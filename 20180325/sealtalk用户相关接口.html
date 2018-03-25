@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="sealtalk用户相关接口文档" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="sealtalk用户相关接口文档">
+<meta name="keywords" content="sealtalk用户相关接口文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用户相关接口">
+<meta property="og:url" content="http://blog.slpi1.com/20180325/sealtalk用户相关接口.html">
+<meta property="og:site_name" content="easy note">
+<meta property="og:description" content="sealtalk用户相关接口文档">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-25T02:31:19.859Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用户相关接口">
+<meta name="twitter:description" content="sealtalk用户相关接口文档">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.slpi1.com/20180325/sealtalk用户相关接口.html"/>
+
+
+
+
+
+  <title>用户相关接口 | easy note</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">easy note</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">easy note</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20180325/sealtalk用户相关接口.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">用户相关接口</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-25T10:31:19+08:00">
+                2018-03-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/rongcloud/" itemprop="url" rel="index">
+                    <span itemprop="name">rongcloud</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/rongcloud/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  sealtalk用户相关接口文档
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <table>
+<thead>
+<tr>
+<th>接口地址</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#post-usersend_code">/user/send_code</a></td>
+<td>向手机发送验证码</td>
+</tr>
+<tr>
+<td><a href="#post-userverify_code">/user/verify_code</a></td>
+<td>验证验证码</td>
+</tr>
+<tr>
+<td><a href="#post-usercheck_phone_available">/user/check_phone_available</a></td>
+<td>检查手机号是否可以注册</td>
+</tr>
+<tr>
+<td><a href="#post-userregister">/user/register</a></td>
+<td>注册新用户</td>
+</tr>
+<tr>
+<td><a href="#post-userlogin">/user/login</a></td>
+<td>用户登录</td>
+</tr>
+<tr>
+<td><a href="#post-userlogout">/user/logout</a></td>
+<td>当前用户注销</td>
+</tr>
+<tr>
+<td><a href="#post-userreset_password">/user/reset_password</a></td>
+<td>通过手机验证码设置新密码</td>
+</tr>
+<tr>
+<td><a href="#post-userchange_password">/user/change_password</a></td>
+<td>当前登录用户通过旧密码设置新密码</td>
+</tr>
+<tr>
+<td><a href="#post-userset_nickname">/user/set_nickname</a></td>
+<td>设置当前用户的昵称</td>
+</tr>
+<tr>
+<td><a href="#post-userset_portrait_uri">/user/set_portrait_uri</a></td>
+<td>设置当前用户头像地址</td>
+</tr>
+<tr>
+<td><a href="#post-userblacklist">/user/blacklist</a></td>
+<td>获取当前用户黑名单列表</td>
+</tr>
+<tr>
+<td><a href="#post-useradd_to_blacklist">/user/add_to_blacklist</a></td>
+<td>将好友加入黑名单</td>
+</tr>
+<tr>
+<td><a href="#post-userremove_from_blacklist">/user/remove_from_blacklist</a></td>
+<td>将好友从黑名单中移除</td>
+</tr>
+<tr>
+<td><a href="#post-userget_token">/user/get_token</a></td>
+<td>获取融云 Token</td>
+</tr>
+<tr>
+<td><a href="#post-userget_image_token">/user/get_image_token</a></td>
+<td>获取云存储所用 Token</td>
+</tr>
+<tr>
+<td><a href="#post-userget_sms_img_code">/user/get_sms_img_code</a></td>
+<td>获取短信图形验证码</td>
+</tr>
+<tr>
+<td><a href="#post-usergroups">/user/groups</a></td>
+<td>获取当前用户所属群组列表</td>
+</tr>
+<tr>
+<td><a href="#post-usersyncversion">/user/sync/:version</a></td>
+<td>同步用户的好友、黑名单、群组、群组成员数据</td>
+</tr>
+<tr>
+<td><a href="#post-userfindregionphone">/user/find/:region/:phone</a></td>
+<td>根据手机号查找用户信息</td>
+</tr>
+<tr>
+<td><a href="#post-userid">/user/:id</a></td>
+<td>获取用户信息</td>
+</tr>
+</tbody>
+</table>
+<h2 id="API-说明"><a href="#API-说明" class="headerlink" title="API 说明"></a>API 说明</h2><p>请注意文档中<code>返回码</code>和 HTTP Status Code 之间的区别，<code>返回码</code>是 HTTP Status Code 为 <code>200</code> 时，返回的 JSON 结果集中 <code>code</code> 的值，<code>code</code> 值正常返回时，也是 <code>200</code> 请注意区分，避免混淆。</p>
+<h3 id="POST-user-send-code"><a href="#POST-user-send-code" class="headerlink" title="POST /user/send_code"></a>POST /user/send_code</h3><p>向手机发送验证码。</p>
+<h4 id="请求参数"><a href="#请求参数" class="headerlink" title="请求参数"></a>请求参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;region&quot;: 86,</span><br><span class="line">  &quot;phone&quot;: 13912345678</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>region: 国际电话区号</li>
+<li>phone: 手机号</li>
+</ul>
+<h4 id="返回结果"><a href="#返回结果" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回码说明：</p>
+<ul>
+<li>200: 发送成功</li>
+<li>5000: 发送失败，超过频率限制</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-verify-code"><a href="#POST-user-verify-code" class="headerlink" title="POST /user/verify_code"></a>POST /user/verify_code</h3><p>验证验证码。</p>
+<h4 id="请求参数-1"><a href="#请求参数-1" class="headerlink" title="请求参数"></a>请求参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;region&quot;: 86,</span><br><span class="line">  &quot;phone&quot;: 13912345678,</span><br><span class="line">  &quot;code&quot;: &apos;1234&apos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>region: 国际电话区号</li>
+<li>phone: 手机号</li>
+<li>code: 验证码，由 /user/send_code 方法发送到手机上</li>
+</ul>
+<h4 id="返回结果-1"><a href="#返回结果-1" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200,</span><br><span class="line">  &quot;result&quot;: &#123;</span><br><span class="line">    &quot;verification_token&quot;: &quot;75dd0f90-9b0d-11e5-803f-59b82644bc50&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>verification_token: 校验 Token</li>
+</ul>
+<p>返回码说明：</p>
+<ul>
+<li>200: 验证成功</li>
+<li>1000: 验证码错误</li>
+<li>2000: 验证码过期</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-check-phone-available"><a href="#POST-user-check-phone-available" class="headerlink" title="POST /user/check_phone_available"></a>POST /user/check_phone_available</h3><p>检查手机号是否可以注册。</p>
+<h4 id="请求参数-2"><a href="#请求参数-2" class="headerlink" title="请求参数"></a>请求参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;region&quot;: 86,</span><br><span class="line">  &quot;phone&quot;: 13912345678</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>region: 国际电话区号</li>
+<li>phone: 手机号</li>
+</ul>
+<h4 id="返回结果-2"><a href="#返回结果-2" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200,</span><br><span class="line">  &quot;result&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>返回结果说明：</p>
+<ul>
+<li>true: 手机号可用</li>
+<li>false: 手机号不可用</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-register"><a href="#POST-user-register" class="headerlink" title="POST /user/register"></a>POST /user/register</h3><p>注册新用户。</p>
+<h4 id="请求参数-3"><a href="#请求参数-3" class="headerlink" title="请求参数"></a>请求参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;nickname&quot;: &quot;Tom&quot;,</span><br><span class="line">  &quot;password&quot;: &quot;P@ssw0rd&quot;,</span><br><span class="line">  &quot;verification_token&quot;: &quot;75dd0f90-9b0d-11e5-803f-59b82644bc50&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>nickname: 昵称，1 到 32 个字节</li>
+<li>password: 密码，6 到 20 个字节，不能包含空格</li>
+<li>verification_token: 调用 /user/verify_code 成功后返回的 verification_token</li>
+</ul>
+<h4 id="返回结果-3"><a href="#返回结果-3" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200,</span><br><span class="line">  &quot;result&quot;: &#123;</span><br><span class="line">    &quot;id&quot;: &quot;5Vg2Xh9f&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>id: 注册的用户 Id</li>
+</ul>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>返回结果说明：</p>
+<ul>
+<li>id: 注册的用户 Id</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>404: verification_token 不存在</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-login"><a href="#POST-user-login" class="headerlink" title="POST /user/login"></a>POST /user/login</h3><p>用户登录。登录成功后，会设置 Cookie，后续接口调用需要登录的权限都依赖于 Cookie。</p>
+<h4 id="请求参数-4"><a href="#请求参数-4" class="headerlink" title="请求参数"></a>请求参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;region&quot;: 86,</span><br><span class="line">  &quot;phone&quot;: 13912345678,</span><br><span class="line">  &quot;password&quot;: &quot;P@ssw0rd&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>region: 国际电话区号</li>
+<li>phone: 手机号</li>
+<li>password: 密码，6 到 20 个字节，不能包含空格</li>
+</ul>
+<h4 id="返回结果-4"><a href="#返回结果-4" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200,</span><br><span class="line">  &quot;result&quot;: &#123;</span><br><span class="line">    &quot;id&quot;: &quot;5Vg2Xh9f&quot;,</span><br><span class="line">    &quot;token&quot;: &quot;C4nEgo1TK0Ly6zUr/+Hqqu/XQOlLIWwcquFNlNhLydOQwZlSzscUQQfhEU6nFWJ+yPKQhMU6qP5XXBgOWA1AhckFbQ/t+nm4&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>id: 登录用户 Id</li>
+<li>token: 融云 Token</li>
+</ul>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+<li>1000: 错误的手机号或者密码</li>
+</ul>
+<p>返回结果说明：</p>
+<ul>
+<li>id: 登录的用户 Id</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-logout"><a href="#POST-user-logout" class="headerlink" title="POST /user/logout"></a>POST /user/logout</h3><p>当前用户注销。</p>
+<h4 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-5"><a href="#请求参数-5" class="headerlink" title="请求参数"></a>请求参数</h4><p>无</p>
+<h4 id="返回结果-5"><a href="#返回结果-5" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<h3 id="POST-user-reset-password"><a href="#POST-user-reset-password" class="headerlink" title="POST /user/reset_password"></a>POST /user/reset_password</h3><p>通过手机验证码设置新密码。</p>
+<h4 id="请求参数-6"><a href="#请求参数-6" class="headerlink" title="请求参数"></a>请求参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;password&quot;: &quot;P@ssw0rd&quot;,</span><br><span class="line">  &quot;verification_token&quot;: &quot;75dd0f90-9b0d-11e5-803f-59b82644bc50&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>password: 密码，6 到 20 个字节，不能包含空格</li>
+<li>verification_token: 调用 /user/verify_code 成功后返回的 verification_token</li>
+</ul>
+<h4 id="返回结果-6"><a href="#返回结果-6" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-change-password"><a href="#POST-user-change-password" class="headerlink" title="POST /user/change_password"></a>POST /user/change_password</h3><p>当前登录用户通过旧密码设置新密码。</p>
+<h4 id="前置条件-1"><a href="#前置条件-1" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-7"><a href="#请求参数-7" class="headerlink" title="请求参数"></a>请求参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;oldPassword&quot;: &quot;P@ssw0rdOld&quot;,</span><br><span class="line">  &quot;newPassword&quot;: &quot;P@ssw0rdNew&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>oldPassword: 旧密码，6 到 20 个字节，不能包含空格</li>
+<li>newPassword: 新密码，6 到 20 个字节，不能包含空格</li>
+</ul>
+<h4 id="返回结果-7"><a href="#返回结果-7" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-set-nickname"><a href="#POST-user-set-nickname" class="headerlink" title="POST /user/set_nickname"></a>POST /user/set_nickname</h3><p>设置当前用户的昵称</p>
+<h4 id="前置条件-2"><a href="#前置条件-2" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-8"><a href="#请求参数-8" class="headerlink" title="请求参数"></a>请求参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;nickname&quot;: &quot;Tom&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>nickname: 当前用户的昵称</li>
+</ul>
+<h4 id="返回结果-8"><a href="#返回结果-8" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-set-portrait-uri"><a href="#POST-user-set-portrait-uri" class="headerlink" title="POST /user/set_portrait_uri"></a>POST /user/set_portrait_uri</h3><p>设置当前用户头像地址。</p>
+<h4 id="前置条件-3"><a href="#前置条件-3" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-9"><a href="#请求参数-9" class="headerlink" title="请求参数"></a>请求参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;portraitUri&quot;: &quot;http://test.com/user/abc123.jpg&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>portraitUri: 当前用户的头像地址</li>
+</ul>
+<h4 id="返回结果-9"><a href="#返回结果-9" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-blacklist"><a href="#POST-user-blacklist" class="headerlink" title="POST /user/blacklist"></a>POST /user/blacklist</h3><p>获取当前用户黑名单列表。</p>
+<h4 id="前置条件-4"><a href="#前置条件-4" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-10"><a href="#请求参数-10" class="headerlink" title="请求参数"></a>请求参数</h4><p>无</p>
+<h4 id="返回结果-10"><a href="#返回结果-10" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200,</span><br><span class="line">  &quot;result&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;id&quot;: &quot;sdf9sd0df98&quot;,</span><br><span class="line">      &quot;nickname&quot;: &quot;Tom&quot;,</span><br><span class="line">      &quot;portraitUri&quot;: &quot;http://test.com/user/abc123.jpg&quot;,</span><br><span class="line">      &quot;updatedAt&quot;: &quot;TODO: DateTime Format&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;id&quot;: &quot;fgh809fg098&quot;,</span><br><span class="line">      &quot;nickname&quot;: &quot;Jerry&quot;,</span><br><span class="line">      &quot;portraitUri&quot;: &quot;http://test.com/user/abc234.jpg&quot;,</span><br><span class="line">      &quot;updatedAt&quot;: &quot;TODO: DateTime Format&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>id: 用户 Id</li>
+<li>nickname: 用户昵称</li>
+<li>portraitUri: 用户头像地址</li>
+<li>updatedAt: 黑名单更新时间</li>
+</ul>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-add-to-blacklist"><a href="#POST-user-add-to-blacklist" class="headerlink" title="POST /user/add_to_blacklist"></a>POST /user/add_to_blacklist</h3><p>将好友加入黑名单。</p>
+<h4 id="前置条件-5"><a href="#前置条件-5" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-11"><a href="#请求参数-11" class="headerlink" title="请求参数"></a>请求参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;friendId&quot;: &quot;d9ewr89j238&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>friendId: 要加入黑名单的好友 Id</li>
+</ul>
+<h4 id="返回结果-11"><a href="#返回结果-11" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-remove-from-blacklist"><a href="#POST-user-remove-from-blacklist" class="headerlink" title="POST /user/remove_from_blacklist"></a>POST /user/remove_from_blacklist</h3><p>将好友从黑名单中移除。</p>
+<h4 id="前置条件-6"><a href="#前置条件-6" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-12"><a href="#请求参数-12" class="headerlink" title="请求参数"></a>请求参数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;friendId&quot;: &quot;d9ewr89j238&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>friendId: 要移除黑名单的好友 Id</li>
+</ul>
+<h4 id="返回结果-12"><a href="#返回结果-12" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-get-token"><a href="#POST-user-get-token" class="headerlink" title="POST /user/get_token"></a>POST /user/get_token</h3><p>获取融云 Token。</p>
+<h4 id="前置条件-7"><a href="#前置条件-7" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-13"><a href="#请求参数-13" class="headerlink" title="请求参数"></a>请求参数</h4><p>无</p>
+<h4 id="返回结果-13"><a href="#返回结果-13" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-get-image-token"><a href="#POST-user-get-image-token" class="headerlink" title="POST /user/get_image_token"></a>POST /user/get_image_token</h3><p>获取云存储所用 Token。</p>
+<h4 id="前置条件-8"><a href="#前置条件-8" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-14"><a href="#请求参数-14" class="headerlink" title="请求参数"></a>请求参数</h4><p>无</p>
+<h4 id="返回结果-14"><a href="#返回结果-14" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200,</span><br><span class="line">  &quot;result&quot;: &#123;</span><br><span class="line">    &quot;target&quot;: &quot;qiniu&quot;,</span><br><span class="line">    &quot;domain&quot;: &quot;a.qiniu.com&quot;,</span><br><span class="line">    &quot;token&quot;: &quot;fsd89feuio3iweoifds&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>target: 云存储类型</li>
+<li>domain: 云存储图片地址域名</li>
+<li>token: 云存储 Token</li>
+</ul>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-get-sms-img-code"><a href="#POST-user-get-sms-img-code" class="headerlink" title="POST /user/get_sms_img_code"></a>POST /user/get_sms_img_code</h3><p>获取短信图形验证码。</p>
+<h4 id="请求参数-15"><a href="#请求参数-15" class="headerlink" title="请求参数"></a>请求参数</h4><p>无</p>
+<h4 id="返回结果-15"><a href="#返回结果-15" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200,</span><br><span class="line">  &quot;result&quot;: &#123;</span><br><span class="line">    &quot;url&quot;: &quot;http://test.com/code.png&quot;,</span><br><span class="line">    &quot;verifyId&quot;: &quot;fsd89feuio3iweoifds&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>url: 验证码图片地址</li>
+<li>verifyId: 图形验证码校验 Id</li>
+</ul>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-groups"><a href="#POST-user-groups" class="headerlink" title="POST /user/groups"></a>POST /user/groups</h3><p>获取当前用户所属群组列表。</p>
+<h4 id="前置条件-9"><a href="#前置条件-9" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-16"><a href="#请求参数-16" class="headerlink" title="请求参数"></a>请求参数</h4><p>无</p>
+<h4 id="返回结果-16"><a href="#返回结果-16" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200,</span><br><span class="line">  &quot;result&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;id&quot;: &quot;sdf9sd0df98&quot;,</span><br><span class="line">      &quot;name&quot;: &quot;Team 1&quot;,</span><br><span class="line">      &quot;portraitUri&quot;: &quot;http://test.com/group/abc123.jpg&quot;,</span><br><span class="line">      &quot;creatorId&quot;: &quot;fgh89wefd9&quot;</span><br><span class="line">      &quot;memberCount&quot;: 5</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;id&quot;: &quot;fgh809fg098&quot;,</span><br><span class="line">      &quot;name&quot;: &quot;Team 2&quot;,</span><br><span class="line">      &quot;portraitUri&quot;: &quot;http://test.com/group/abc234.jpg&quot;,</span><br><span class="line">      &quot;creatorId&quot;: &quot;kl234klj234&quot;</span><br><span class="line">      &quot;memberCount&quot;: 8</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>id: 用户 Id</li>
+<li>name: 群组名称</li>
+<li>portraitUri: 群组头像地址</li>
+<li>creatorId: 群组创建者 Id</li>
+<li>memberCount: 群组成员数</li>
+</ul>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-sync-version"><a href="#POST-user-sync-version" class="headerlink" title="POST /user/sync/:version"></a>POST /user/sync/:version</h3><p>同步用户的好友、黑名单、群组、群组成员数据。</p>
+<p>参见 <a href="#客户端数据同步策略说明">客户端数据同步策略说明</a></p>
+<h4 id="前置条件-10"><a href="#前置条件-10" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-17"><a href="#请求参数-17" class="headerlink" title="请求参数"></a>请求参数</h4><ul>
+<li>version: 请求的时间戳（版本号）</li>
+</ul>
+<h4 id="返回结果-17"><a href="#返回结果-17" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200,</span><br><span class="line">  &quot;result&quot;: &#123;</span><br><span class="line">    &quot;version&quot;: 1234567894,</span><br><span class="line">    &quot;user&quot;: &#123;</span><br><span class="line">      &quot;id&quot;: &quot;sdf9sd0df98&quot;,</span><br><span class="line">      &quot;nickname&quot;: &quot;Tom&quot;,</span><br><span class="line">      &quot;portraitUri&quot;: &quot;http://test.com/user/abc123.jpg&quot;,</span><br><span class="line">      &quot;timestamp&quot;: 1234567891</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;blacklist&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;friendId&quot;: &quot;sdf9sd0df98&quot;,</span><br><span class="line">        &quot;status&quot;: true,</span><br><span class="line">        &quot;timestamp&quot;: 1234567891</span><br><span class="line">      &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;friends&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;friendId&quot;: &quot;sdf9sd0df98&quot;,</span><br><span class="line">        &quot;displayName&quot;: &quot;Jerry&quot;,</span><br><span class="line">        &quot;status&quot;: 20,</span><br><span class="line">        &quot;timestamp&quot;: 1234567892</span><br><span class="line">      &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;groups&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;displayName&quot;: &quot;Ironman&quot;,</span><br><span class="line">        &quot;role&quot;: 1,</span><br><span class="line">        &quot;isDeleted&quot;: true,</span><br><span class="line">        &quot;group&quot;: &#123;</span><br><span class="line">          &quot;id&quot;: &quot;sdf9sd0df98&quot;,</span><br><span class="line">          &quot;name&quot;: &quot;Team 1&quot;,</span><br><span class="line">          &quot;portraitUri&quot;: &quot;http://test.com/group/abc123.jpg&quot;,</span><br><span class="line">          &quot;timestamp&quot;: 1234567893</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;group_members&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;groupId&quot;: &quot;cvx989vxc9&quot;,</span><br><span class="line">        &quot;memberId&quot;: &quot;sdf9sd0df98&quot;,</span><br><span class="line">        &quot;displayName&quot;: &quot;Ironman&quot;,</span><br><span class="line">        &quot;role&quot;: 1,</span><br><span class="line">        &quot;isDeleted&quot;: true,</span><br><span class="line">        &quot;timestamp&quot;: 1234567893,</span><br><span class="line">        &quot;user&quot;: &#123;</span><br><span class="line">          &quot;nickname&quot;: &quot;Tom&quot;,</span><br><span class="line">          &quot;portraitUri&quot;: &quot;http://test.com/user/abc123.jpg&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>version:</p>
+</li>
+<li><p>user.id: 用户 Id</p>
+</li>
+<li>user.name: 用户名称</li>
+<li>user.portraitUri: 用户头像地址</li>
+<li><p>user.timestamp: 用户信息时间戳（版本号）</p>
+</li>
+<li><p>blacklist.friendId: 好友 Id</p>
+</li>
+<li>blacklist.status: 黑名单状态</li>
+<li><p>blacklist.timestamp: 黑名单信息时间戳（版本号）</p>
+</li>
+<li><p>friends.friendId: 好友 Id</p>
+</li>
+<li>friends.displayName: 好友显示名称</li>
+<li>friends.status: 好友状态</li>
+<li><p>friends.timestamp: 好友信息时间戳（版本号）</p>
+</li>
+<li><p>groups.displayName: 在群组中的显示名称</p>
+</li>
+<li>groups.role: 在群组中的角色</li>
+<li>groups.isDeleted: 是否被删除</li>
+<li>groups.group.id: 群组 Id</li>
+<li>groups.group.name: 群组名称</li>
+<li>groups.group.portraitUri: 群组头像地址</li>
+<li><p>groups.group.timestamp: 群组信息时间戳（版本号）</p>
+</li>
+<li><p>group_members.groupId: 群组 Id</p>
+</li>
+<li>group_members.memberId: 群组成员 Id</li>
+<li>group_members.displayName: 群组成员显示名称</li>
+<li>group_members.role: 群组成员角色</li>
+<li>group_members.isDeleted: 是否被删除</li>
+<li>group_members.timestamp: 群组成员信息时间戳（版本号）</li>
+<li>group_members.group.id: 群组 Id</li>
+<li>group_members.group.name: 群组名称</li>
+<li>group_members.group.portraitUri: 群组头像地址</li>
+</ul>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-find-region-phone"><a href="#POST-user-find-region-phone" class="headerlink" title="POST /user/find/:region/:phone"></a>POST /user/find/:region/:phone</h3><p>根据手机号查找用户信息。</p>
+<h4 id="前置条件-11"><a href="#前置条件-11" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-18"><a href="#请求参数-18" class="headerlink" title="请求参数"></a>请求参数</h4><ul>
+<li>region: 国际电话区号</li>
+<li>phone: 手机号</li>
+</ul>
+<h4 id="返回结果-18"><a href="#返回结果-18" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200,</span><br><span class="line">  &quot;result&quot;:&#123;</span><br><span class="line">    &quot;id&quot;: &quot;sdf9sd0df98&quot;,</span><br><span class="line">    &quot;nickname&quot;: &quot;Tom&quot;,</span><br><span class="line">    &quot;portraitUri&quot;: &quot;http://test.com/user/abc123.jpg&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>id: 用户 Id</li>
+<li>nickname: 用户昵称</li>
+<li>portraitUri: 用户头像地址</li>
+</ul>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>404: 无此用户</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+<h3 id="POST-user-id"><a href="#POST-user-id" class="headerlink" title="POST /user/:id"></a>POST /user/:id</h3><p>获取用户信息。</p>
+<h4 id="前置条件-12"><a href="#前置条件-12" class="headerlink" title="前置条件"></a>前置条件</h4><p>需要登录才能访问。</p>
+<h4 id="请求参数-19"><a href="#请求参数-19" class="headerlink" title="请求参数"></a>请求参数</h4><ul>
+<li>id: 用户 Id</li>
+</ul>
+<h4 id="返回结果-19"><a href="#返回结果-19" class="headerlink" title="返回结果"></a>返回结果</h4><p>正常返回，返回的 HTTP Status Code 为 200，返回的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;code&quot;: 200,</span><br><span class="line">  &quot;result&quot;:&#123;</span><br><span class="line">    &quot;id&quot;: &quot;sdf9sd0df98&quot;,</span><br><span class="line">    &quot;nickname&quot;: &quot;Tom&quot;,</span><br><span class="line">    &quot;portraitUri&quot;: &quot;http://test.com/user/abc123.jpg&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>id: 用户 Id</li>
+<li>nickname: 用户昵称</li>
+<li>portraitUri: 用户头像地址</li>
+</ul>
+<p>返回码说明：</p>
+<ul>
+<li>200: 请求成功</li>
+</ul>
+<p>异常返回，返回的 HTTP Status Code 如下：</p>
+<ul>
+<li>400: 错误的请求</li>
+<li>404: 无此用户</li>
+<li>500: 应用服务器内部错误</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/20180325/php返回json数据，int型字段显示为string型的问题.html" rel="next" title="php返回json数据，int型字段显示为string型的问题">
+                <i class="fa fa-chevron-left"></i> php返回json数据，int型字段显示为string型的问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/20180325/php的引用.html" rel="prev" title="php 中的引用计数、写时复制、写时改变">
+                php 中的引用计数、写时复制、写时改变 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="slpi1" />
+          <p class="site-author-name" itemprop="name">slpi1</p>
+           
+              <p class="site-description motion-element" itemprop="description">PHP,Laravel,thinkPHP,javascript,css</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#API-说明"><span class="nav-number">1.</span> <span class="nav-text">API 说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-send-code"><span class="nav-number">1.1.</span> <span class="nav-text">POST /user/send_code</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数"><span class="nav-number">1.1.1.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果"><span class="nav-number">1.1.2.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-verify-code"><span class="nav-number">1.2.</span> <span class="nav-text">POST /user/verify_code</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-1"><span class="nav-number">1.2.2.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-check-phone-available"><span class="nav-number">1.3.</span> <span class="nav-text">POST /user/check_phone_available</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-2"><span class="nav-number">1.3.1.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-2"><span class="nav-number">1.3.2.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-register"><span class="nav-number">1.4.</span> <span class="nav-text">POST /user/register</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-3"><span class="nav-number">1.4.1.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-3"><span class="nav-number">1.4.2.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-login"><span class="nav-number">1.5.</span> <span class="nav-text">POST /user/login</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-4"><span class="nav-number">1.5.1.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-4"><span class="nav-number">1.5.2.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-logout"><span class="nav-number">1.6.</span> <span class="nav-text">POST /user/logout</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件"><span class="nav-number">1.6.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-5"><span class="nav-number">1.6.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-5"><span class="nav-number">1.6.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-reset-password"><span class="nav-number">1.7.</span> <span class="nav-text">POST /user/reset_password</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-6"><span class="nav-number">1.7.1.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-6"><span class="nav-number">1.7.2.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-change-password"><span class="nav-number">1.8.</span> <span class="nav-text">POST /user/change_password</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件-1"><span class="nav-number">1.8.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-7"><span class="nav-number">1.8.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-7"><span class="nav-number">1.8.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-set-nickname"><span class="nav-number">1.9.</span> <span class="nav-text">POST /user/set_nickname</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件-2"><span class="nav-number">1.9.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-8"><span class="nav-number">1.9.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-8"><span class="nav-number">1.9.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-set-portrait-uri"><span class="nav-number">1.10.</span> <span class="nav-text">POST /user/set_portrait_uri</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件-3"><span class="nav-number">1.10.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-9"><span class="nav-number">1.10.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-9"><span class="nav-number">1.10.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-blacklist"><span class="nav-number">1.11.</span> <span class="nav-text">POST /user/blacklist</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件-4"><span class="nav-number">1.11.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-10"><span class="nav-number">1.11.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-10"><span class="nav-number">1.11.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-add-to-blacklist"><span class="nav-number">1.12.</span> <span class="nav-text">POST /user/add_to_blacklist</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件-5"><span class="nav-number">1.12.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-11"><span class="nav-number">1.12.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-11"><span class="nav-number">1.12.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-remove-from-blacklist"><span class="nav-number">1.13.</span> <span class="nav-text">POST /user/remove_from_blacklist</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件-6"><span class="nav-number">1.13.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-12"><span class="nav-number">1.13.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-12"><span class="nav-number">1.13.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-get-token"><span class="nav-number">1.14.</span> <span class="nav-text">POST /user/get_token</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件-7"><span class="nav-number">1.14.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-13"><span class="nav-number">1.14.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-13"><span class="nav-number">1.14.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-get-image-token"><span class="nav-number">1.15.</span> <span class="nav-text">POST /user/get_image_token</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件-8"><span class="nav-number">1.15.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-14"><span class="nav-number">1.15.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-14"><span class="nav-number">1.15.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-get-sms-img-code"><span class="nav-number">1.16.</span> <span class="nav-text">POST /user/get_sms_img_code</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-15"><span class="nav-number">1.16.1.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-15"><span class="nav-number">1.16.2.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-groups"><span class="nav-number">1.17.</span> <span class="nav-text">POST /user/groups</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件-9"><span class="nav-number">1.17.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-16"><span class="nav-number">1.17.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-16"><span class="nav-number">1.17.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-sync-version"><span class="nav-number">1.18.</span> <span class="nav-text">POST /user/sync/:version</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件-10"><span class="nav-number">1.18.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-17"><span class="nav-number">1.18.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-17"><span class="nav-number">1.18.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-find-region-phone"><span class="nav-number">1.19.</span> <span class="nav-text">POST /user/find/:region/:phone</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件-11"><span class="nav-number">1.19.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-18"><span class="nav-number">1.19.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-18"><span class="nav-number">1.19.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-user-id"><span class="nav-number">1.20.</span> <span class="nav-text">POST /user/:id</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前置条件-12"><span class="nav-number">1.20.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数-19"><span class="nav-number">1.20.2.</span> <span class="nav-text">请求参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回结果-19"><span class="nav-number">1.20.3.</span> <span class="nav-text">返回结果</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">slpi1</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

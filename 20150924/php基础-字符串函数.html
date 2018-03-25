@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="php基础 - 字符串函数" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="php基础，常用字符串函数">
+<meta name="keywords" content="php基础 - 字符串函数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="php基础 - 常用字符串函数">
+<meta property="og:url" content="http://blog.slpi1.com/20150924/php基础-字符串函数.html">
+<meta property="og:site_name" content="easy note">
+<meta property="og:description" content="php基础，常用字符串函数">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-25T02:31:19.859Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="php基础 - 常用字符串函数">
+<meta name="twitter:description" content="php基础，常用字符串函数">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.slpi1.com/20150924/php基础-字符串函数.html"/>
+
+
+
+
+
+  <title>php基础 - 常用字符串函数 | easy note</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">easy note</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">easy note</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20150924/php基础-字符串函数.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">php基础 - 常用字符串函数</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-09-24T12:30:00+08:00">
+                2015-09-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  php基础，常用字符串函数
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="rtrim"><a href="#rtrim" class="headerlink" title="rtrim"></a>rtrim</h2><p>删除字符串末端的空白字符（或者其他字符）。</p>
+<h2 id="ltrim"><a href="#ltrim" class="headerlink" title="ltrim"></a>ltrim</h2><p>删除字符串首端的空白字符（或者其他字符）。</p>
+<h2 id="trim"><a href="#trim" class="headerlink" title="trim"></a>trim</h2><p>去除字符串首尾处的空白字符（或者其他字符）</p>
+<p>该函数删除 str 末端的空白字符并返回。不使用第二个参数，rtrim() 仅删除以下字符：</p>
+<ul>
+<li>“ “ (ASCII 32 (0x20))，普通空白符。</li>
+<li>“\t” (ASCII 9 (0x09))，制表符。</li>
+<li>“\n” (ASCII 10 (0x0A))，换行符。</li>
+<li>“\r” (ASCII 13 (0x0D))，回车符。</li>
+<li>“\0” (ASCII 0 (0x00))，NUL 空字节符。</li>
+<li>“\x0B” (ASCII 11 (0x0B))，垂直制表符。</li>
+</ul>
+<h2 id="chr"><a href="#chr" class="headerlink" title="chr"></a>chr</h2><p>返回相对应于 ascii 所指定的单个字符。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    echo chr(65);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure></p>
+<p>输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A</span><br></pre></td></tr></table></figure></p>
+<h2 id="ord"><a href="#ord" class="headerlink" title="ord"></a>ord</h2><p>返回字符串 string 第一个字符的 ASCII 码值。该函数是 chr() 的互补函数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    echo ord(&apos;A&apos;);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure></p>
+<p>输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">65</span><br></pre></td></tr></table></figure></p>
+<h2 id="explode"><a href="#explode" class="headerlink" title="explode"></a>explode</h2><p>使用一个字符串分割另一个字符串。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">array explode ( string $separator , string $string [, int $limit ] )</span><br></pre></td></tr></table></figure></p>
+<p>如果 separator 为空字符串（””），explode() 将返回 FALSE。如果 separator 所包含的值在 string 中找不到，那么 explode() 将返回包含 string 单个元素的数组。limit 表示最大分割的份数。</p>
+<h2 id="implode"><a href="#implode" class="headerlink" title="implode"></a>implode</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">string implode ( string $glue , array $pieces )</span><br><span class="line">string implode ( array $pieces )</span><br></pre></td></tr></table></figure>
+<p>组合字符串。</p>
+<h2 id="parse-url"><a href="#parse-url" class="headerlink" title="parse_url"></a>parse_url</h2><p>解析url字符串。返回url各个部分的信息，包括scheme,host,port,user,pass,path,query,fragment</p>
+<ul>
+<li>scheme:协议，http/ftp/file/https/mailto等</li>
+<li>host:主机名</li>
+<li>port：端口</li>
+<li>user：用户</li>
+<li>pass：密码</li>
+<li>path：路径<ul>
+<li>对于绝对url，是com之后？之前的部分，一定以‘/’开头，以文档名结尾，或以‘/’结尾</li>
+<li>对于相对路径，是？之前的部分，可能以‘.’、‘..’、‘/’、字母开头。</li>
+</ul>
+</li>
+<li>query：查询字符</li>
+<li>fragment：锚点</li>
+</ul>
+<h2 id="parse-str"><a href="#parse-str" class="headerlink" title="parse_str"></a>parse_str</h2><p>将<code>查询字符query</code>解析为值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$str = &quot;first=value&amp;arr[]=foo+bar&amp;arr[]=baz&quot;;</span><br><span class="line">parse_str($str);</span><br><span class="line">echo $first;  // value</span><br><span class="line">echo $arr[0]; // foo bar</span><br><span class="line">echo $arr[1]; // baz</span><br><span class="line"></span><br><span class="line">parse_str($str, $output);</span><br><span class="line">echo $output[&apos;first&apos;];  // value</span><br><span class="line">echo $output[&apos;arr&apos;][0]; // foo bar</span><br><span class="line">echo $output[&apos;arr&apos;][1]; // baz</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="str-repeat"><a href="#str-repeat" class="headerlink" title="str_repeat"></a>str_repeat</h2><p>重复一个字符串<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string str_repeat ( string $input , int $multiplier )</span><br></pre></td></tr></table></figure></p>
+<p>返回 input 重复 multiplier 次后的结果。</p>
+<h2 id="str-replace"><a href="#str-replace" class="headerlink" title="str_replace"></a>str_replace</h2><p>子字符串替换，该函数区分大小写。使用 str_ireplace() 可以进行不区分大小写的替换。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mixed str_replace ( mixed $search , mixed $replace , mixed $subject [, int &amp;$count ] )</span><br></pre></td></tr></table></figure></p>
+<p>该函数返回一个字符串或者数组。该字符串或数组是将 subject 中全部的 search 都被 replace 替换之后的结果。</p>
+<ul>
+<li>search 和 replace 为数组，那么 str_replace() 将对 subject 做二者的映射替换。</li>
+<li>replace 的值的个数少于 search 的个数，多余的替换将使用空字符串来进行。</li>
+<li>search 是一个数组而 replace 是一个字符串，那么 search 中每个元素的替换将始终使用这个字符串。该转换不会改变大小写。</li>
+</ul>
+<h2 id="str-split"><a href="#str-split" class="headerlink" title="str_split"></a>str_split</h2><p>将字符串转换为数组<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">array str_split ( string $string [, int $split_length = 1 ] )</span><br></pre></td></tr></table></figure></p>
+<p>如果指定了可选的 split_length 参数，返回数组中的每个元素均为一个长度为 split_length 的字符块，否则每个字符块为单个字符。<br>如果 split_length 小于 1，返回 FALSE。如果 split_length 参数超过了 string 超过了字符串 string 的长度，整个字符串将作为数组仅有的一个元素返回。</p>
+<h2 id="strip-tags"><a href="#strip-tags" class="headerlink" title="strip_tags"></a>strip_tags</h2><p>从字符串中去除 HTML 和 PHP 标记<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string strip_tags ( string $str [, string $allowable_tags ] )</span><br></pre></td></tr></table></figure></p>
+<h2 id="stripos"><a href="#stripos" class="headerlink" title="stripos"></a>stripos</h2><p>查找字符串首次出现的位置。stripos() 不区分大小写。strpos()区分大小写。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int stripos ( string $haystack , string $needle [, int $offset = 0 ] )</span><br></pre></td></tr></table></figure></p>
+<p>返回在字符串 haystack 中 needle 首次出现的数字位置。 </p>
+<h2 id="strripos"><a href="#strripos" class="headerlink" title="strripos"></a>strripos</h2><p>计算指定字符串在目标字符串中最后一次出现的位置（不区分大小写）。strrpos区分大小写。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int strripos ( string $haystack , string $needle [, int $offset = 0 ] )</span><br></pre></td></tr></table></figure></p>
+<h2 id="strstr"><a href="#strstr" class="headerlink" title="strstr"></a>strstr</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string strstr ( string $haystack , mixed $needle [, bool $before_needle = false ] )</span><br></pre></td></tr></table></figure>
+<p>同strchr，该函数区分大小写。如果想要不区分大小写，请使用 stristr()。<br>查找字符串的首次出现。返回 haystack 字符串从 needle 第一次出现的位置开始到 haystack 结尾的字符串。<br>before_needle若为 TRUE，strstr() 将返回 needle 在 haystack 中的位置之前的部分。</p>
+<h2 id="strrchr"><a href="#strrchr" class="headerlink" title="strrchr"></a>strrchr</h2><p>查找指定字符在字符串中的最后一次出现<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string strrchr ( string $haystack , mixed $needle )</span><br></pre></td></tr></table></figure></p>
+<p>该函数返回 haystack 字符串中的一部分，这部分以 needle 的最后出现位置开始，直到 haystack 末尾。<br>该函数没有不区分大小写的版本。</p>
+<h2 id="strlen"><a href="#strlen" class="headerlink" title="strlen"></a>strlen</h2><p>获取字符串长度</p>
+<h2 id="strtolower"><a href="#strtolower" class="headerlink" title="strtolower"></a>strtolower</h2><p>将 string 中所有的字母字符转换为小写并返回。</p>
+<h2 id="strtoupper"><a href="#strtoupper" class="headerlink" title="strtoupper"></a>strtoupper</h2><p>将 string 中所有的字母字符转换为大写并返回。</p>
+<h2 id="ucfirst"><a href="#ucfirst" class="headerlink" title="ucfirst"></a>ucfirst</h2><p>将字符串的首字母转换为大写</p>
+<h2 id="ucwords"><a href="#ucwords" class="headerlink" title="ucwords"></a>ucwords</h2><p>将字符串中每个单词的首字母转换为大写</p>
+<h2 id="strcmp"><a href="#strcmp" class="headerlink" title="strcmp"></a>strcmp</h2><p>二进制安全字符串比较，strcasecmp不区分大小写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int strcmp ( string $str1 , string $str2 )</span><br></pre></td></tr></table></figure></p>
+<p>如果 str1 小于 str2，返回负数；如果 str1 大于 str2，返回正数；二者相等则返回 0。 </p>
+<h2 id="strnatcmp"><a href="#strnatcmp" class="headerlink" title="strnatcmp"></a>strnatcmp</h2><p>使用自然排序算法比较字符串。strnatcasecmp不区分大小写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int strnatcmp ( string $str1 , string $str2 )</span><br></pre></td></tr></table></figure></p>
+<p>该函数实现了以人类习惯对数字型字符串进行排序的比较算法，这就是“自然顺序”。</p>
+<h2 id="strncmp"><a href="#strncmp" class="headerlink" title="strncmp"></a>strncmp</h2><p>二进制安全比较字符串开头的若干个字符。strncasecmp不区分大小写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int strncmp ( string $str1 , string $str2 , int $len )</span><br></pre></td></tr></table></figure></p>
+<p>该函数与 strcmp() 类似，不同之处在于你可以指定两个字符串比较时使用的长度（即最大比较长度）。</p>
+<h2 id="substr"><a href="#substr" class="headerlink" title="substr"></a>substr</h2><p>返回字符串的子串<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string substr ( string $string , int $start [, int $length ] )</span><br></pre></td></tr></table></figure></p>
+<p>参数描述string必需。规定要返回其中一部分的字符串。start必需。规定在字符串的何处开始。</p>
+<ul>
+<li>正数 - 在字符串的指定位置开始</li>
+<li>负数 - 在从字符串结尾的指定位置开始</li>
+<li>0 - 在字符串中的第一个字符处开始</li>
+</ul>
+<p>length可选。规定要返回的字符串长度。默认是直到字符串的结尾。</p>
+<ul>
+<li>正数 - 从 start 参数所在的位置返回</li>
+<li>负数 - 从字符串末端返回</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/20150923/PHP基础.html" rel="next" title="php基础">
+                <i class="fa fa-chevron-left"></i> php基础
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/20150924/php基础-时间与日期.html" rel="prev" title="php基础 - 时间与日期">
+                php基础 - 时间与日期 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="slpi1" />
+          <p class="site-author-name" itemprop="name">slpi1</p>
+           
+              <p class="site-description motion-element" itemprop="description">PHP,Laravel,thinkPHP,javascript,css</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#rtrim"><span class="nav-number">1.</span> <span class="nav-text">rtrim</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ltrim"><span class="nav-number">2.</span> <span class="nav-text">ltrim</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#trim"><span class="nav-number">3.</span> <span class="nav-text">trim</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chr"><span class="nav-number">4.</span> <span class="nav-text">chr</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ord"><span class="nav-number">5.</span> <span class="nav-text">ord</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#explode"><span class="nav-number">6.</span> <span class="nav-text">explode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#implode"><span class="nav-number">7.</span> <span class="nav-text">implode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#parse-url"><span class="nav-number">8.</span> <span class="nav-text">parse_url</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#parse-str"><span class="nav-number">9.</span> <span class="nav-text">parse_str</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#str-repeat"><span class="nav-number">10.</span> <span class="nav-text">str_repeat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#str-replace"><span class="nav-number">11.</span> <span class="nav-text">str_replace</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#str-split"><span class="nav-number">12.</span> <span class="nav-text">str_split</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strip-tags"><span class="nav-number">13.</span> <span class="nav-text">strip_tags</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#stripos"><span class="nav-number">14.</span> <span class="nav-text">stripos</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strripos"><span class="nav-number">15.</span> <span class="nav-text">strripos</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strstr"><span class="nav-number">16.</span> <span class="nav-text">strstr</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strrchr"><span class="nav-number">17.</span> <span class="nav-text">strrchr</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strlen"><span class="nav-number">18.</span> <span class="nav-text">strlen</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strtolower"><span class="nav-number">19.</span> <span class="nav-text">strtolower</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strtoupper"><span class="nav-number">20.</span> <span class="nav-text">strtoupper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ucfirst"><span class="nav-number">21.</span> <span class="nav-text">ucfirst</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ucwords"><span class="nav-number">22.</span> <span class="nav-text">ucwords</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strcmp"><span class="nav-number">23.</span> <span class="nav-text">strcmp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strnatcmp"><span class="nav-number">24.</span> <span class="nav-text">strnatcmp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strncmp"><span class="nav-number">25.</span> <span class="nav-text">strncmp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#substr"><span class="nav-number">26.</span> <span class="nav-text">substr</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">slpi1</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

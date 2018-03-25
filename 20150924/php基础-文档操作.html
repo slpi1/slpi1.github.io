@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="php基础 - 文档操作" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="php对文档及目录的操作。">
+<meta name="keywords" content="php基础 - 文档操作">
+<meta property="og:type" content="article">
+<meta property="og:title" content="php基础 - 文档操作">
+<meta property="og:url" content="http://blog.slpi1.com/20150924/php基础-文档操作.html">
+<meta property="og:site_name" content="easy note">
+<meta property="og:description" content="php对文档及目录的操作。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-25T02:31:19.859Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="php基础 - 文档操作">
+<meta name="twitter:description" content="php对文档及目录的操作。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.slpi1.com/20150924/php基础-文档操作.html"/>
+
+
+
+
+
+  <title>php基础 - 文档操作 | easy note</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">easy note</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">easy note</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20150924/php基础-文档操作.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">php基础 - 文档操作</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-09-24T14:30:00+08:00">
+                2015-09-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  php对文档及目录的操作。
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="目录操作"><a href="#目录操作" class="headerlink" title="目录操作"></a>目录操作</h2><h3 id="chdir"><a href="#chdir" class="headerlink" title="chdir"></a>chdir</h3><p>改变目录。将 PHP 的当前目录改为 directory。<br><code>bool chdir ( string $directory )</code></p>
+<h3 id="dir"><a href="#dir" class="headerlink" title="dir"></a>dir</h3><p>directory 类。这是个仿冒面向对象的机制来读取一个目录。给定的 directory 被打开。一旦目录被打开，有两个属性可用。handle 属性可以用在其它目录函数例如 readdir()，rewinddir() 和 closedir() 中。path 属性被设为被打开的目录路径。有三个方法可用：read，rewind 和 close。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    $d = dir(&quot;/etc/php5&quot;);</span><br><span class="line">    echo &quot;Handle: &quot; . $d-&gt;handle . &quot;\n&quot;;</span><br><span class="line">    echo &quot;Path: &quot; . $d-&gt;path . &quot;\n&quot;;</span><br><span class="line">    while (false !== ($entry = $d-&gt;read())) &#123;</span><br><span class="line">       echo $entry.&quot;\n&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    $d-&gt;close();</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="opendir"><a href="#opendir" class="headerlink" title="opendir"></a>opendir</h3><p>打开目录句柄，可由 <code>closedir()</code>，<code>readdir()</code> 和 <code>rewinddir()</code> 使用。同dir对象的handle属性<br><code>resource opendir ( string $path [, resource $context ] )</code></p>
+<h3 id="readdir"><a href="#readdir" class="headerlink" title="readdir"></a>readdir</h3><p>从目录句柄中读取条目，同dir对象的read方法<br><code>string readdir ( resource $dir_handle )</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    // 注意在 4.0.0-RC2 之前不存在 !== 运算符</span><br><span class="line"></span><br><span class="line">    if ($handle = opendir(&apos;/path/to/files&apos;)) &#123;</span><br><span class="line">        echo &quot;Directory handle: $handle\n&quot;;</span><br><span class="line">        echo &quot;Files:\n&quot;;</span><br><span class="line"></span><br><span class="line">        /* 这是正确地遍历目录方法 */</span><br><span class="line">        while (false !== ($file = readdir($handle))) &#123;</span><br><span class="line">            echo &quot;$file\n&quot;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /* 这是错误地遍历目录的方法 */</span><br><span class="line">        while ($file = readdir($handle)) &#123;</span><br><span class="line">            echo &quot;$file\n&quot;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        closedir($handle);</span><br><span class="line">    &#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure></p>
+<p>请留意上述例子中检查 readdir()/$d-&gt;read() 返回值的风格。这里明确地测试返回值是否全等于（值和类型都相同——更多信息参见比较运算符）FALSE，否则任何目录项的名称求值为 FALSE 的都会导致循环停止（例如一个目录名为“0”）</p>
+<h3 id="closedir"><a href="#closedir" class="headerlink" title="closedir"></a>closedir</h3><p>关闭目录句柄,同dir对象的close方法<br><code>void closedir ( resource $dir_handle )</code></p>
+<h3 id="rewinddir"><a href="#rewinddir" class="headerlink" title="rewinddir"></a>rewinddir</h3><p>倒回目录句柄,同dir对象的rewind方法<br><code>void rewinddir ( resource $dir_handle )</code></p>
+<h3 id="scandir"><a href="#scandir" class="headerlink" title="scandir"></a>scandir</h3><p>列出指定路径中的文件和目录<br><code>array scandir ( string $directory [, int $sorting_order [, resource $context ]] )</code></p>
+<h2 id="文件操作"><a href="#文件操作" class="headerlink" title="文件操作"></a>文件操作</h2><h3 id="pathinfo"><a href="#pathinfo" class="headerlink" title="pathinfo"></a>pathinfo</h3><p>返回文件路径的信息<br><code>mixed pathinfo ( string $path [, int $options = PATHINFO_DIRNAME | PATHINFO_BASENAME | PATHINFO_EXTENSION | PATHINFO_FILENAME ] )</code><br>pathinfo() 返回一个关联数组包含有 path 的信息。包括以下的数组单元：dirname，filename，basename 和 extension。  </p>
+<blockquote>
+<p>note:<br>文件包含多个extension时，只返回最后一个，文件没有extension是，不返回对应值<br>5.2以后的版本中，加入filename参数</p>
+</blockquote>
+<h3 id="basename"><a href="#basename" class="headerlink" title="basename"></a>basename</h3><p>返回路径中的文件名部分，第二个参数为后缀，存在时，这部分会被去掉<br><code>string basename ( string $path [, string $suffix ] )</code></p>
+<h3 id="dirname"><a href="#dirname" class="headerlink" title="dirname"></a>dirname</h3><p>Given a string containing the path of a file or directory, this function will return the parent directory’s path that islevels up from the current directory.<br>文件或目录所在的路径。<br><code>string dirname ( string $path )</code></p>
+<h3 id="copy"><a href="#copy" class="headerlink" title="copy"></a>copy</h3><p>拷贝文件<br><code>bool copy ( string $source , string $dest )</code></p>
+<p><strong>disk_free_space(‘C:’) 函数返回目录中的可用空间 以字节为单位。</strong></p>
+<p><strong>disk_total_space(‘C:’) 函数返回指定目录的磁盘总大小 以字节为单位。</strong></p>
+<h3 id="fopen"><a href="#fopen" class="headerlink" title="fopen"></a>fopen</h3><p>打开文件或者 URL<br><code>resource fopen ( string $filename , string $mode [, bool $use_include_path [, resource $zcontext ]] )</code><br>mode 参数指定了所要求到该流的访问类型。可以是以下：fopen() 中 mode 的可能值列表</p>
+<ul>
+<li>‘r’   只读方式打开，将文件指针指向文件头。</li>
+<li>‘r+’  读写方式打开，将文件指针指向文件头。</li>
+<li>‘w’   写入方式打开，将文件指针指向文件头并将文件大小截为零。如果文件不存在则尝试创建之。</li>
+<li>‘w+’  读写方式打开，将文件指针指向文件头并将文件大小截为零。如果文件不存在则尝试创建之。</li>
+<li>‘a’   写入方式打开，将文件指针指向文件末尾。如果文件不存在则尝试创建之。</li>
+<li>‘a+’  读写方式打开，将文件指针指向文件末尾。如果文件不存在则尝试创建之。</li>
+<li>‘x’   创建并以写入方式打开，将文件指针指向文件头。如果文件已存在，则 fopen() 调用失败并返回 FALSE，并生成一条 E_WARNING 级别的错误信息。如果文件不存在则尝试创建之。这和给 底层的 open(2) 系统调用指定 O_EXCL|O_CREAT 标记是等价的。</li>
+<li>‘x+’  创建并以读写方式打开，其他的行为和 ‘x’ 一样。</li>
+<li>‘c’   Open the file for writing only. If the file does not exist, it is created. If it exists, it is neither truncated (as opposed to ‘w’), nor the call to this function fails (as is the case with ‘x’). The file pointer is positioned on the beginning of the file. This may be useful if it’s desired to get an advisory lock (see flock()) before attempting to modify the file, as using ‘w’ could truncate the file before the lock was obtained (if truncation is desired, ftruncate() can be used after the lock is requested).</li>
+<li>‘c+’  Open the file for reading and writing; otherwise it has the same behavior as ‘c’.</li>
+</ul>
+<blockquote>
+<p>Note:为移植性考虑，强烈建议在用 fopen() 打开文件时总是使用 ‘b’ 标记。 </p>
+</blockquote>
+<h3 id="fclose"><a href="#fclose" class="headerlink" title="fclose"></a>fclose</h3><p>关闭一个已打开的文件指针<br><code>bool fclose ( resource $handle )</code></p>
+<h2 id="文件输出"><a href="#文件输出" class="headerlink" title="文件输出"></a>文件输出</h2><h3 id="file-get-contents"><a href="#file-get-contents" class="headerlink" title="file_get_contents"></a>file_get_contents</h3><p>将整个文件读入一个字符串<br><code>string file_get_contents ( string $filename [, bool $use_include_path [, resource $context [, int $offset [, int $maxlen ]]]] )</code><br>参数 offset 指定开始的位置，参数maxlen 指定长度。如果失败，file_get_contents() 将返回 FALSE。 </p>
+<h3 id="fgetc"><a href="#fgetc" class="headerlink" title="fgetc"></a>fgetc</h3><p>从文件指针中读取字符<br>返回一个包含有一个字符的字符串，该字符从 handle 指向的文件中得到。碰到 EOF 则返回 FALSE。<br><code>string fgetc ( resource $handle )</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    $fp = fopen(&apos;somefile.txt&apos;, &apos;r&apos;);</span><br><span class="line">    if (!$fp) &#123;</span><br><span class="line">        echo &apos;Could not open file somefile.txt&apos;;</span><br><span class="line">    &#125;</span><br><span class="line">    while (false !== ($char = fgetc($fp))) &#123;</span><br><span class="line">        echo &quot;$char\n&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="fgets"><a href="#fgets" class="headerlink" title="fgets"></a>fgets</h3><p>从文件指针中读取一行<br><code>string fgets ( int $handle [, int $length ] )</code></p>
+<blockquote>
+<p>Note: length 参数从 PHP 4.2.0 起成为可选项，如果忽略，则行的长度被假定为 1024。从 PHP 4.3 开始，忽略掉 length 将继续从流中读取数据直到行结束。如果文件中的大多数行都大于 8KB，则在脚本中指定最大行的长度在利用资源上更为有效。</p>
+</blockquote>
+<blockquote>
+<p>Note: 从 PHP 4.3 开始本函数可以安全用于二进制文件。早期的版本则不行。</p>
+</blockquote>
+<h3 id="fgetss"><a href="#fgetss" class="headerlink" title="fgetss"></a>fgetss</h3><p>从文件指针中读取一行并过滤掉 HTML 标记，和 fgets() 相同，只除了 fgetss 尝试从读取的文本中去掉任何 HTML 和 PHP 标记。<br><code>string fgetss ( resource $handle [, int $length [, string $allowable_tags ]] )</code></p>
+<h3 id="file"><a href="#file" class="headerlink" title="file"></a>file</h3><p>把整个文件读入一个数组中<br><code>array file ( string $filename [, int $use_include_path [, resource $context ]] )</code><br>和 file_get_contents() 一样，只除了 file() 将文件作为一个数组返回。数组中的每个单元都是文件中相应的一行，包括换行符在内。如果失败 file() 返回 FALSE。<br>如果也想在 include_path 中搜寻文件的话，可以将可选参数 use_include_path 设为 “1”。</p>
+<h3 id="fread"><a href="#fread" class="headerlink" title="fread"></a>fread</h3><p>读取文件（可安全用于二进制文件）<br><code>string fread ( int $handle , int $length )</code><br>fread() 从文件指针 handle 读取最多 length 个字节。该函数在读取完最多 length 个字节数，或到达 EOF 的时候，或（对于网络流）当一个包可用时，或（在打开用户空间流之后）已读取了 8192 个字节时就会停止读取文件，视乎先碰到哪种情况。<br>返回所读取的字符串，如果出错返回 FALSE。</p>
+<h3 id="readfile"><a href="#readfile" class="headerlink" title="readfile"></a>readfile</h3><p>输出一个文件<br><code>int readfile ( string $filename [, bool $use_include_path [, resource $context ]] )</code><br>读入一个文件并写入到输出缓冲。可用于文件下载。<br>返回从文件中读入的字节数。如果出错返回 FALSE 并且除非是以 @readfile() 形式调用，否则会显示错误信息。</p>
+<h2 id="文档写入"><a href="#文档写入" class="headerlink" title="文档写入"></a>文档写入</h2><h3 id="file-put-contents"><a href="#file-put-contents" class="headerlink" title="file_put_contents"></a>file_put_contents</h3><p>将一个字符串写入文件，和依次调用 fopen()，fwrite() 以及 fclose() 功能一样。 参数 data 可以是数组（但不能为多维数组），这就相当于 <code>file_put_contents($filename, join(&#39;&#39;, $array))</code><br><code>string file_get_contents ( string $filename [, bool $use_include_path [, resource $context [, int $offset [, int $maxlen ]]]] )</code></p>
+<h3 id="fwrite"><a href="#fwrite" class="headerlink" title="fwrite"></a>fwrite</h3><p>写入文件（可安全用于二进制文件）<br><code>fwrite()</code> 把 string 的内容写入 文件指针 handle 处。 如果指定了 length，当写入了 length 个字节或者写完了 string 以后，写入就会停止，视乎先碰到哪种情况。<br>fwrite() 返回写入的字符数，出现错误时则返回 FALSE 。<br><code>int fwrite ( resource $handle , string $string [, int $length ] )</code></p>
+<h2 id="文件或目录删除"><a href="#文件或目录删除" class="headerlink" title="文件或目录删除"></a>文件或目录删除</h2><h3 id="rmdir"><a href="#rmdir" class="headerlink" title="rmdir"></a>rmdir</h3><p>删除目录。尝试删除 dirname 所指定的目录。 该目录必须是空的，而且要有相应的权限。成功时返回 TRUE， 或者在失败时返回 FALSE.<br><code>bool rmdir ( string $dirname )</code></p>
+<h3 id="unlink"><a href="#unlink" class="headerlink" title="unlink"></a>unlink</h3><p>删除文件<br><code>bool unlink ( string $filename )</code></p>
+<h2 id="判断函数"><a href="#判断函数" class="headerlink" title="判断函数"></a>判断函数</h2><h3 id="file-exists"><a href="#file-exists" class="headerlink" title="file_exists"></a>file_exists</h3><p>检查文件或目录是否存在<br><code>bool file_exists ( string $filename )</code></p>
+<h3 id="is-dir"><a href="#is-dir" class="headerlink" title="is_dir"></a>is_dir</h3><p>判断给定文件名是否是一个目录<br><code>bool is_dir ( string $filename )</code><br>如果文件名存在并且为目录则返回 TRUE。如果 filename 是一个相对路径，则按照当前工作目录检查其相对路径。  </p>
+<h3 id="is-file"><a href="#is-file" class="headerlink" title="is_file"></a>is_file</h3><p>判断给定文件名是否为一个正常的文件<br><code>bool is_file ( string $filename )</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    var_dump(is_file(&apos;a_file.txt&apos;)) . &quot;\n&quot;;  //true</span><br><span class="line">    var_dump(is_file(&apos;/usr/bin/&apos;)) . &quot;\n&quot;;   //false</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="is-readable"><a href="#is-readable" class="headerlink" title="is_readable"></a>is_readable</h3><p>判断给定文件名是否可读.如果由 filename 指定的文件或目录存在并且可读则返回 TRUE。<br><code>bool is_readable ( string $filename )</code></p>
+<h3 id="is-writable"><a href="#is-writable" class="headerlink" title="is_writable"></a>is_writable</h3><p>判断给定的文件名是否可写<br><code>bool is_writable ( string $filename )</code></p>
+<h3 id="is-uploaded-file"><a href="#is-uploaded-file" class="headerlink" title="is_uploaded_file"></a>is_uploaded_file</h3><p>判断文件是否是通过 HTTP POST 上传的<br><code>bool is_uploaded_file ( string $filename )</code><br>如果 filename 所给出的文件是通过 HTTP POST 上传的则返回 TRUE。这可以用来确保恶意的用户无法欺骗脚本去访问本不能访问的文件，例如 /etc/passwd。<br>这种检查显得格外重要，如果上传的文件有可能会造成对用户或本系统的其他用户显示其内容的话。<br>为了能使 is_uploaded_file() 函数正常工作，必段指定类似于 <code>$_FILES[&#39;userfile&#39;][&#39;tmp_name&#39;]</code> 的变量，而在从客户端上传的文件名<code>$_FILES[&#39;userfile&#39;][&#39;name&#39;]</code> 不能正常运作。</p>
+<h3 id="clearstatcache"><a href="#clearstatcache" class="headerlink" title="clearstatcache"></a>clearstatcache</h3><p>清除文件状态缓存<br><code>void clearstatcache ( void )</code><br>当使用 stat()，lstat() 或者任何列在受影响函数表（见下面）中的函数时，PHP 将缓存这些函数的返回信息以提供更快的性能。然而在某些情况下，你可能想清除被缓存的信息。例如如果在一个脚本中多次检查同一个文件，而该文件在此脚本执行期间有被删除或修改的危险时，你需要清除文件状态缓存。这种情况下，可以用 clearstatcache() 函数来清除被 PHP 缓存的该文件信息。<br>必须注意的是，对于不存在的文件，PHP 并不会缓存其信息。所以如果调用 file_exists() 来检查不存在的文件，在该文件没有被创建之前，它都会返回 FALSE。如果该文件被创建了，就算以后被删除，它都会返回 TRUE<br>受影响的函数包括 stat()，lstat()，file_exists()，is_writable()，is_readable()，is_executable()，is_file()，is_dir()，is_link()，filectime()，fileatime()，filemtime()，fileinode()，filegroup()，fileowner()，filesize()，filetype() 和 fileperms()。</p>
+<h2 id="其他信息获取"><a href="#其他信息获取" class="headerlink" title="其他信息获取"></a>其他信息获取</h2><ul>
+<li>fileatime — 取得文件的上次访问时间</li>
+<li>filectime — 取得文件的 inode 修改时间</li>
+<li>filegroup — 取得文件的组</li>
+<li>fileinode — 取得文件的 inode</li>
+<li>filemtime — 取得文件修改时间</li>
+<li>fileowner — 取得文件的所有者</li>
+<li>fileperms — 取得文件的权限</li>
+<li>filesize — 取得文件大小</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/20150924/php基础-时间与日期.html" rel="next" title="php基础 - 时间与日期">
+                <i class="fa fa-chevron-left"></i> php基础 - 时间与日期
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/20151005/php与curl.html" rel="prev" title="php的curl使用">
+                php的curl使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="slpi1" />
+          <p class="site-author-name" itemprop="name">slpi1</p>
+           
+              <p class="site-description motion-element" itemprop="description">PHP,Laravel,thinkPHP,javascript,css</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录操作"><span class="nav-number">1.</span> <span class="nav-text">目录操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#chdir"><span class="nav-number">1.1.</span> <span class="nav-text">chdir</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dir"><span class="nav-number">1.2.</span> <span class="nav-text">dir</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#opendir"><span class="nav-number">1.3.</span> <span class="nav-text">opendir</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#readdir"><span class="nav-number">1.4.</span> <span class="nav-text">readdir</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#closedir"><span class="nav-number">1.5.</span> <span class="nav-text">closedir</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rewinddir"><span class="nav-number">1.6.</span> <span class="nav-text">rewinddir</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scandir"><span class="nav-number">1.7.</span> <span class="nav-text">scandir</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件操作"><span class="nav-number">2.</span> <span class="nav-text">文件操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pathinfo"><span class="nav-number">2.1.</span> <span class="nav-text">pathinfo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#basename"><span class="nav-number">2.2.</span> <span class="nav-text">basename</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dirname"><span class="nav-number">2.3.</span> <span class="nav-text">dirname</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#copy"><span class="nav-number">2.4.</span> <span class="nav-text">copy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fopen"><span class="nav-number">2.5.</span> <span class="nav-text">fopen</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fclose"><span class="nav-number">2.6.</span> <span class="nav-text">fclose</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件输出"><span class="nav-number">3.</span> <span class="nav-text">文件输出</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#file-get-contents"><span class="nav-number">3.1.</span> <span class="nav-text">file_get_contents</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fgetc"><span class="nav-number">3.2.</span> <span class="nav-text">fgetc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fgets"><span class="nav-number">3.3.</span> <span class="nav-text">fgets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fgetss"><span class="nav-number">3.4.</span> <span class="nav-text">fgetss</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#file"><span class="nav-number">3.5.</span> <span class="nav-text">file</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fread"><span class="nav-number">3.6.</span> <span class="nav-text">fread</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#readfile"><span class="nav-number">3.7.</span> <span class="nav-text">readfile</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文档写入"><span class="nav-number">4.</span> <span class="nav-text">文档写入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#file-put-contents"><span class="nav-number">4.1.</span> <span class="nav-text">file_put_contents</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fwrite"><span class="nav-number">4.2.</span> <span class="nav-text">fwrite</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件或目录删除"><span class="nav-number">5.</span> <span class="nav-text">文件或目录删除</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#rmdir"><span class="nav-number">5.1.</span> <span class="nav-text">rmdir</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unlink"><span class="nav-number">5.2.</span> <span class="nav-text">unlink</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断函数"><span class="nav-number">6.</span> <span class="nav-text">判断函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#file-exists"><span class="nav-number">6.1.</span> <span class="nav-text">file_exists</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#is-dir"><span class="nav-number">6.2.</span> <span class="nav-text">is_dir</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#is-file"><span class="nav-number">6.3.</span> <span class="nav-text">is_file</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#is-readable"><span class="nav-number">6.4.</span> <span class="nav-text">is_readable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#is-writable"><span class="nav-number">6.5.</span> <span class="nav-text">is_writable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#is-uploaded-file"><span class="nav-number">6.6.</span> <span class="nav-text">is_uploaded_file</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#clearstatcache"><span class="nav-number">6.7.</span> <span class="nav-text">clearstatcache</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他信息获取"><span class="nav-number">7.</span> <span class="nav-text">其他信息获取</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">slpi1</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
