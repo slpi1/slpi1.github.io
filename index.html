@@ -253,425 +253,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20210219/discuss/excel-merge-cell.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="slpi1">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="easy note">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/20210219/discuss/excel-merge-cell.html" itemprop="url">Excel单元格自动合并的实现方案</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-19T16:08:15+08:00">
-                2021-02-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h1><ul>
-<li><a href="#背景">背景</a></li>
-<li><a href="#思路">思路</a><ul>
-<li><a href="#找出合并的隐含条件">找出合并的隐含条件</a></li>
-<li><a href="#可合并区域的寻找">可合并区域的寻找</a></li>
-<li><a href="#可合并区域的影响">可合并区域的影响</a></li>
-<li><a href="#结束条件">结束条件</a></li>
-<li><a href="#其他问题">其他问题</a><ul>
-<li><a href="#三角形问题">三角形问题</a></li>
-<li><a href="#起始点的合并顺序">起始点的合并顺序</a></li>
-<li><a href="#我们如何引入自定义条件">我们如何引入自定义条件</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#点睛之笔-自定义条件">点睛之笔-自定义条件</a><ul>
-<li><a href="#停止行与停止列">停止行与停止列</a></li>
-<li><a href="#继承">继承</a></li>
-<li><a href="#合并优先序">合并优先序</a></li>
-</ul>
-</li>
-<li><a href="#实现">实现</a><ul>
-<li><a href="#基本对象">基本对象</a><ul>
-<li><a href="#单元格对象">单元格对象</a></li>
-<li><a href="#区域对象">区域对象</a></li>
-<li><a href="#数据源对象">数据源对象</a></li>
-<li><a href="#搜索执行对象">搜索执行对象</a></li>
-<li><a href="#停止规则对象">停止规则对象</a></li>
-</ul>
-</li>
-<li><a href="#执行过程">执行过程</a><ul>
-<li><a href="#合并的初始化与进行">合并的初始化与进行</a></li>
-<li><a href="#停止行规则">停止行规则</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>以前在开发有格数据驾驶舱的时候，由于需要展示比较多的表格，而且表格有合并的情况，每个表格的合并规则还不一致。当时需要同时支持导出 <code>Excel</code> 文件的合并，以及返回到接口的数据，供前端展示时合并，这两种情况。通过分析之后，计划通过两种方案来实现：</p>
-<ul>
-<li><code>Excel</code> 模板。模板包含要合并的情况，导出时仅填充数据。</li>
-<li>动态合并规则。按要求，自动对数据项进行合并。</li>
-</ul>
-<p>通过模板的方式来解决这个问题，需要面以下下困难：</p>
-<ul>
-<li>如果合并的情况比较复杂，比如前十行与后十行的合并情况不一致，更进一步，如果这个“十”是变化的，那么模板就无能为力了。</li>
-<li>返回给前端接口的表格数据，无法共模板这一方案，需要单独想办法解决</li>
-</ul>
-<p>由于上述两个原因，决定采用方案二，动态合并规则来实现。总的概括一下我们要解决的问题：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">任意给定一组二维数据，根据自定义的一些规则，来对这组数据进行合并，并列出所有合并区域的起点与终点。</span><br></pre></td></tr></table></figure>
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>如何找出需要合并的区域呢？先假设一个无规则的情况；如果有一个表格，你可以自由的对表格数据进行合并，要如何实现？</p>
-<h2 id="找出合并的隐含条件"><a href="#找出合并的隐含条件" class="headerlink" title="找出合并的隐含条件"></a>找出合并的隐含条件</h2><p>在无规则情况下，其实默认单元格满足下列两个条件，就可以进行合并：</p>
-<ul>
-<li>两个单元格的值相等</li>
-<li>两个单元格的位置相邻</li>
-</ul>
-<h2 id="可合并区域的寻找"><a href="#可合并区域的寻找" class="headerlink" title="可合并区域的寻找"></a>可合并区域的寻找</h2><p>那么，合并区域的寻找，可以通过以下过程来展开：</p>
-<ul>
-<li>确定起点：确定数据的起点，假设为 <code>O(0,0)</code>，标记点 <code>O</code> 为合并的起点</li>
-<li>横向检查：检查 <code>O</code> 右侧的点 <code>N(0,1)</code>，如果点 <code>O</code> 与点 <code>N</code> 的值相等，那么表示可以合并，继续检查 <code>N</code> 右侧的点 <code>N1</code>，直到 <code>Nx</code> 的值不等于 <code>O</code> 的值，至此，横向检查完毕</li>
-<li>纵向检查：检查 <code>O</code> 下方的点 <code>H(1,0)</code>, 如果点 <code>O</code> 与点 <code>H</code> 的值相等，那么从 <code>H</code> 点开始，启动第二轮横向检查。如果不想等，那么合并结束，合并区域为 <code>O~Nx-1</code> 。 <code>Nx-1</code> 表示最后一轮横向检查的终点。</li>
-</ul>
-<p>这个过程是一次合并区域检查的过程，每执行一个这样的过程，就会得到一个合并区域，记作 <code>Range[O,Nx-1]</code>，如果点 <code>O</code> 与点 <code>Nx-1</code> 相等，说明该合并区域就是一个点，可以舍弃掉。</p>
-<h2 id="可合并区域的影响"><a href="#可合并区域的影响" class="headerlink" title="可合并区域的影响"></a>可合并区域的影响</h2><p>每寻找到一个合并区域 <code>Range[O,Nx-1]</code> ,我们就消除了一个起点，同时，得到了两个新的起点。由于合并区域是一个矩形，矩形有四个点，其中一个是我们选择的起始点，还剩下三个点，由于对角线上的点比较特殊，我们先抛开不谈，还剩下起始点相邻的两个点，这两个点，就是下一次合并的起始点。<br>假设合并区域的终点为 <code>Nx-1(m,n)</code>，那么，由点 <code>O</code> 分裂出两个新的起始点</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O(0,0) -&gt; O1(0,n), O2(m,0)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>由于合并起始点需要进行一个单位的偏移，对角点会偏移成三个点。但这三个点都有可能被相邻两个点的区域所包含，也有可能不会包含。将对角点考虑进来讨论的话，会大大的增加问题的复杂性，但并不会对结果有积极的意义，弊大于利，所以讨论与编码时，都将这个点忽略</p>
-</blockquote>
-<p>接下来，我们继续以 <code>O1/O2</code> 为起始点，分别进行可合并区域的寻找，就能又找到两个可合并区域，以及，分裂成四个新的起始点。</p>
-<h2 id="结束条件"><a href="#结束条件" class="headerlink" title="结束条件"></a>结束条件</h2><p>根据上述分析，我们会发现，随着可合并区域不断被找出，起始点不断被分裂成更多的起始点。那么这个循环会一直持续下去吗？并不是，当分裂到数据的边界的时候，一个起始点就只会分裂成一个起始点，这时，起始点的规模就会开始收缩。那么，“数据的边界”，包含哪些情况呢？</p>
-<ul>
-<li>数据的范围达到给定范围的极限，就是，数据右边或下边没有更多数据了。</li>
-<li>数据的范围，触及到某个已找到的可合并区域的边界。显然，由此分裂出的开始点，已经被“寻找过”，并不会产生新的可合并区域。</li>
-</ul>
-<p>当所有的起始点，都触碰到数据的边界的时候，查找，就结束了，已找到的可合并区域，就是给定数据中，所有的可合并区域。</p>
-<h2 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h2><p>我们按照上述思路，已经归纳出了方案的基本雏形，只不过在实际使用中，可能并不会达到我们想要的结果，因为这当中忽略了几个比较重要的问题。</p>
-<h3 id="三角形问题"><a href="#三角形问题" class="headerlink" title="三角形问题"></a>三角形问题</h3><p>如果数据中有一个三角形区域 <code>O(0,0) -&gt; A(0,10) -&gt; B(10, 0)</code> 其中所有的单元格的值都相等，按照上述思路，最终寻找的可合并区域是 <code>Range[O(0,0), B(10,0)]</code>，因为我们在可合并区域的寻找过程中，遵循的是“横向合并优先”，如果我们遵循“纵向合并优先”的话，最终需要的可合并区域是 <code>Range[O(0,0), A(0, 10)]</code>，然而实际当中，也许这两种情况，都不是我们希望的结果，比如，若我希望合并区域有最大的面积，那么，最终的可合并区域应该是 <code>Range[O(0,0), M(5,5)]</code>。究竟应该如何取舍，实际上取决于“我们的要求”。</p>
-<h3 id="起始点的合并顺序"><a href="#起始点的合并顺序" class="headerlink" title="起始点的合并顺序"></a>起始点的合并顺序</h3><p>由于起始点是会逐渐分裂增加的，那么，依据什么来决定，哪个起始点优先进入合并队列呢？考虑一种极端情况，第一个可合并区域将整个数据分成了两个部分：可合并区域的数据都是1，剩下部分的数据，都是2。如果称可合并区域为第二象限，那么以右侧的点开始，得到的合并区域是第一象限与第四象限的组合；如果以下侧的点，开始，得到的合并区域是第三象限与第四象限的组合。所以，起始点的选取顺序，也会导致合并区域结果的差异。</p>
-<h3 id="我们如何引入自定义条件"><a href="#我们如何引入自定义条件" class="headerlink" title="我们如何引入自定义条件"></a>我们如何引入自定义条件</h3><p>到此为止，我们上述的讨论，都不涉及到自定义条件的问题，而这本身就是需求之一。</p>
-<h1 id="点睛之笔-自定义条件"><a href="#点睛之笔-自定义条件" class="headerlink" title="点睛之笔-自定义条件"></a>点睛之笔-自定义条件</h1><p>如果讨论至于上述的思路，那么这一方案实际上并无太大用处，因为由于最后三个问题的存在，导致最终合并的结果，很有可能并不是我们想要的。其中，第三个问题，它既是一个问题，又是一个需求，那么，考虑在解决该问题的同时，附带解决其余两个问题。我们将上文的思路，归纳成两个过程：</p>
-<ul>
-<li>寻找合并区域</li>
-<li>循环起始点</li>
-</ul>
-<p>从顺序上看，<code>寻找合并区域</code> 先于 <code>循环起始点</code> ，从因果关系上看，<code>寻找合并区域</code> 会导致 <code>循环起始点</code> 的主体 <code>起始点</code> 起始点的变化。所以我们先考虑从 <code>寻找合并区域</code> 这一过程中，引入自定义条件。 <code>寻找合并区域</code> 分为两个主要过程，<code>横向检查</code> 与 <code>纵向检查</code>，我们引入的条件，应该是能影响这两个过程的结束位置。</p>
-<p>对于上述 <code>三角形问题</code> ,如果我们要求可合并区域的面积最大，可以转化为这样的一组条件：</p>
-<ul>
-<li>横向合并到 <code>5</code> 为止</li>
-<li>纵向合并到 <code>5</code> 为止</li>
-</ul>
-<p>这里的两个条件，就是我们的自定义条件，我们把这类条件，归纳为 <code>停止行/停止列</code></p>
-<h2 id="停止行与停止列"><a href="#停止行与停止列" class="headerlink" title="停止行与停止列"></a>停止行与停止列</h2><p>停止行与停止列，是自定义条件的核心。他规定合并区域的寻找，在遇到哪些行与列的时候，就停止。因此，我们只需要在寻找合并区域的逻辑当中，引入对停止行与停止列的检查即可。需要留意的是，停止行与停止列的位置可能是变化的，我们在编码时可能需要考虑到这一点。</p>
-<h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><p>停止行与停止列可能需要被继承，他所代表的含义是：表格前面部分的停止规则，极有可能对后面的数据生效，但是根据后面的数据以及规则，可能无法计算出合适的停止规则，这时，直接将前面的停止规则继承过来即可。</p>
-<h2 id="合并优先序"><a href="#合并优先序" class="headerlink" title="合并优先序"></a>合并优先序</h2><p>我们在讨论 <code>三角形问题</code> 时，提到过 <code>横向合并优先/纵向合并优先</code> 的概念，这是指在寻找合并区域时遇到的顺序问题。在循环起始点时，也存在这么一个问题：即应该以左侧的点开始新一轮的合并区域寻找，还是应该以下侧的点，开始新一轮的合并区域寻找。这是两个合并优先序的问题。</p>
-<p>先来看一看起始点的分裂情况，假设有以下分裂过程：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">O(0,0) -&gt; [N(2, 0),H(0,2)]</span><br><span class="line"></span><br><span class="line">N(2, 0) -&gt; [N1(5, 0), H1(2,3)]; H(0, 2) -&gt; [N2(1, 2), H2(0, 4)]</span><br></pre></td></tr></table></figure>
-<p>起始点出现的顺序是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">N - H - N1 - H1 - N2 - H2</span><br></pre></td></tr></table></figure>
-<p>分布大概如下表所示</p>
-<table>
-<thead>
-<tr>
-<th>0 O(0,0)</th>
-<th>1</th>
-<th>2 N(2, 0)</th>
-<th>3</th>
-<th>4</th>
-<th>5 N1(5,0)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-</tr>
-<tr>
-<td>2 H(0,2)</td>
-<td>N2(1,2)</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-</tr>
-<tr>
-<td>3</td>
-<td>—</td>
-<td>H1(2,3)</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-</tr>
-<tr>
-<td>4 H2(0,4)</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-</tr>
-<tr>
-<td>5</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<p>如果以开始点出现的顺序进行合并，通过相对位置可知，点 <code>H1</code> 可能会被包含在 <code>N2</code> 开始的可合并区域中。但是按点的顺序来看，<code>H1</code> 的合并先发生，由于已合并区域会形成边界，这时 <code>N2</code> 进行合并的话，不可能再次包含点 <code>H1</code>。</p>
-<p>通过以上示例可以看出，起始点的合并开始顺序，确实会影响最终的合并结果。因此，在每次合并完成后，都需要对已存在的点和新生成的两个点，进行一次排序，用以决定究竟哪个点该进入下一次的合并。</p>
-<p>每个点都有一个横坐标与纵坐标，很容易想到的方法是，仅比较每个点的横坐标，越小的点，越先开始合并；或者仅比较每个点的纵坐标，越小的点，越先开始合并。但如果有两个点的某个坐标相同，又恰巧以该坐标决定合并顺序呢，很容易想到，比较应该同时结合横坐标与纵坐标，但以某一项为主；就像如果以横坐标为主，那么横坐标的值充当十位，纵坐标的值充当个位，用以区分其权重。</p>
-<p>显然，如果横坐标的排序权重高，我们称为“横向合并优先”，那么每次分裂之后，横向的点都会进入下一个合并队列，纵向的点，进入等待队列，直到横向的数据达到数据范围的极限，此时，等待队列中的开始点，类似下列情况：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Nn - H1 - H2 - H3 - - - Hn</span><br></pre></td></tr></table></figure>
-<p>横向数据范围越大，<code>Hn</code> 中 <code>n</code> 的值越大，等待合并的点越多。如果纵坐标的排序权重高，我们称为“横向合并优先”，情况依然类似。</p>
-<p>其实，只要合并不是无序的，无论是横向优先，还是纵向优先，对合并结果的影响并不是很大，尤其是在停止行规则充分时，基本可以达到相同的合并结果。不过因为横向与纵向数据范围的差异，可能导致待合并队列中点的个数差异，进一步影响点排序的效率，因此，此处可以有一个优化，来使排序的效率增加，就是以数据范围小的坐标作为合并优先序。</p>
-<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><p>基于上述思想。我们简单理一下，该如何编码来实现本功能。</p>
-<h2 id="基本对象"><a href="#基本对象" class="headerlink" title="基本对象"></a>基本对象</h2><h3 id="单元格对象"><a href="#单元格对象" class="headerlink" title="单元格对象"></a>单元格对象</h3><p>该对象用来表示点，他需要有一个横坐标属性，纵坐标属性，还需要能计算出左侧的点，右侧的点，以及两个点是否是同一个点。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cell</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> $x;</span><br><span class="line">    <span class="keyword">protected</span> $y;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($x = <span class="number">0</span>, $y = <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;x = $x;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;y = $y;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getX</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;x;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getY</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;y;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">nextHorizonCell</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Cell(<span class="keyword">$this</span>-&gt;x + <span class="number">1</span>, <span class="keyword">$this</span>-&gt;y);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">nextVerticalCell</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Cell(<span class="keyword">$this</span>-&gt;x, <span class="keyword">$this</span>-&gt;y + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">equal</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;x == $cell-&gt;getX() &amp;&amp; <span class="keyword">$this</span>-&gt;y == $cell-&gt;getY();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个实现并没有任何对点的值的表示，为何要这样处理，我们放在后面来说。</p>
-<h3 id="区域对象"><a href="#区域对象" class="headerlink" title="区域对象"></a>区域对象</h3><p>区域表示的是一个范围，他有一个开始的点，与结束的点。同时他还需要有获取分裂后的点的能力，需要有判断点是否落在区域中的能力。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Cell</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Range</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $start;</span><br><span class="line">    <span class="keyword">public</span> $end;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> $active;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> $maxX = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(Cell $start, Cell $end)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;start = $start;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;end   = <span class="keyword">$this</span>-&gt;active   = $end;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">haveCell</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $cellX = $cell-&gt;getX();</span><br><span class="line">        $cellY = $cell-&gt;getY();</span><br><span class="line"></span><br><span class="line">        $startX = <span class="keyword">$this</span>-&gt;start-&gt;getX();</span><br><span class="line">        $startY = <span class="keyword">$this</span>-&gt;start-&gt;getY();</span><br><span class="line"></span><br><span class="line">        $endX = <span class="keyword">$this</span>-&gt;end-&gt;getX();</span><br><span class="line">        $endY = <span class="keyword">$this</span>-&gt;end-&gt;getY();</span><br><span class="line">        <span class="keyword">if</span> ($cellX &gt;= $startX &amp;&amp; $cellX &lt;= $endX &amp;&amp; $cellY &gt;= $startY &amp;&amp; $cellY &lt;= $endY) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">isCell</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;start-&gt;getX() == <span class="keyword">$this</span>-&gt;end-&gt;getX() &amp;&amp; <span class="keyword">$this</span>-&gt;start-&gt;getY() == <span class="keyword">$this</span>-&gt;end-&gt;getY()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">horizonTouchAllow</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;maxX != <span class="number">0</span> &amp;&amp; $cell-&gt;getX() &gt; <span class="keyword">$this</span>-&gt;maxX) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">markMaxHorizonTouch</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;maxX = <span class="keyword">$this</span>-&gt;maxX == <span class="number">0</span> ? <span class="keyword">$this</span>-&gt;active-&gt;getX() : min(<span class="keyword">$this</span>-&gt;maxX, <span class="keyword">$this</span>-&gt;active-&gt;getX());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getValue</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> [</span><br><span class="line">            [<span class="keyword">$this</span>-&gt;start-&gt;getX(), <span class="keyword">$this</span>-&gt;start-&gt;getY()],</span><br><span class="line">            [<span class="keyword">$this</span>-&gt;end-&gt;getX(), <span class="keyword">$this</span>-&gt;end-&gt;getY()],</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">nextRowFirst</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $x = <span class="keyword">$this</span>-&gt;start-&gt;getX();</span><br><span class="line">        $y = <span class="keyword">$this</span>-&gt;end-&gt;getY() + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Cell($x, $y);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">nextColumnFirst</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $x = <span class="keyword">$this</span>-&gt;end-&gt;getX() + <span class="number">1</span>;</span><br><span class="line">        $y = <span class="keyword">$this</span>-&gt;start-&gt;getY();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Cell($x, $y);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">nextMergeStartCells</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $nextRowFirst    = <span class="keyword">$this</span>-&gt;nextRowFirst();</span><br><span class="line">        $nextColumnFirst = <span class="keyword">$this</span>-&gt;nextColumnFirst();</span><br><span class="line">        <span class="keyword">return</span> [</span><br><span class="line">            $nextColumnFirst,</span><br><span class="line">            $nextRowFirst,</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="数据源对象"><a href="#数据源对象" class="headerlink" title="数据源对象"></a>数据源对象</h3><p>数据源对象，就是给定的初始二维数据。只不过我们在编码时，不应该把它具体化，只需要知道，这个对象需要提供哪些功能。因此，数据源对象是什么。我们并不关心，但他需要实现这个接口：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">Cell</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">RepositoryInterface</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// 获取点的值</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getValue</span><span class="params">(Cell $cell)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取数据横向范围</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getWidth</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取数据纵向范围</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getHeight</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里来解释一下，为何单元格对象并不能获取自身的值？因为源数据有可能需要一个很大的存储空间，如果单元格能获取到值，必然需要在某处引用这一数据源，此时，<code>Cell</code> 类会对外部产生一个依赖，并且需要在实例化时主动传入该数据对象。而在执行过程中，会出现大量的点对象，由此可能导致内存占用增加，所以，将单元格的取值过程转嫁给数据源对象。</p>
-<h3 id="搜索执行对象"><a href="#搜索执行对象" class="headerlink" title="搜索执行对象"></a>搜索执行对象</h3><p>对给定数据源执行搜索，其中包含代码主要的逻辑部分。</p>
-<h3 id="停止规则对象"><a href="#停止规则对象" class="headerlink" title="停止规则对象"></a>停止规则对象</h3><p>停止规则对象依赖给定数据源，用以计算出动态的停止规则。</p>
-<h2 id="执行过程"><a href="#执行过程" class="headerlink" title="执行过程"></a>执行过程</h2><h3 id="合并的初始化与进行"><a href="#合并的初始化与进行" class="headerlink" title="合并的初始化与进行"></a>合并的初始化与进行</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">start</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 将点 O(0,0) 放入横向合并队列</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;horizonMergeQueue[] = <span class="keyword">new</span> Cell;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 开始检查合并</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;catchMergeRange();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回合并区域列表</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;mergedRanges;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">catchMergeRange</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 判断下一个要合并的起始点</span></span><br><span class="line">    $startCell = <span class="keyword">$this</span>-&gt;getNextMergeStart();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果不存在，表示合并结束</span></span><br><span class="line">    <span class="keyword">if</span> ($startCell) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果点不存在于已合并的区域中</span></span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;merged($startCell)) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 初始化待合并区域</span></span><br><span class="line">            $range = <span class="keyword">new</span> Range($startCell, $startCell);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 可合并区域的寻找 - 区域终点搜索</span></span><br><span class="line">            $range = <span class="keyword">$this</span>-&gt;touchRange($range);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 判断区域是否是一个点，如果不是，则加入已合并区域列表</span></span><br><span class="line">            <span class="keyword">if</span> (!$range-&gt;isCell()) &#123;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;mergedRanges[<span class="keyword">$this</span>-&gt;getRangeId($range)] = $range;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 起始点分裂</span></span><br><span class="line">            <span class="keyword">list</span>($cellHorizon, $cellVertical) = $range-&gt;nextMergeStartCells();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 将点$cellHorizon 加入横向合并队列</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;isExistsCell($cellHorizon)) &#123;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;horizonMergeQueue[<span class="keyword">$this</span>-&gt;getCellHorizonIndex($cellHorizon)] = $cellHorizon;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;makeExtendStopRule($cellHorizon);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 将点$cellVertical 加入纵向合并队列</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;isExistsCell($cellVertical)) &#123;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;verticalMergeQueue[<span class="keyword">$this</span>-&gt;getCellVerticalIndex($cellVertical)] = $cellVertical;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;makeExtendStopRule($cellVertical);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 启动下一个起始点的合并</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;catchMergeRange();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">touchRange</span><span class="params">(Range $range)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 区域内 - 横向检查</span></span><br><span class="line">    $range = <span class="keyword">$this</span>-&gt;touchCellHorizon($range);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 区域内 - 纵向检查</span></span><br><span class="line">    $range = <span class="keyword">$this</span>-&gt;touchCellVertical($range);</span><br><span class="line">    <span class="keyword">return</span> $range;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 纵向检查</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">touchCellHorizon</span><span class="params">(Range $range)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $nextHorizonCell = $range-&gt;active-&gt;nextHorizonCell();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 达到纵向数据范围的极限，检查停止</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;isExistsCell($nextHorizonCell)) &#123;</span><br><span class="line">        $range-&gt;end = $range-&gt;active;</span><br><span class="line">        <span class="keyword">return</span> $range;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 纵向检查通过，启动横向检查，在这里检查停止行规则</span></span><br><span class="line">    <span class="keyword">if</span> ($range-&gt;horizonTouchAllow($nextHorizonCell) &amp;&amp;</span><br><span class="line">        !<span class="keyword">$this</span>-&gt;atStopColumn($nextHorizonCell) &amp;&amp;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;getValue($range-&gt;active) === <span class="keyword">$this</span>-&gt;getValue($nextHorizonCell)) &#123;</span><br><span class="line">        $range-&gt;active = $nextHorizonCell;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;touchCellHorizon($range);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 否则检查停止</span></span><br><span class="line">        $range-&gt;end = $range-&gt;active;</span><br><span class="line"></span><br><span class="line">        $range-&gt;markMaxHorizonTouch();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> $range;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 横向检查</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">touchCellVertical</span><span class="params">(Range $range)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $nextRowFirst = $range-&gt;nextRowFirst();</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;isExistsCell($nextRowFirst)) &#123;</span><br><span class="line">        <span class="keyword">return</span> $range;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 横向检查通过，继续下一轮检查，在这里检查停止行规则</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;atStopRow($nextRowFirst) &amp;&amp; <span class="keyword">$this</span>-&gt;getValue($range-&gt;start) === <span class="keyword">$this</span>-&gt;getValue($nextRowFirst)) &#123;</span><br><span class="line">        $range-&gt;active = $nextRowFirst;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;touchRange($range);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> $range;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取下一个起始点</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getNextMergeStart</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">empty</span>(<span class="keyword">$this</span>-&gt;horizonMergeQueue) &amp;&amp; <span class="keyword">empty</span>(<span class="keyword">$this</span>-&gt;verticalMergeQueue)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((<span class="keyword">$this</span>-&gt;mergeDirect == <span class="keyword">self</span>::HORIZON_DIRECT &amp;&amp; !<span class="keyword">empty</span>(<span class="keyword">$this</span>-&gt;horizonMergeQueue)) || <span class="keyword">empty</span>(<span class="keyword">$this</span>-&gt;verticalMergeQueue)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;getNextMergeStartOfQueue(<span class="keyword">$this</span>-&gt;horizonMergeQueue);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;getNextMergeStartOfQueue(<span class="keyword">$this</span>-&gt;verticalMergeQueue);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 去除起始点时，先进行一次排序</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getNextMergeStartOfQueue</span><span class="params">(&amp;$queue)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    krsort($queue);</span><br><span class="line">    <span class="keyword">return</span> array_pop($queue);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 是否是停止列</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">atStopColumn</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;stopRule-&gt;atStopColumn($cell);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 是否是停止行</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">atStopRow</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;stopRule-&gt;atStopRow($cell);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里只列出了主要的检查逻辑。</p>
-<h3 id="停止行规则"><a href="#停止行规则" class="headerlink" title="停止行规则"></a>停止行规则</h3><p>停止规则对象</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StopRule</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">use</span> <span class="title">ExcelBaseOperate</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> $exporter;</span><br><span class="line">    <span class="keyword">protected</span> $stopColumn = [];</span><br><span class="line">    <span class="keyword">protected</span> $stopRow    = [];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> $extendStopRows = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> $extendStopColumns = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($exporter)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;exporter = $exporter;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">isset</span>($exporter-&gt;extendStopRows) &amp;&amp; $exporter-&gt;extendStopRows) &#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;extendStopRows = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">isset</span>($exporter-&gt;extendStopColumns) &amp;&amp; $exporter-&gt;extendStopColumns) &#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;extendStopColumns = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 传入一个点对象，用来检查是否处于停止行</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">atStopColumn</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 如果数据源对象实现了规则，则获取数据源的规则，并解析停止结果</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;exporter <span class="keyword">instanceof</span> WithStopRule) &#123;</span><br><span class="line">            $rule       = <span class="keyword">$this</span>-&gt;exporter-&gt;stopColumns();</span><br><span class="line">            $shouldStop = <span class="keyword">$this</span>-&gt;parserStopColumnRule($rule, $cell);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ($shouldStop) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (in_array($cell-&gt;getX(), <span class="keyword">$this</span>-&gt;stopColumn)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 传入一个点对象，用来检查是否处于停止列</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">atStopRow</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 如果数据源对象实现了规则，则获取数据源的规则，并解析停止结果</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;exporter <span class="keyword">instanceof</span> WithStopRule) &#123;</span><br><span class="line">            $rule       = <span class="keyword">$this</span>-&gt;exporter-&gt;stopRows();</span><br><span class="line">            $shouldStop = <span class="keyword">$this</span>-&gt;parserStopRowRule($rule, $cell);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ($shouldStop) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (in_array($cell-&gt;getY(), <span class="keyword">$this</span>-&gt;stopRow)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">addStopColumn</span><span class="params">($index)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;stopColumn[$index] = $index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">addStopRow</span><span class="params">($index)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;stopRow[$index] = $index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 按数据源规则解析停止结果</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">parserStopColumnRule</span><span class="params">($rule, Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 规则为布尔值，表示始终停止或不停止</span></span><br><span class="line">        <span class="keyword">if</span> (is_bool($rule)) &#123;</span><br><span class="line">            <span class="keyword">return</span> $rule;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 规则为数组，表示指定的停止行号或ID</span></span><br><span class="line">        <span class="keyword">if</span> (is_array($rule)) &#123;</span><br><span class="line">            <span class="keyword">foreach</span> ($rule <span class="keyword">as</span> $item) &#123;</span><br><span class="line">                <span class="keyword">if</span> (is_numeric($item) &amp;&amp; $cell-&gt;getX() == $item) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;isColumnName($item) &amp;&amp; <span class="keyword">$this</span>-&gt;columnNameToIndex($item) == $cell-&gt;getX()) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 规则为一个可执行结构，由数据源自身计算是否需要停止</span></span><br><span class="line">        <span class="keyword">if</span> (is_callable($rule)) &#123;</span><br><span class="line">            <span class="keyword">return</span> call_user_func_array($rule, [$cell-&gt;getX(), $cell-&gt;getY()]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">parserStopRowRule</span><span class="params">($rule, Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (is_bool($rule)) &#123;</span><br><span class="line">            <span class="keyword">return</span> $rule;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (is_array($rule)) &#123;</span><br><span class="line">            <span class="keyword">foreach</span> ($rule <span class="keyword">as</span> $item) &#123;</span><br><span class="line">                <span class="keyword">if</span> (is_numeric($item) &amp;&amp; $cell-&gt;getY() == $item) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (is_callable($rule)) &#123;</span><br><span class="line">            <span class="keyword">return</span> call_user_func_array($rule, [$cell-&gt;getY(), $cell-&gt;getX()]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在进行停止行的判定时，有这样的一部分代码：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;exporter <span class="keyword">instanceof</span> WithStopRule) &#123;</span><br><span class="line">    $rule       = <span class="keyword">$this</span>-&gt;exporter-&gt;stopRows();</span><br><span class="line">    $shouldStop = <span class="keyword">$this</span>-&gt;parserStopRowRule($rule, $cell);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ($shouldStop) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其中 <code>exporter</code> 就是一开始给定的原始数据对象，如果该对象实现了 <code>WithStopRule</code> 接口的话，表名该对象定义了自己的停止规则，通过 <code>stopRows/stopColumns</code> 方法获取到原始数据定义的停止规则 <code>$rule</code>，然后将 <code>$rule</code>和当前的点 <code>$cell</code> 传给 <code>parserStopRowRule</code> 方法，计算出在当前点 <code>$cell</code> 是否需要停止。</p>
-<p>最终代码结构如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">/</span><br><span class="line">|----/Concerns/</span><br><span class="line">|--------/ExtendStopColumns.php·············停止列继承</span><br><span class="line">|--------/ExtendStopRows.php················停止行继承</span><br><span class="line">|--------/RepositoryInterface.php···········源数据对象接口</span><br><span class="line">|--------/WithStopRule.php··················停止规则定义接口</span><br><span class="line">|----/Merge/</span><br><span class="line">|--------/Discover.php······················搜索过程定义</span><br><span class="line">|--------/StopRule.php······················停止规则解析</span><br><span class="line">|----/Repositories/</span><br><span class="line">|--------/ArrayRepository.php···············二维数组源数据包装对象</span><br><span class="line">|--------/WorksheetRepository.php···········Excel工作表源数据包装对象</span><br><span class="line">|----/Table/</span><br><span class="line">|--------/Cell.php··························基础点对象</span><br><span class="line">|--------/Range.php·························基础区域对象</span><br><span class="line">|----/Table/</span><br><span class="line">|--------/ExcelBaseOperate.php··············行与列操作方法</span><br></pre></td></tr></table></figure>
-<p>完整代码请转<a href="https://gitlab.uuzu.com/songzhp/laravel-excel-merge" target="_blank" rel="noopener">gitlab.uuzu.com/songzhp/laravel-excel-merge</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20210219/environment/docker/docker-compose.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="slpi1">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="easy note">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/20210219/environment/docker/docker-compose.html" itemprop="url">未命名</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-19T15:44:38+08:00">
-                2021-02-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            {"version":"3","services":{"redis":{"image":"harbor.uuzu.com/information/redis:4.0-alpine","networks":["localhost"],"ports":["6379:6379"],"volumes":["D:\\song\\docker\\localhost\\data\\redis:/data"]},"mysql":{"image":"harbor.uuzu.com/information/mysql:5.7","command":"mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci","networks":["localhost"],"ports":["3306:3306"],"environment":{"MYSQL_ROOT_PASSWORD":"root","MYSQL_USER":"test","MYSQL_PASSWORD":"test"},"volumes":["D:\\song\\docker\\localhost\\data\\mysql:/var/lib/mysql"]},"php":{"build":{"context":".","dockerfile":"Dockerfile.php"},"volumes":["D:\\song\\www:/app"],"networks":["localhost"]},"queue":{"build":{"context":".","dockerfile":"Dockerfile.queue"},"volumes":["D:\\song\\www:/app","D:\\song\\docker\\localhost\\supervisor:/etc/supervisor.d/"],"networks":["localhost"]},"web":{"image":"harbor.uuzu.com/information/nginx:alpine","ports":["80:80"],"volumes":["D:\\song\\www:/app","D:\\song\\docker\\localhost\\vhost:/etc/nginx/conf.d"],"networks":["localhost"],"depends_on":["php"]}},"networks":{"localhost":{"driver":"bridge"}}}
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20210219/php实现variable-precision SWAR算法.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2005,6 +1586,430 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20191108/discuss/office-to-pdf.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/20191108/discuss/office-to-pdf.html" itemprop="url">word操作与pdf转码</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-08T16:57:00+08:00">
+                2019-11-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h1><ul>
+<li><a href="#word文档中动态插入内容">word文档中动态插入内容</a></li>
+<li><a href="#检查预定义标记是否存在">检查预定义标记是否存在</a><ul>
+<li><a href="#一般情况">一般情况</a></li>
+<li><a href="#审阅模式">审阅模式</a></li>
+</ul>
+</li>
+<li><a href="#word转pdf">word转pdf</a></li>
+<li><a href="#其他问题">其他问题</a><ul>
+<li><a href="#mac上编辑过后，标记检查失败">mac上编辑过后，标记检查失败</a></li>
+<li><a href="#pdf转码时中文出现乱码">pdf转码时中文出现乱码</a></li>
+</ul>
+</li>
+</ul>
+<p>最近在开发供应商入库系统时，涉及到部分操作 <code>office</code> 文档的过程，在这里简单记录一下。主要有下面这几个过程</p>
+<ul>
+<li>在 <code>word</code> 文档指定位置插入内容</li>
+<li>检查 <code>word</code> 文档中预定内容是否存在</li>
+<li><code>word</code> 文档转 <code>pdf</code></li>
+</ul>
+<h1 id="word文档中动态插入内容"><a href="#word文档中动态插入内容" class="headerlink" title="word文档中动态插入内容"></a>word文档中动态插入内容</h1><p>在项目中会按供应商商生成许多合同文档，附件等，需要以供应商公司名称等预定内容填充至文档中。这里可以使用 <code>phpoffice/phpword</code> 扩展直接来完成：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">PhpOffice</span>\<span class="title">PhpWord</span>\<span class="title">TemplateProcessor</span>;</span><br><span class="line"></span><br><span class="line">$template = <span class="string">'/template.docx'</span>;</span><br><span class="line">$option = [</span><br><span class="line">    <span class="string">'company'</span> =&gt; <span class="string">'游族'</span>,</span><br><span class="line">    <span class="string">'user'</span> =&gt; <span class="string">'雷行'</span></span><br><span class="line">];</span><br><span class="line">$target = <span class="string">'/target.docx'</span>;</span><br><span class="line"></span><br><span class="line">$templateProcessor = <span class="keyword">new</span> TemplateProcessor($template);</span><br><span class="line">$templateProcessor-&gt;setValue(array_keys($option), array_values($option));</span><br><span class="line">$templateProcessor-&gt;saveAs($target);</span><br></pre></td></tr></table></figure>
+<p>其中 <code>$template</code> 表示模板文档路径，<code>$option</code> 是待填充内容。 <code>$target</code> 是生成的文件保存路径。待填充部分的内容，以规定的格式将键值填入文档，即可完成替换。如模板文档中字符 <code>${company}</code> 会被替换为 <code>游族</code>, <code>${user}</code> 会被替换为 <code>雷行</code>。</p>
+<h1 id="检查预定义标记是否存在"><a href="#检查预定义标记是否存在" class="headerlink" title="检查预定义标记是否存在"></a>检查预定义标记是否存在</h1><p>由于业务流程问题，在入库过程中，需要在文档中保留一部分的标记，供后续流程进行替换。在此之前，供应商会下载文档，进行编辑，然后重新上传，在上传时，服务端需要检查文档中标记是否被编辑过，是则提示供应商错误信息，以免后续流程执行错误。</p>
+<h2 id="一般情况"><a href="#一般情况" class="headerlink" title="一般情况"></a>一般情况</h2><p>通过 <code>TemplateProcessor::getVariableCount()</code> 方法可以获取文档中存在的标记和数量，返回数据格式如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$target = <span class="string">'/target.docx'</span>;</span><br><span class="line"></span><br><span class="line">$templateProcessor = <span class="keyword">new</span> TemplateProcessor($target);</span><br><span class="line">$result = $templateProcessor-&gt;getVariableCount();</span><br><span class="line"></span><br><span class="line"><span class="comment">// $result</span></span><br><span class="line"><span class="comment">// [</span></span><br><span class="line"><span class="comment">//    'company' =&gt; 1,</span></span><br><span class="line"><span class="comment">//    'user' =&gt; 1</span></span><br><span class="line"><span class="comment">// ]</span></span><br></pre></td></tr></table></figure>
+<p>因此只需要检查返回结果中是否存在相应的键值即可。</p>
+<h2 id="审阅模式"><a href="#审阅模式" class="headerlink" title="审阅模式"></a>审阅模式</h2><p>在审阅模式下，直接通过上述方法，无法获得正确的结果，其原因在于：审阅模式下，编辑 <code>word</code> 文档，即使删除了标记，但在 <code>word</code> 文档的数据源中，仍然存在标记，只不过通过删除线，在文档中变成了不可见内容。所以即使用户编辑了标记，上述方法也无法检测到标记的丢失。</p>
+<p>将 <code>word</code> 文档重命名为 <code>zip</code> 的文档后解压，得到大致如下结构的目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/</span><br><span class="line">|---_rels/</span><br><span class="line">    |---.rels</span><br><span class="line">|---docProps/</span><br><span class="line">    |---app.xml</span><br><span class="line">    |---core.xml</span><br><span class="line">    |---custom.xml</span><br><span class="line">|---word/</span><br><span class="line">    |---_rels/</span><br><span class="line">    |---media/</span><br><span class="line">    |---theme/</span><br><span class="line">    |---document.xml</span><br><span class="line">    |---endnotes.xml</span><br><span class="line">    |---fontTable.xml</span><br><span class="line">    |---footer1.xml</span><br><span class="line">    |---footnotes.xml</span><br><span class="line">    |---header1.xml</span><br><span class="line">    |---numbering.xml</span><br><span class="line">    |---people.xml</span><br><span class="line">    |---settings.xml</span><br><span class="line">    |---styles.xml</span><br><span class="line">    |---webSettings.xml</span><br><span class="line">|---[Content_Types].xml</span><br></pre></td></tr></table></figure>
+<p>操作 <code>word</code> 文档，实际就是对压缩文件内的子文件的操作。文档的内容基本都在 <code>/word/document.xml</code> 这个文件当中。我们查看审阅模式下的 <code>document.xml</code> 找到被编辑过的标记：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--- 这是审阅模式下被编辑过的标记的数据源 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">w:ins</span> <span class="attr">w:id</span>=<span class="string">"29"</span> <span class="attr">w:author</span>=<span class="string">"宋正平(雷行)"</span> <span class="attr">w:date</span>=<span class="string">"2019-10-08T13:58:00Z"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">w:del</span> <span class="attr">w:id</span>=<span class="string">"30"</span> <span class="attr">w:author</span>=<span class="string">"宋正平(雷行) [2]"</span> <span class="attr">w:date</span>=<span class="string">"2019-12-24T10:51:00Z"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">w:r</span> <span class="attr">w:rsidR</span>=<span class="string">"001737A4"</span> <span class="attr">w:rsidRPr</span>=<span class="string">"001737A4"</span> <span class="attr">w:rsidDel</span>=<span class="string">"00212F81"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">w:rPr</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">w:rFonts</span> <span class="attr">w:ascii</span>=<span class="string">"微软雅黑"</span> <span class="attr">w:eastAsia</span>=<span class="string">"微软雅黑"</span> <span class="attr">w:hAnsi</span>=<span class="string">"微软雅黑"</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">w:szCs</span> <span class="attr">w:val</span>=<span class="string">"21"</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">w:u</span> <span class="attr">w:val</span>=<span class="string">"single"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">w:rPr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">w:delText</span>&gt;</span>$&#123;sY&#125;<span class="tag">&lt;/<span class="name">w:delText</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">w:r</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">w:del</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">w:ins</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--- 这是审阅模式下没有编辑过的标记的数据源 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">w:ins</span> <span class="attr">w:id</span>=<span class="string">"32"</span> <span class="attr">w:author</span>=<span class="string">"宋正平(雷行)"</span> <span class="attr">w:date</span>=<span class="string">"2019-10-08T13:58:00Z"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">w:r</span> <span class="attr">w:rsidR</span>=<span class="string">"001737A4"</span> <span class="attr">w:rsidRPr</span>=<span class="string">"001737A4"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">w:rPr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">w:rFonts</span> <span class="attr">w:ascii</span>=<span class="string">"微软雅黑"</span> <span class="attr">w:eastAsia</span>=<span class="string">"微软雅黑"</span> <span class="attr">w:hAnsi</span>=<span class="string">"微软雅黑"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">w:szCs</span> <span class="attr">w:val</span>=<span class="string">"21"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">w:u</span> <span class="attr">w:val</span>=<span class="string">"single"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">w:rPr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">w:t</span>&gt;</span>$&#123;sM&#125;<span class="tag">&lt;/<span class="name">w:t</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">w:r</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">w:ins</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>通过对比发现，审阅模式下被编辑过的内容，依然存在文档数据源中，不过被添加了一对 <code>&lt;w:delText&gt;&lt;/w:delText&gt;</code> 的标记。所以我们只需要在执行 <code>getVariableCount()</code> 方法时，过滤掉这部分的标记即可。</p>
+<p>为了方便操作，我们新建一个类，继承自 <code>PhpOffice\PhpWord\TemplateProcessor</code> 类，然后添加相应操作：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Services</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Exceptions</span>\<span class="title">ErrorLogicException</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">PhpOffice</span>\<span class="title">PhpWord</span>\<span class="title">TemplateProcessor</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WordTagDeleteCheck</span> <span class="keyword">extends</span> <span class="title">TemplateProcessor</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 过滤审阅模式下已删除的标记</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@method</span>  getVariableCountWithoutDel</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span>  雷行  songzhp<span class="doctag">@yoozoo</span>.com  2019-10-30T12:01:16+0800</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>  array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getVariableCountWithoutDel</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过原方法获取标记列表</span></span><br><span class="line">        $vars = <span class="keyword">$this</span>-&gt;getVariableCount();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建替换数组，将带有删除线的标记替换为空字符</span></span><br><span class="line">        $option = [];</span><br><span class="line">        <span class="keyword">foreach</span> ($vars <span class="keyword">as</span> $key =&gt; $value) &#123;</span><br><span class="line">            $option[<span class="string">'&lt;w:delText&gt;$&#123;'</span> . $key . <span class="string">'&#125;&lt;/w:delText&gt;'</span>] = <span class="string">''</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        $search                     = array_keys($option);</span><br><span class="line">        $replace                    = array_values($option);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 对文档页头执行替换</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;tempDocumentHeaders  = <span class="keyword">$this</span>-&gt;setValueForPart($search, $replace, <span class="keyword">$this</span>-&gt;tempDocumentHeaders, <span class="keyword">self</span>::MAXIMUM_REPLACEMENTS_DEFAULT);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 对文档内容执行替换</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;tempDocumentMainPart = <span class="keyword">$this</span>-&gt;setValueForPart($search, $replace, <span class="keyword">$this</span>-&gt;tempDocumentMainPart, <span class="keyword">self</span>::MAXIMUM_REPLACEMENTS_DEFAULT);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 对文档页脚执行替换</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;tempDocumentFooters  = <span class="keyword">$this</span>-&gt;setValueForPart($search, $replace, <span class="keyword">$this</span>-&gt;tempDocumentFooters, <span class="keyword">self</span>::MAXIMUM_REPLACEMENTS_DEFAULT);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 重新获取文档标记</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;getVariableCount();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 检查合同时间标记是否缺少</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@method</span>  checkDateTagDelete</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span>  雷行  songzhp<span class="doctag">@yoozoo</span>.com  2019-10-30T12:01:40+0800</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>  boolean</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">checkDateTagDelete</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line"></span><br><span class="line">        $vars = <span class="keyword">$this</span>-&gt;getVariableCountWithoutDel();</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">isset</span>($vars[<span class="string">'sY'</span>]) ||</span><br><span class="line">            !<span class="keyword">isset</span>($vars[<span class="string">'sM'</span>]) ||</span><br><span class="line">            !<span class="keyword">isset</span>($vars[<span class="string">'sD'</span>]) ||</span><br><span class="line">            !<span class="keyword">isset</span>($vars[<span class="string">'eY'</span>]) ||</span><br><span class="line">            !<span class="keyword">isset</span>($vars[<span class="string">'eM'</span>]) ||</span><br><span class="line">            !<span class="keyword">isset</span>($vars[<span class="string">'eD'</span>])</span><br><span class="line">        ) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> ErrorLogicException(<span class="string">'file.doc.contract'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="word转pdf"><a href="#word转pdf" class="headerlink" title="word转pdf"></a>word转pdf</h1><p>要完成word转pdf，需要现在服务器上安装软件 <code>libreoffice</code>， 然后就可以通过命令来完成：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> HOME=/output &amp;&amp; soffice  --headless --convert-to pdf:writer_pdf_Export  --outdir /output /target.docx</span><br></pre></td></tr></table></figure>
+<p>其中，<code>target.docx</code> 表示文档路径，<code>output</code> 表示转码后 <code>pdf</code> 文档存放的目录。</p>
+<p>一般来说，执行 <code>docx</code> 文档的生成、<code>pdf</code> 的转码，都需要放到队列中异步执行，然而 <code>libreoffice</code> 提供的命令不支持并发操作。所以在启动队列时，执行 <code>pdf</code> 文件转码的队列只允许有一个，否则出现并发，会导致进程卡死，<code>PHP</code> 执行 <code>exec</code> 的进程挂起，队列中的任务会无限超时，<code>pdf</code> 生成失败，千万要注意。</p>
+<h1 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h1><h2 id="mac上编辑过后，标记检查失败"><a href="#mac上编辑过后，标记检查失败" class="headerlink" title="mac上编辑过后，标记检查失败"></a>mac上编辑过后，标记检查失败</h2><p>mac上编辑 <code>word</code> 文档时，可能因 <code>mac</code> 上不具备原文档所需要的字体，自动转化为其他字体，此时会改变标记的 <code>xml</code> 数据，导致标记检查失效。解决方法是在保存模板时嵌入字体</p>
+<h2 id="pdf转码时中文出现乱码"><a href="#pdf转码时中文出现乱码" class="headerlink" title="pdf转码时中文出现乱码"></a>pdf转码时中文出现乱码</h2><ul>
+<li>检查服务器上是否有安装中文字体，如果没有可能会导致中文全部乱码</li>
+<li>原 <code>word</code> 文档是否有嵌入字体，如果服务端已安装中文字体，<code>word</code> 文档嵌入字体，可能会导致部分中文乱码</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20191101/discuss/error.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/20191101/discuss/error.html" itemprop="url">错误与异常的处理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-01T17:15:00+08:00">
+                2019-11-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h1><ul>
+<li><a href="#概念">概念</a><ul>
+<li><a href="#什么是异常">什么是异常</a><ul>
+<li><a href="#异常的捕获">异常的捕获</a></li>
+<li><a href="#异常未捕获的情况">异常未捕获的情况</a></li>
+</ul>
+</li>
+<li><a href="#什么是错误">什么是错误</a><ul>
+<li><a href="#错误级别">错误级别</a></li>
+<li><a href="#错误的捕获">错误的捕获</a></li>
+<li><a href="#错误未捕获的情况">错误未捕获的情况</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#模拟错误的产生">模拟错误的产生</a><ul>
+<li><a href="#E_NOTICE">E_NOTICE</a></li>
+<li><a href="#E_WARNING">E_WARNING</a></li>
+<li><a href="#E_ERROR">E_ERROR</a></li>
+</ul>
+</li>
+<li><a href="#异常的运用">异常的运用</a><ul>
+<li><a href="#前提">前提</a></li>
+<li><a href="#使用">使用</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><p>首先要注意区分错误与异常的概念。</p>
+<h2 id="什么是异常"><a href="#什么是异常" class="headerlink" title="什么是异常"></a>什么是异常</h2><p>所有的异常都由一个基类：Exception。异常是指在代码中由程序猿通过 <code>throw new Exception</code> 语法主动抛出的。</p>
+<h3 id="异常的捕获"><a href="#异常的捕获" class="headerlink" title="异常的捕获"></a>异常的捕获</h3><p>异常可以通过两种方式进行捕获：</p>
+<ul>
+<li><code>try/catch</code> 语句块进行捕获</li>
+<li><code>set_exception_handler</code> 异常处理函数</li>
+</ul>
+<blockquote>
+<p>Exception 异常可以被第一个匹配的 try / catch 块所捕获。如果没有匹配的 catch 块，则调用异常处理函数（事先通过 set_exception_handler() 注册）进行处理。</p>
+</blockquote>
+<h3 id="异常未捕获的情况"><a href="#异常未捕获的情况" class="headerlink" title="异常未捕获的情况"></a>异常未捕获的情况</h3><p>如果没有对异常进行捕获，就会产生一个致命错误。</p>
+<blockquote>
+<p>如果尚未注册异常处理函数，则按照传统方式处理：被报告为一个致命错误（Fatal Error）。</p>
+</blockquote>
+<h2 id="什么是错误"><a href="#什么是错误" class="headerlink" title="什么是错误"></a>什么是错误</h2><p>错误是代码在运行过程中产生的，一般不由程序猿主动抛出。当出现错误时，说明代码中有bug，需要进行修复。</p>
+<h3 id="错误级别"><a href="#错误级别" class="headerlink" title="错误级别"></a>错误级别</h3><p>错误有级别之分。经常遇到的错误级别有下列几种:</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>常量</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>E_ERROR</td>
+<td>致命的运行时错误。这类错误一般是不可恢复的情况，例如内存分配导致的问题。后果是导致脚本终止不再继续运行。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>E_WARNING</td>
+<td>运行时警告 (非致命错误)。仅给出提示信息，但是脚本不会终止运行。</td>
+</tr>
+<tr>
+<td>8</td>
+<td>E_NOTICE</td>
+<td>运行时通知。表示脚本遇到可能会表现为错误的情况，但是在可以正常运行的脚本里面也可能会有类似的通知。</td>
+</tr>
+</tbody>
+</table>
+<p>其他的错误类型在日常开发中可能遇到的不是很多，就不进行一一列举。其中, <code>E_ERROR</code> 类型的错误分为可捕获错误与致命错误。</p>
+<h3 id="错误的捕获"><a href="#错误的捕获" class="headerlink" title="错误的捕获"></a>错误的捕获</h3><p>错误也是可进行捕获的。在PHP7中，由于改变了大多数错误的报告方式，大多数错误被作为 Error 异常抛出，也可以通过  try / catch 块进行捕获。</p>
+<ul>
+<li><code>try/catch</code> 语句块进行捕获</li>
+<li><code>set_exception_handler</code> 异常处理函数</li>
+<li><code>set_error_handler</code> 错误处理函数</li>
+<li><code>register_shutdown_function =&gt; error_get_last</code></li>
+</ul>
+<p>set_error_handler 错误处理函数所能捕获的错误有限。</p>
+<blockquote>
+<p>以下级别的错误不能由用户定义的函数来处理： E_ERROR、 E_PARSE、 E_CORE_ERROR、 E_CORE_WARNING、 E_COMPILE_ERROR、 E_COMPILE_WARNING，和在 调用 set_error_handler() 函数所在文件中产生的大多数 E_STRICT。</p>
+</blockquote>
+<p>register_shutdown_function 会由以下情况触发：</p>
+<ul>
+<li>脚本正常退出时</li>
+<li>在脚本运行(run-time not parse-time)出错退出时</li>
+<li>用户调用exit方法退出时</li>
+</ul>
+<p>也就是说 register_shutdown_function 被执行时，并不能捕获到错误，需要在函数体内，由error_get_last来捕获最后产生的错误。</p>
+<p>按错误级别由低到高来分的话，上述捕获手段可以分别捕获到如下表所示的错误：</p>
+<table>
+<thead>
+<tr>
+<th>错误级别</th>
+<th>备注</th>
+<th>捕获手段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8/E_NOTICE</td>
+<td></td>
+<td>set_error_handler/register_shutdown_function</td>
+</tr>
+<tr>
+<td>2/E_WARNING</td>
+<td></td>
+<td>set_error_handler/register_shutdown_function</td>
+</tr>
+<tr>
+<td>1/E_ERROR</td>
+<td>可捕获错误</td>
+<td>try/set_exception_handler/register_shutdown_function</td>
+</tr>
+<tr>
+<td>1/E_ERROR</td>
+<td>致命错误</td>
+<td>register_shutdown_function</td>
+</tr>
+</tbody>
+</table>
+<h3 id="错误未捕获的情况"><a href="#错误未捕获的情况" class="headerlink" title="错误未捕获的情况"></a>错误未捕获的情况</h3><p>程序bug。</p>
+<p>综上所述，如果在抛出一个异常之后：</p>
+<ul>
+<li>没有 try / catch , set_exception_handler 进行捕获，会报告为一个错误</li>
+<li>没有 set_error_handler 进行错误的捕获（其实 set_error_handler 也无法捕获上述错误）</li>
+<li>没有 register_shutdown_function、error_get_last 进行捕获<br>则程序会中断运行。</li>
+</ul>
+<h1 id="模拟错误的产生"><a href="#模拟错误的产生" class="headerlink" title="模拟错误的产生"></a>模拟错误的产生</h1><p>错误的模拟主要是为了方便验证上述捕获手段，并不会在实际中进行运用，关于错误模拟可以参考文件夹<a href="./error">error</a>部分的代码</p>
+<h2 id="E-NOTICE"><a href="#E-NOTICE" class="headerlink" title="E_NOTICE"></a>E_NOTICE</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//$test未定义，会报一个notice级别的错误</span></span><br><span class="line"><span class="keyword">return</span> $a;</span><br></pre></td></tr></table></figure>
+<h2 id="E-WARNING"><a href="#E-WARNING" class="headerlink" title="E_WARNING"></a>E_WARNING</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$array = [<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// in_array函数需要传入两个参数，会报一个warning级别的错误</span></span><br><span class="line">in_array($array);</span><br></pre></td></tr></table></figure>
+<h2 id="E-ERROR"><a href="#E-ERROR" class="headerlink" title="E_ERROR"></a>E_ERROR</h2><p>可捕获错误：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sum</span><span class="params">(Array $array)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// sum指定传入一个数组参数，会报一个TypeError的可捕获错误</span></span><br><span class="line">sum(<span class="string">'a'</span>);</span><br></pre></td></tr></table></figure></p>
+<p>致命错误:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 如果这里test的定义不放在if中，会在编译阶段报告语法错误，而不会进入到运行时。</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="异常的运用"><a href="#异常的运用" class="headerlink" title="异常的运用"></a>异常的运用</h1><h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>在运用异常之前，务必先了解框架的异常处理机制，或者自行设计异常的处理机制。laravel框架的异常处理逻辑主要在 <code>Illuminate\Foundation\Bootstrap\HandleExceptions::class</code> 这个类中。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>异常的使用，是指通过异常捕获机制，根据捕获到的不同类型的异常，来决定作出什么样的处理。我在项目中比较常用的技巧，是通过异常来决定接口的响应，在异常捕获的逻辑中有以下两个逻辑分支:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ($exception <span class="keyword">instanceof</span> ErrorLogicException) &#123;</span><br><span class="line">    <span class="comment">// 逻辑错误，需要反馈给用户阅读，并翻译为用户当前语系</span></span><br><span class="line">    <span class="keyword">return</span> response()-&gt;json([</span><br><span class="line">        <span class="string">'code'</span> =&gt; $exception-&gt;getCode(),</span><br><span class="line">        <span class="string">'data'</span> =&gt; <span class="string">''</span>,</span><br><span class="line">        <span class="string">'msg'</span>  =&gt; $exception-&gt;getMessage(),</span><br><span class="line">    ]);</span><br><span class="line">&#125; <span class="keyword">elseif</span> ($exception <span class="keyword">instanceof</span> ErrorDebugException) &#123;</span><br><span class="line">    <span class="comment">// debug 错误，给用户返回一个统一的信息</span></span><br><span class="line">    <span class="comment">// 日志记录错误信息，debug模式下直接返回错误信息，用于调试</span></span><br><span class="line">    $info = $exception-&gt;getMessage();</span><br><span class="line">    Log::debug($info);</span><br><span class="line">    <span class="keyword">return</span> response()-&gt;json([</span><br><span class="line">        <span class="string">'code'</span> =&gt; $exception-&gt;getCode(),</span><br><span class="line">        <span class="string">'data'</span> =&gt; <span class="string">''</span>,</span><br><span class="line">        <span class="string">'msg'</span>  =&gt; config(<span class="string">'app.debug'</span>) ? $info : __(<span class="string">'common.failed'</span>),</span><br><span class="line">    ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先定义两种异常类型:</p>
+<ul>
+<li>ErrorLogicException: 流程逻辑错误。指没有按照规定使用，产生的异常类型。这个时候会返回明确的错误提示，或者指导用户什么是正确的操作。</li>
+<li>ErrorDebugException: 非正常错误，泛指不可预知的错误，但是会影响流程的正确性。这个时候并不需要告知用户发生了什么错误，但是需要记录错误发生的相关信息，交由开发者进一步分析问题产生的原因。比如：数据保存失败等小概率事件。</li>
+</ul>
+<p>然后在需要的地方抛出对应的异常即可。</p>
+<p>对于ErrorLogicException异常的情形，并非一定要按上述逻辑来处理，因为在抛出ErrorLogicException异常的情形下，都是确定出错了的情况，也可以通过 <code>return false</code> 来返回函数的调用栈，如果代码的层级比较深，可能要经过<code>Model -&gt; Service -&gt; Controller</code> 或更多的层级来return到Controller，这个时候用异常就会有“短路”的效果，避免过多层级的return。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2055,7 +2060,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-count">35</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
