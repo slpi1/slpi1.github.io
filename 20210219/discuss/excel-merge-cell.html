@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Excel单元格自动合并的实现方案Index 背景 思路 找出合并的隐含条件 可合并区域的寻找 可合并区域的影响 结束条件 其他问题 三角形问题 起始点的合并顺序 我们如何引入自定义条件     点睛之笔-自定义条件 停止行与停止列 继承 合并优先序   实现 基本对象 单元格对象 区域对象 数据源对象 搜索执行对象 停止规则对象   执行过程 合并的初始化与进行 停止行规则      背景以前在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="easy note">
+<meta property="og:url" content="http://blog.slpi1.com/20210219/discuss/excel-merge-cell.html">
+<meta property="og:site_name" content="easy note">
+<meta property="og:description" content="Excel单元格自动合并的实现方案Index 背景 思路 找出合并的隐含条件 可合并区域的寻找 可合并区域的影响 结束条件 其他问题 三角形问题 起始点的合并顺序 我们如何引入自定义条件     点睛之笔-自定义条件 停止行与停止列 继承 合并优先序   实现 基本对象 单元格对象 区域对象 数据源对象 搜索执行对象 停止规则对象   执行过程 合并的初始化与进行 停止行规则      背景以前在">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-02-19T07:44:38.638Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="easy note">
+<meta name="twitter:description" content="Excel单元格自动合并的实现方案Index 背景 思路 找出合并的隐含条件 可合并区域的寻找 可合并区域的影响 结束条件 其他问题 三角形问题 起始点的合并顺序 我们如何引入自定义条件     点睛之笔-自定义条件 停止行与停止列 继承 合并优先序   实现 基本对象 单元格对象 区域对象 数据源对象 搜索执行对象 停止规则对象   执行过程 合并的初始化与进行 停止行规则      背景以前在">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.slpi1.com/20210219/discuss/excel-merge-cell.html"/>
+
+
+
+
+
+  <title> | easy note</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">easy note</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">easy note</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20210219/discuss/excel-merge-cell.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline"></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-19T15:44:38+08:00">
+                2021-02-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Excel单元格自动合并的实现方案"><a href="#Excel单元格自动合并的实现方案" class="headerlink" title="Excel单元格自动合并的实现方案"></a>Excel单元格自动合并的实现方案</h1><h1 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h1><ul>
+<li><a href="#背景">背景</a></li>
+<li><a href="#思路">思路</a><ul>
+<li><a href="#找出合并的隐含条件">找出合并的隐含条件</a></li>
+<li><a href="#可合并区域的寻找">可合并区域的寻找</a></li>
+<li><a href="#可合并区域的影响">可合并区域的影响</a></li>
+<li><a href="#结束条件">结束条件</a></li>
+<li><a href="#其他问题">其他问题</a><ul>
+<li><a href="#三角形问题">三角形问题</a></li>
+<li><a href="#起始点的合并顺序">起始点的合并顺序</a></li>
+<li><a href="#我们如何引入自定义条件">我们如何引入自定义条件</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#点睛之笔-自定义条件">点睛之笔-自定义条件</a><ul>
+<li><a href="#停止行与停止列">停止行与停止列</a></li>
+<li><a href="#继承">继承</a></li>
+<li><a href="#合并优先序">合并优先序</a></li>
+</ul>
+</li>
+<li><a href="#实现">实现</a><ul>
+<li><a href="#基本对象">基本对象</a><ul>
+<li><a href="#单元格对象">单元格对象</a></li>
+<li><a href="#区域对象">区域对象</a></li>
+<li><a href="#数据源对象">数据源对象</a></li>
+<li><a href="#搜索执行对象">搜索执行对象</a></li>
+<li><a href="#停止规则对象">停止规则对象</a></li>
+</ul>
+</li>
+<li><a href="#执行过程">执行过程</a><ul>
+<li><a href="#合并的初始化与进行">合并的初始化与进行</a></li>
+<li><a href="#停止行规则">停止行规则</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>以前在开发有格数据驾驶舱的时候，由于需要展示比较多的表格，而且表格有合并的情况，每个表格的合并规则还不一致。当时需要同时支持导出 <code>Excel</code> 文件的合并，以及返回到接口的数据，供前端展示时合并，这两种情况。通过分析之后，计划通过两种方案来实现：</p>
+<ul>
+<li><code>Excel</code> 模板。模板包含要合并的情况，导出时仅填充数据。</li>
+<li>动态合并规则。按要求，自动对数据项进行合并。</li>
+</ul>
+<p>通过模板的方式来解决这个问题，需要面以下下困难：</p>
+<ul>
+<li>如果合并的情况比较复杂，比如前十行与后十行的合并情况不一致，更进一步，如果这个“十”是变化的，那么模板就无能为力了。</li>
+<li>返回给前端接口的表格数据，无法共模板这一方案，需要单独想办法解决</li>
+</ul>
+<p>由于上述两个原因，决定采用方案二，动态合并规则来实现。总的概括一下我们要解决的问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">任意给定一组二维数据，根据自定义的一些规则，来对这组数据进行合并，并列出所有合并区域的起点与终点。</span><br></pre></td></tr></table></figure>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>如何找出需要合并的区域呢？先假设一个无规则的情况；如果有一个表格，你可以自由的对表格数据进行合并，要如何实现？</p>
+<h2 id="找出合并的隐含条件"><a href="#找出合并的隐含条件" class="headerlink" title="找出合并的隐含条件"></a>找出合并的隐含条件</h2><p>在无规则情况下，其实默认单元格满足下列两个条件，就可以进行合并：</p>
+<ul>
+<li>两个单元格的值相等</li>
+<li>两个单元格的位置相邻</li>
+</ul>
+<h2 id="可合并区域的寻找"><a href="#可合并区域的寻找" class="headerlink" title="可合并区域的寻找"></a>可合并区域的寻找</h2><p>那么，合并区域的寻找，可以通过以下过程来展开：</p>
+<ul>
+<li>确定起点：确定数据的起点，假设为 <code>O(0,0)</code>，标记点 <code>O</code> 为合并的起点</li>
+<li>横向检查：检查 <code>O</code> 右侧的点 <code>N(0,1)</code>，如果点 <code>O</code> 与点 <code>N</code> 的值相等，那么表示可以合并，继续检查 <code>N</code> 右侧的点 <code>N1</code>，直到 <code>Nx</code> 的值不等于 <code>O</code> 的值，至此，横向检查完毕</li>
+<li>纵向检查：检查 <code>O</code> 下方的点 <code>H(1,0)</code>, 如果点 <code>O</code> 与点 <code>H</code> 的值相等，那么从 <code>H</code> 点开始，启动第二轮横向检查。如果不想等，那么合并结束，合并区域为 <code>O~Nx-1</code> 。 <code>Nx-1</code> 表示最后一轮横向检查的终点。</li>
+</ul>
+<p>这个过程是一次合并区域检查的过程，每执行一个这样的过程，就会得到一个合并区域，记作 <code>Range[O,Nx-1]</code>，如果点 <code>O</code> 与点 <code>Nx-1</code> 相等，说明该合并区域就是一个点，可以舍弃掉。</p>
+<h2 id="可合并区域的影响"><a href="#可合并区域的影响" class="headerlink" title="可合并区域的影响"></a>可合并区域的影响</h2><p>每寻找到一个合并区域 <code>Range[O,Nx-1]</code> ,我们就消除了一个起点，同时，得到了两个新的起点。由于合并区域是一个矩形，矩形有四个点，其中一个是我们选择的起始点，还剩下三个点，由于对角线上的点比较特殊，我们先抛开不谈，还剩下起始点相邻的两个点，这两个点，就是下一次合并的起始点。<br>假设合并区域的终点为 <code>Nx-1(m,n)</code>，那么，由点 <code>O</code> 分裂出两个新的起始点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O(0,0) -&gt; O1(0,n), O2(m,0)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>由于合并起始点需要进行一个单位的偏移，对角点会偏移成三个点。但这三个点都有可能被相邻两个点的区域所包含，也有可能不会包含。将对角点考虑进来讨论的话，会大大的增加问题的复杂性，但并不会对结果有积极的意义，弊大于利，所以讨论与编码时，都将这个点忽略</p>
+</blockquote>
+<p>接下来，我们继续以 <code>O1/O2</code> 为起始点，分别进行可合并区域的寻找，就能又找到两个可合并区域，以及，分裂成四个新的起始点。</p>
+<h2 id="结束条件"><a href="#结束条件" class="headerlink" title="结束条件"></a>结束条件</h2><p>根据上述分析，我们会发现，随着可合并区域不断被找出，起始点不断被分裂成更多的起始点。那么这个循环会一直持续下去吗？并不是，当分裂到数据的边界的时候，一个起始点就只会分裂成一个起始点，这时，起始点的规模就会开始收缩。那么，“数据的边界”，包含哪些情况呢？</p>
+<ul>
+<li>数据的范围达到给定范围的极限，就是，数据右边或下边没有更多数据了。</li>
+<li>数据的范围，触及到某个已找到的可合并区域的边界。显然，由此分裂出的开始点，已经被“寻找过”，并不会产生新的可合并区域。</li>
+</ul>
+<p>当所有的起始点，都触碰到数据的边界的时候，查找，就结束了，已找到的可合并区域，就是给定数据中，所有的可合并区域。</p>
+<h2 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h2><p>我们按照上述思路，已经归纳出了方案的基本雏形，只不过在实际使用中，可能并不会达到我们想要的结果，因为这当中忽略了几个比较重要的问题。</p>
+<h3 id="三角形问题"><a href="#三角形问题" class="headerlink" title="三角形问题"></a>三角形问题</h3><p>如果数据中有一个三角形区域 <code>O(0,0) -&gt; A(0,10) -&gt; B(10, 0)</code> 其中所有的单元格的值都相等，按照上述思路，最终寻找的可合并区域是 <code>Range[O(0,0), B(10,0)]</code>，因为我们在可合并区域的寻找过程中，遵循的是“横向合并优先”，如果我们遵循“纵向合并优先”的话，最终需要的可合并区域是 <code>Range[O(0,0), A(0, 10)]</code>，然而实际当中，也许这两种情况，都不是我们希望的结果，比如，若我希望合并区域有最大的面积，那么，最终的可合并区域应该是 <code>Range[O(0,0), M(5,5)]</code>。究竟应该如何取舍，实际上取决于“我们的要求”。</p>
+<h3 id="起始点的合并顺序"><a href="#起始点的合并顺序" class="headerlink" title="起始点的合并顺序"></a>起始点的合并顺序</h3><p>由于起始点是会逐渐分裂增加的，那么，依据什么来决定，哪个起始点优先进入合并队列呢？考虑一种极端情况，第一个可合并区域将整个数据分成了两个部分：可合并区域的数据都是1，剩下部分的数据，都是2。如果称可合并区域为第二象限，那么以右侧的点开始，得到的合并区域是第一象限与第四象限的组合；如果以下侧的点，开始，得到的合并区域是第三象限与第四象限的组合。所以，起始点的选取顺序，也会导致合并区域结果的差异。</p>
+<h3 id="我们如何引入自定义条件"><a href="#我们如何引入自定义条件" class="headerlink" title="我们如何引入自定义条件"></a>我们如何引入自定义条件</h3><p>到此为止，我们上述的讨论，都不涉及到自定义条件的问题，而这本身就是需求之一。</p>
+<h1 id="点睛之笔-自定义条件"><a href="#点睛之笔-自定义条件" class="headerlink" title="点睛之笔-自定义条件"></a>点睛之笔-自定义条件</h1><p>如果讨论至于上述的思路，那么这一方案实际上并无太大用处，因为由于最后三个问题的存在，导致最终合并的结果，很有可能并不是我们想要的。其中，第三个问题，它既是一个问题，又是一个需求，那么，考虑在解决该问题的同时，附带解决其余两个问题。我们将上文的思路，归纳成两个过程：</p>
+<ul>
+<li>寻找合并区域</li>
+<li>循环起始点</li>
+</ul>
+<p>从顺序上看，<code>寻找合并区域</code> 先于 <code>循环起始点</code> ，从因果关系上看，<code>寻找合并区域</code> 会导致 <code>循环起始点</code> 的主体 <code>起始点</code> 起始点的变化。所以我们先考虑从 <code>寻找合并区域</code> 这一过程中，引入自定义条件。 <code>寻找合并区域</code> 分为两个主要过程，<code>横向检查</code> 与 <code>纵向检查</code>，我们引入的条件，应该是能影响这两个过程的结束位置。</p>
+<p>对于上述 <code>三角形问题</code> ,如果我们要求可合并区域的面积最大，可以转化为这样的一组条件：</p>
+<ul>
+<li>横向合并到 <code>5</code> 为止</li>
+<li>纵向合并到 <code>5</code> 为止</li>
+</ul>
+<p>这里的两个条件，就是我们的自定义条件，我们把这类条件，归纳为 <code>停止行/停止列</code></p>
+<h2 id="停止行与停止列"><a href="#停止行与停止列" class="headerlink" title="停止行与停止列"></a>停止行与停止列</h2><p>停止行与停止列，是自定义条件的核心。他规定合并区域的寻找，在遇到哪些行与列的时候，就停止。因此，我们只需要在寻找合并区域的逻辑当中，引入对停止行与停止列的检查即可。需要留意的是，停止行与停止列的位置可能是变化的，我们在编码时可能需要考虑到这一点。</p>
+<h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><p>停止行与停止列可能需要被继承，他所代表的含义是：表格前面部分的停止规则，极有可能对后面的数据生效，但是根据后面的数据以及规则，可能无法计算出合适的停止规则，这时，直接将前面的停止规则继承过来即可。</p>
+<h2 id="合并优先序"><a href="#合并优先序" class="headerlink" title="合并优先序"></a>合并优先序</h2><p>我们在讨论 <code>三角形问题</code> 时，提到过 <code>横向合并优先/纵向合并优先</code> 的概念，这是指在寻找合并区域时遇到的顺序问题。在循环起始点时，也存在这么一个问题：即应该以左侧的点开始新一轮的合并区域寻找，还是应该以下侧的点，开始新一轮的合并区域寻找。这是两个合并优先序的问题。</p>
+<p>先来看一看起始点的分裂情况，假设有以下分裂过程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">O(0,0) -&gt; [N(2, 0),H(0,2)]</span><br><span class="line"></span><br><span class="line">N(2, 0) -&gt; [N1(5, 0), H1(2,3)]; H(0, 2) -&gt; [N2(1, 2), H2(0, 4)]</span><br></pre></td></tr></table></figure>
+<p>起始点出现的顺序是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">N - H - N1 - H1 - N2 - H2</span><br></pre></td></tr></table></figure>
+<p>分布大概如下表所示</p>
+<table>
+<thead>
+<tr>
+<th>0 O(0,0)</th>
+<th>1</th>
+<th>2 N(2, 0)</th>
+<th>3</th>
+<th>4</th>
+<th>5 N1(5,0)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>2 H(0,2)</td>
+<td>N2(1,2)</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>3</td>
+<td>—</td>
+<td>H1(2,3)</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>4 H2(0,4)</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>5</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>如果以开始点出现的顺序进行合并，通过相对位置可知，点 <code>H1</code> 可能会被包含在 <code>N2</code> 开始的可合并区域中。但是按点的顺序来看，<code>H1</code> 的合并先发生，由于已合并区域会形成边界，这时 <code>N2</code> 进行合并的话，不可能再次包含点 <code>H1</code>。</p>
+<p>通过以上示例可以看出，起始点的合并开始顺序，确实会影响最终的合并结果。因此，在每次合并完成后，都需要对已存在的点和新生成的两个点，进行一次排序，用以决定究竟哪个点该进入下一次的合并。</p>
+<p>每个点都有一个横坐标与纵坐标，很容易想到的方法是，仅比较每个点的横坐标，越小的点，越先开始合并；或者仅比较每个点的纵坐标，越小的点，越先开始合并。但如果有两个点的某个坐标相同，又恰巧以该坐标决定合并顺序呢，很容易想到，比较应该同时结合横坐标与纵坐标，但以某一项为主；就像如果以横坐标为主，那么横坐标的值充当十位，纵坐标的值充当个位，用以区分其权重。</p>
+<p>显然，如果横坐标的排序权重高，我们称为“横向合并优先”，那么每次分裂之后，横向的点都会进入下一个合并队列，纵向的点，进入等待队列，直到横向的数据达到数据范围的极限，此时，等待队列中的开始点，类似下列情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Nn - H1 - H2 - H3 - - - Hn</span><br></pre></td></tr></table></figure>
+<p>横向数据范围越大，<code>Hn</code> 中 <code>n</code> 的值越大，等待合并的点越多。如果纵坐标的排序权重高，我们称为“横向合并优先”，情况依然类似。</p>
+<p>其实，只要合并不是无序的，无论是横向优先，还是纵向优先，对合并结果的影响并不是很大，尤其是在停止行规则充分时，基本可以达到相同的合并结果。不过因为横向与纵向数据范围的差异，可能导致待合并队列中点的个数差异，进一步影响点排序的效率，因此，此处可以有一个优化，来使排序的效率增加，就是以数据范围小的坐标作为合并优先序。</p>
+<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><p>基于上述思想。我们简单理一下，该如何编码来实现本功能。</p>
+<h2 id="基本对象"><a href="#基本对象" class="headerlink" title="基本对象"></a>基本对象</h2><h3 id="单元格对象"><a href="#单元格对象" class="headerlink" title="单元格对象"></a>单元格对象</h3><p>该对象用来表示点，他需要有一个横坐标属性，纵坐标属性，还需要能计算出左侧的点，右侧的点，以及两个点是否是同一个点。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cell</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> $x;</span><br><span class="line">    <span class="keyword">protected</span> $y;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($x = <span class="number">0</span>, $y = <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;x = $x;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;y = $y;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getX</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;x;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getY</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;y;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">nextHorizonCell</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Cell(<span class="keyword">$this</span>-&gt;x + <span class="number">1</span>, <span class="keyword">$this</span>-&gt;y);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">nextVerticalCell</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Cell(<span class="keyword">$this</span>-&gt;x, <span class="keyword">$this</span>-&gt;y + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">equal</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;x == $cell-&gt;getX() &amp;&amp; <span class="keyword">$this</span>-&gt;y == $cell-&gt;getY();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个实现并没有任何对点的值的表示，为何要这样处理，我们放在后面来说。</p>
+<h3 id="区域对象"><a href="#区域对象" class="headerlink" title="区域对象"></a>区域对象</h3><p>区域表示的是一个范围，他有一个开始的点，与结束的点。同时他还需要有获取分裂后的点的能力，需要有判断点是否落在区域中的能力。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Cell</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Range</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $start;</span><br><span class="line">    <span class="keyword">public</span> $end;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> $active;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> $maxX = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(Cell $start, Cell $end)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;start = $start;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;end   = <span class="keyword">$this</span>-&gt;active   = $end;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">haveCell</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $cellX = $cell-&gt;getX();</span><br><span class="line">        $cellY = $cell-&gt;getY();</span><br><span class="line"></span><br><span class="line">        $startX = <span class="keyword">$this</span>-&gt;start-&gt;getX();</span><br><span class="line">        $startY = <span class="keyword">$this</span>-&gt;start-&gt;getY();</span><br><span class="line"></span><br><span class="line">        $endX = <span class="keyword">$this</span>-&gt;end-&gt;getX();</span><br><span class="line">        $endY = <span class="keyword">$this</span>-&gt;end-&gt;getY();</span><br><span class="line">        <span class="keyword">if</span> ($cellX &gt;= $startX &amp;&amp; $cellX &lt;= $endX &amp;&amp; $cellY &gt;= $startY &amp;&amp; $cellY &lt;= $endY) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">isCell</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;start-&gt;getX() == <span class="keyword">$this</span>-&gt;end-&gt;getX() &amp;&amp; <span class="keyword">$this</span>-&gt;start-&gt;getY() == <span class="keyword">$this</span>-&gt;end-&gt;getY()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">horizonTouchAllow</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;maxX != <span class="number">0</span> &amp;&amp; $cell-&gt;getX() &gt; <span class="keyword">$this</span>-&gt;maxX) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">markMaxHorizonTouch</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;maxX = <span class="keyword">$this</span>-&gt;maxX == <span class="number">0</span> ? <span class="keyword">$this</span>-&gt;active-&gt;getX() : min(<span class="keyword">$this</span>-&gt;maxX, <span class="keyword">$this</span>-&gt;active-&gt;getX());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getValue</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> [</span><br><span class="line">            [<span class="keyword">$this</span>-&gt;start-&gt;getX(), <span class="keyword">$this</span>-&gt;start-&gt;getY()],</span><br><span class="line">            [<span class="keyword">$this</span>-&gt;end-&gt;getX(), <span class="keyword">$this</span>-&gt;end-&gt;getY()],</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">nextRowFirst</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $x = <span class="keyword">$this</span>-&gt;start-&gt;getX();</span><br><span class="line">        $y = <span class="keyword">$this</span>-&gt;end-&gt;getY() + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Cell($x, $y);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">nextColumnFirst</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $x = <span class="keyword">$this</span>-&gt;end-&gt;getX() + <span class="number">1</span>;</span><br><span class="line">        $y = <span class="keyword">$this</span>-&gt;start-&gt;getY();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Cell($x, $y);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">nextMergeStartCells</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $nextRowFirst    = <span class="keyword">$this</span>-&gt;nextRowFirst();</span><br><span class="line">        $nextColumnFirst = <span class="keyword">$this</span>-&gt;nextColumnFirst();</span><br><span class="line">        <span class="keyword">return</span> [</span><br><span class="line">            $nextColumnFirst,</span><br><span class="line">            $nextRowFirst,</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="数据源对象"><a href="#数据源对象" class="headerlink" title="数据源对象"></a>数据源对象</h3><p>数据源对象，就是给定的初始二维数据。只不过我们在编码时，不应该把它具体化，只需要知道，这个对象需要提供哪些功能。因此，数据源对象是什么。我们并不关心，但他需要实现这个接口：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">Cell</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">RepositoryInterface</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// 获取点的值</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getValue</span><span class="params">(Cell $cell)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取数据横向范围</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getWidth</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取数据纵向范围</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getHeight</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里来解释一下，为何单元格对象并不能获取自身的值？因为源数据有可能需要一个很大的存储空间，如果单元格能获取到值，必然需要在某处引用这一数据源，此时，<code>Cell</code> 类会对外部产生一个依赖，并且需要在实例化时主动传入该数据对象。而在执行过程中，会出现大量的点对象，由此可能导致内存占用增加，所以，将单元格的取值过程转嫁给数据源对象。</p>
+<h3 id="搜索执行对象"><a href="#搜索执行对象" class="headerlink" title="搜索执行对象"></a>搜索执行对象</h3><p>对给定数据源执行搜索，其中包含代码主要的逻辑部分。</p>
+<h3 id="停止规则对象"><a href="#停止规则对象" class="headerlink" title="停止规则对象"></a>停止规则对象</h3><p>停止规则对象依赖给定数据源，用以计算出动态的停止规则。</p>
+<h2 id="执行过程"><a href="#执行过程" class="headerlink" title="执行过程"></a>执行过程</h2><h3 id="合并的初始化与进行"><a href="#合并的初始化与进行" class="headerlink" title="合并的初始化与进行"></a>合并的初始化与进行</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">start</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 将点 O(0,0) 放入横向合并队列</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;horizonMergeQueue[] = <span class="keyword">new</span> Cell;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 开始检查合并</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;catchMergeRange();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回合并区域列表</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;mergedRanges;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">catchMergeRange</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 判断下一个要合并的起始点</span></span><br><span class="line">    $startCell = <span class="keyword">$this</span>-&gt;getNextMergeStart();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果不存在，表示合并结束</span></span><br><span class="line">    <span class="keyword">if</span> ($startCell) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果点不存在于已合并的区域中</span></span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;merged($startCell)) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 初始化待合并区域</span></span><br><span class="line">            $range = <span class="keyword">new</span> Range($startCell, $startCell);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 可合并区域的寻找 - 区域终点搜索</span></span><br><span class="line">            $range = <span class="keyword">$this</span>-&gt;touchRange($range);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 判断区域是否是一个点，如果不是，则加入已合并区域列表</span></span><br><span class="line">            <span class="keyword">if</span> (!$range-&gt;isCell()) &#123;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;mergedRanges[<span class="keyword">$this</span>-&gt;getRangeId($range)] = $range;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 起始点分裂</span></span><br><span class="line">            <span class="keyword">list</span>($cellHorizon, $cellVertical) = $range-&gt;nextMergeStartCells();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 将点$cellHorizon 加入横向合并队列</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;isExistsCell($cellHorizon)) &#123;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;horizonMergeQueue[<span class="keyword">$this</span>-&gt;getCellHorizonIndex($cellHorizon)] = $cellHorizon;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;makeExtendStopRule($cellHorizon);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 将点$cellVertical 加入纵向合并队列</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;isExistsCell($cellVertical)) &#123;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;verticalMergeQueue[<span class="keyword">$this</span>-&gt;getCellVerticalIndex($cellVertical)] = $cellVertical;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;makeExtendStopRule($cellVertical);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 启动下一个起始点的合并</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;catchMergeRange();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">touchRange</span><span class="params">(Range $range)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 区域内 - 横向检查</span></span><br><span class="line">    $range = <span class="keyword">$this</span>-&gt;touchCellHorizon($range);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 区域内 - 纵向检查</span></span><br><span class="line">    $range = <span class="keyword">$this</span>-&gt;touchCellVertical($range);</span><br><span class="line">    <span class="keyword">return</span> $range;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 纵向检查</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">touchCellHorizon</span><span class="params">(Range $range)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $nextHorizonCell = $range-&gt;active-&gt;nextHorizonCell();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 达到纵向数据范围的极限，检查停止</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;isExistsCell($nextHorizonCell)) &#123;</span><br><span class="line">        $range-&gt;end = $range-&gt;active;</span><br><span class="line">        <span class="keyword">return</span> $range;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 纵向检查通过，启动横向检查，在这里检查停止行规则</span></span><br><span class="line">    <span class="keyword">if</span> ($range-&gt;horizonTouchAllow($nextHorizonCell) &amp;&amp;</span><br><span class="line">        !<span class="keyword">$this</span>-&gt;atStopColumn($nextHorizonCell) &amp;&amp;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;getValue($range-&gt;active) === <span class="keyword">$this</span>-&gt;getValue($nextHorizonCell)) &#123;</span><br><span class="line">        $range-&gt;active = $nextHorizonCell;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;touchCellHorizon($range);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 否则检查停止</span></span><br><span class="line">        $range-&gt;end = $range-&gt;active;</span><br><span class="line"></span><br><span class="line">        $range-&gt;markMaxHorizonTouch();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> $range;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 横向检查</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">touchCellVertical</span><span class="params">(Range $range)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $nextRowFirst = $range-&gt;nextRowFirst();</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;isExistsCell($nextRowFirst)) &#123;</span><br><span class="line">        <span class="keyword">return</span> $range;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 横向检查通过，继续下一轮检查，在这里检查停止行规则</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;atStopRow($nextRowFirst) &amp;&amp; <span class="keyword">$this</span>-&gt;getValue($range-&gt;start) === <span class="keyword">$this</span>-&gt;getValue($nextRowFirst)) &#123;</span><br><span class="line">        $range-&gt;active = $nextRowFirst;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;touchRange($range);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> $range;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取下一个起始点</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getNextMergeStart</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">empty</span>(<span class="keyword">$this</span>-&gt;horizonMergeQueue) &amp;&amp; <span class="keyword">empty</span>(<span class="keyword">$this</span>-&gt;verticalMergeQueue)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((<span class="keyword">$this</span>-&gt;mergeDirect == <span class="keyword">self</span>::HORIZON_DIRECT &amp;&amp; !<span class="keyword">empty</span>(<span class="keyword">$this</span>-&gt;horizonMergeQueue)) || <span class="keyword">empty</span>(<span class="keyword">$this</span>-&gt;verticalMergeQueue)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;getNextMergeStartOfQueue(<span class="keyword">$this</span>-&gt;horizonMergeQueue);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;getNextMergeStartOfQueue(<span class="keyword">$this</span>-&gt;verticalMergeQueue);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 去除起始点时，先进行一次排序</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getNextMergeStartOfQueue</span><span class="params">(&amp;$queue)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    krsort($queue);</span><br><span class="line">    <span class="keyword">return</span> array_pop($queue);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 是否是停止列</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">atStopColumn</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;stopRule-&gt;atStopColumn($cell);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 是否是停止行</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">atStopRow</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;stopRule-&gt;atStopRow($cell);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里只列出了主要的检查逻辑。</p>
+<h3 id="停止行规则"><a href="#停止行规则" class="headerlink" title="停止行规则"></a>停止行规则</h3><p>停止规则对象</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StopRule</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">use</span> <span class="title">ExcelBaseOperate</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> $exporter;</span><br><span class="line">    <span class="keyword">protected</span> $stopColumn = [];</span><br><span class="line">    <span class="keyword">protected</span> $stopRow    = [];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> $extendStopRows = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> $extendStopColumns = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($exporter)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;exporter = $exporter;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">isset</span>($exporter-&gt;extendStopRows) &amp;&amp; $exporter-&gt;extendStopRows) &#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;extendStopRows = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">isset</span>($exporter-&gt;extendStopColumns) &amp;&amp; $exporter-&gt;extendStopColumns) &#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;extendStopColumns = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 传入一个点对象，用来检查是否处于停止行</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">atStopColumn</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 如果数据源对象实现了规则，则获取数据源的规则，并解析停止结果</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;exporter <span class="keyword">instanceof</span> WithStopRule) &#123;</span><br><span class="line">            $rule       = <span class="keyword">$this</span>-&gt;exporter-&gt;stopColumns();</span><br><span class="line">            $shouldStop = <span class="keyword">$this</span>-&gt;parserStopColumnRule($rule, $cell);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ($shouldStop) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (in_array($cell-&gt;getX(), <span class="keyword">$this</span>-&gt;stopColumn)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 传入一个点对象，用来检查是否处于停止列</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">atStopRow</span><span class="params">(Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 如果数据源对象实现了规则，则获取数据源的规则，并解析停止结果</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;exporter <span class="keyword">instanceof</span> WithStopRule) &#123;</span><br><span class="line">            $rule       = <span class="keyword">$this</span>-&gt;exporter-&gt;stopRows();</span><br><span class="line">            $shouldStop = <span class="keyword">$this</span>-&gt;parserStopRowRule($rule, $cell);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ($shouldStop) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (in_array($cell-&gt;getY(), <span class="keyword">$this</span>-&gt;stopRow)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">addStopColumn</span><span class="params">($index)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;stopColumn[$index] = $index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">addStopRow</span><span class="params">($index)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;stopRow[$index] = $index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 按数据源规则解析停止结果</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">parserStopColumnRule</span><span class="params">($rule, Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 规则为布尔值，表示始终停止或不停止</span></span><br><span class="line">        <span class="keyword">if</span> (is_bool($rule)) &#123;</span><br><span class="line">            <span class="keyword">return</span> $rule;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 规则为数组，表示指定的停止行号或ID</span></span><br><span class="line">        <span class="keyword">if</span> (is_array($rule)) &#123;</span><br><span class="line">            <span class="keyword">foreach</span> ($rule <span class="keyword">as</span> $item) &#123;</span><br><span class="line">                <span class="keyword">if</span> (is_numeric($item) &amp;&amp; $cell-&gt;getX() == $item) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;isColumnName($item) &amp;&amp; <span class="keyword">$this</span>-&gt;columnNameToIndex($item) == $cell-&gt;getX()) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 规则为一个可执行结构，由数据源自身计算是否需要停止</span></span><br><span class="line">        <span class="keyword">if</span> (is_callable($rule)) &#123;</span><br><span class="line">            <span class="keyword">return</span> call_user_func_array($rule, [$cell-&gt;getX(), $cell-&gt;getY()]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">parserStopRowRule</span><span class="params">($rule, Cell $cell)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (is_bool($rule)) &#123;</span><br><span class="line">            <span class="keyword">return</span> $rule;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (is_array($rule)) &#123;</span><br><span class="line">            <span class="keyword">foreach</span> ($rule <span class="keyword">as</span> $item) &#123;</span><br><span class="line">                <span class="keyword">if</span> (is_numeric($item) &amp;&amp; $cell-&gt;getY() == $item) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (is_callable($rule)) &#123;</span><br><span class="line">            <span class="keyword">return</span> call_user_func_array($rule, [$cell-&gt;getY(), $cell-&gt;getX()]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在进行停止行的判定时，有这样的一部分代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;exporter <span class="keyword">instanceof</span> WithStopRule) &#123;</span><br><span class="line">    $rule       = <span class="keyword">$this</span>-&gt;exporter-&gt;stopRows();</span><br><span class="line">    $shouldStop = <span class="keyword">$this</span>-&gt;parserStopRowRule($rule, $cell);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ($shouldStop) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中 <code>exporter</code> 就是一开始给定的原始数据对象，如果该对象实现了 <code>WithStopRule</code> 接口的话，表名该对象定义了自己的停止规则，通过 <code>stopRows/stopColumns</code> 方法获取到原始数据定义的停止规则 <code>$rule</code>，然后将 <code>$rule</code>和当前的点 <code>$cell</code> 传给 <code>parserStopRowRule</code> 方法，计算出在当前点 <code>$cell</code> 是否需要停止。</p>
+<p>最终代码结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">/</span><br><span class="line">|----/Concerns/</span><br><span class="line">|--------/ExtendStopColumns.php·············停止列继承</span><br><span class="line">|--------/ExtendStopRows.php················停止行继承</span><br><span class="line">|--------/RepositoryInterface.php···········源数据对象接口</span><br><span class="line">|--------/WithStopRule.php··················停止规则定义接口</span><br><span class="line">|----/Merge/</span><br><span class="line">|--------/Discover.php······················搜索过程定义</span><br><span class="line">|--------/StopRule.php······················停止规则解析</span><br><span class="line">|----/Repositories/</span><br><span class="line">|--------/ArrayRepository.php···············二维数组源数据包装对象</span><br><span class="line">|--------/WorksheetRepository.php···········Excel工作表源数据包装对象</span><br><span class="line">|----/Table/</span><br><span class="line">|--------/Cell.php··························基础点对象</span><br><span class="line">|--------/Range.php·························基础区域对象</span><br><span class="line">|----/Table/</span><br><span class="line">|--------/ExcelBaseOperate.php··············行与列操作方法</span><br></pre></td></tr></table></figure>
+<p>完整代码请转<a href="https://gitlab.uuzu.com/songzhp/laravel-excel-merge" target="_blank" rel="noopener">gitlab.uuzu.com/songzhp/laravel-excel-merge</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/20210219/custom/readme.html" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/20210219/discuss/package.html" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="slpi1" />
+          <p class="site-author-name" itemprop="name">slpi1</p>
+           
+              <p class="site-description motion-element" itemprop="description">PHP,Laravel,thinkPHP,javascript,css</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Excel单元格自动合并的实现方案"><span class="nav-number">1.</span> <span class="nav-text">Excel单元格自动合并的实现方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Index"><span class="nav-number">2.</span> <span class="nav-text">Index</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">3.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#思路"><span class="nav-number">4.</span> <span class="nav-text">思路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#找出合并的隐含条件"><span class="nav-number">4.1.</span> <span class="nav-text">找出合并的隐含条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可合并区域的寻找"><span class="nav-number">4.2.</span> <span class="nav-text">可合并区域的寻找</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可合并区域的影响"><span class="nav-number">4.3.</span> <span class="nav-text">可合并区域的影响</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束条件"><span class="nav-number">4.4.</span> <span class="nav-text">结束条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他问题"><span class="nav-number">4.5.</span> <span class="nav-text">其他问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#三角形问题"><span class="nav-number">4.5.1.</span> <span class="nav-text">三角形问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#起始点的合并顺序"><span class="nav-number">4.5.2.</span> <span class="nav-text">起始点的合并顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我们如何引入自定义条件"><span class="nav-number">4.5.3.</span> <span class="nav-text">我们如何引入自定义条件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#点睛之笔-自定义条件"><span class="nav-number">5.</span> <span class="nav-text">点睛之笔-自定义条件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#停止行与停止列"><span class="nav-number">5.1.</span> <span class="nav-text">停止行与停止列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承"><span class="nav-number">5.2.</span> <span class="nav-text">继承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#合并优先序"><span class="nav-number">5.3.</span> <span class="nav-text">合并优先序</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现"><span class="nav-number">6.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本对象"><span class="nav-number">6.1.</span> <span class="nav-text">基本对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单元格对象"><span class="nav-number">6.1.1.</span> <span class="nav-text">单元格对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#区域对象"><span class="nav-number">6.1.2.</span> <span class="nav-text">区域对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据源对象"><span class="nav-number">6.1.3.</span> <span class="nav-text">数据源对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搜索执行对象"><span class="nav-number">6.1.4.</span> <span class="nav-text">搜索执行对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#停止规则对象"><span class="nav-number">6.1.5.</span> <span class="nav-text">停止规则对象</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行过程"><span class="nav-number">6.2.</span> <span class="nav-text">执行过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#合并的初始化与进行"><span class="nav-number">6.2.1.</span> <span class="nav-text">合并的初始化与进行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#停止行规则"><span class="nav-number">6.2.2.</span> <span class="nav-text">停止行规则</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">slpi1</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="PHP代码规范1. 文件夹 文件夹名称必须符合 CamelCase 式的大写字母开头驼峰命名规范。  2. 文件 PHP 代码文件必须以不带 BOM 的 UTF-8 编码。 纯 PHP 代码文件必须省略最后的 ?&amp;gt; 结束标签。  3. 行 行的长度一定限制在140个字符以内。 非空行后一定不能有多余的空格符。 每行一定不能存在多于一条语句。 适当空行可以使得阅读代码更加方便以及有助于代码的分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="easy note">
+<meta property="og:url" content="http://blog.slpi1.com/20210219/standard.html">
+<meta property="og:site_name" content="easy note">
+<meta property="og:description" content="PHP代码规范1. 文件夹 文件夹名称必须符合 CamelCase 式的大写字母开头驼峰命名规范。  2. 文件 PHP 代码文件必须以不带 BOM 的 UTF-8 编码。 纯 PHP 代码文件必须省略最后的 ?&amp;gt; 结束标签。  3. 行 行的长度一定限制在140个字符以内。 非空行后一定不能有多余的空格符。 每行一定不能存在多于一条语句。 适当空行可以使得阅读代码更加方便以及有助于代码的分">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-02-19T07:44:38.644Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="easy note">
+<meta name="twitter:description" content="PHP代码规范1. 文件夹 文件夹名称必须符合 CamelCase 式的大写字母开头驼峰命名规范。  2. 文件 PHP 代码文件必须以不带 BOM 的 UTF-8 编码。 纯 PHP 代码文件必须省略最后的 ?&amp;gt; 结束标签。  3. 行 行的长度一定限制在140个字符以内。 非空行后一定不能有多余的空格符。 每行一定不能存在多于一条语句。 适当空行可以使得阅读代码更加方便以及有助于代码的分">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.slpi1.com/20210219/standard.html"/>
+
+
+
+
+
+  <title> | easy note</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">easy note</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">easy note</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20210219/standard.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline"></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-19T15:44:38+08:00">
+                2021-02-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="PHP代码规范"><a href="#PHP代码规范" class="headerlink" title="PHP代码规范"></a>PHP代码规范</h1><h2 id="1-文件夹"><a href="#1-文件夹" class="headerlink" title="1. 文件夹"></a>1. 文件夹</h2><ul>
+<li>文件夹名称<strong>必须</strong>符合 <code>CamelCase</code> 式的大写字母开头驼峰命名规范。</li>
+</ul>
+<h2 id="2-文件"><a href="#2-文件" class="headerlink" title="2. 文件"></a>2. 文件</h2><ul>
+<li><code>PHP</code> 代码文件<strong>必须</strong>以不带 <code>BOM</code> 的 <code>UTF-8</code> 编码。</li>
+<li>纯 <code>PHP</code> 代码文件<strong>必须</strong>省略最后的 <code>?&gt;</code> 结束标签。</li>
+</ul>
+<h2 id="3-行"><a href="#3-行" class="headerlink" title="3. 行"></a>3. 行</h2><ul>
+<li>行的长度一定限制在140个字符以内。</li>
+<li>非空行后一定不能有多余的空格符。</li>
+<li>每行一定不能存在多于一条语句。</li>
+<li>适当空行可以使得阅读代码更加方便以及有助于代码的分块（但注意不能滥用空行）。</li>
+</ul>
+<h2 id="4-缩进"><a href="#4-缩进" class="headerlink" title="4. 缩进"></a>4. 缩进</h2><ul>
+<li>代码<strong>必须</strong>使用4个空格符的缩进，一定不能用 <code>tab</code> 键 。</li>
+</ul>
+<h2 id="5-关键字以及-true-false-null"><a href="#5-关键字以及-true-false-null" class="headerlink" title="5. 关键字以及 true/false/null"></a>5. 关键字以及 <code>true/false/null</code></h2><ul>
+<li><code>PHP</code> 所有关键字<strong>必须</strong>全部小写。</li>
+<li>常量 <code>true</code>、<code>false</code> 和 <code>null</code> <strong>必须</strong>全部小写。</li>
+</ul>
+<h2 id="6-namespace-以及-use-声明"><a href="#6-namespace-以及-use-声明" class="headerlink" title="6. namespace 以及 use 声明"></a>6. <code>namespace</code> 以及 <code>use</code> 声明</h2><ul>
+<li><code>namespace</code> 声明后<strong>必须</strong>插入一个空白行。</li>
+<li>所有 <code>use</code> <strong>必须</strong>在 <code>namespace</code> 后声明。</li>
+<li>每条 <code>use</code> 声明语句<strong>必须</strong>只有一个 <code>use</code> 关键词。</li>
+<li><code>use</code> 声明语句块后<strong>必须</strong>要有一个空白行。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">VendorgiPackage</span>;  </span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">FooClass</span>; </span><br><span class="line"><span class="keyword">use</span> <span class="title">BarClass</span> <span class="title">as</span> <span class="title">Bar</span>; </span><br><span class="line"><span class="keyword">use</span> <span class="title">OtherVendorgiOtherPackage</span>\<span class="title">BazClass</span>;  </span><br><span class="line"></span><br><span class="line"><span class="comment">// ... additional PHP code ...</span></span><br></pre></td></tr></table></figure>
+<h2 id="7-类-class，属性-properties-和方法-methods"><a href="#7-类-class，属性-properties-和方法-methods" class="headerlink" title="7. 类 class，属性 properties 和方法 methods"></a>7. 类 <code>class</code>，属性 <code>properties</code> 和方法 <code>methods</code></h2><p>这里的类是广义的类，它包含所有的类 <code>classes</code> ，接口 <code>interface</code> 和 <code>traits</code>。</p>
+<h3 id="7-1-类-class"><a href="#7-1-类-class" class="headerlink" title="7.1 类 class"></a>7.1 类 <code>class</code></h3><ul>
+<li>类的命名<strong>必须</strong>遵循大写字母开头的驼峰式命名规范。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">VendorgiPackage</span>;  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span> </span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// constants, properties, methods</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="7-2-extends-和-implements"><a href="#7-2-extends-和-implements" class="headerlink" title="7.2 extends 和 implements"></a>7.2 <code>extends</code> 和 <code>implements</code></h3><ul>
+<li>关键词 <code>extends</code> 和 <code>implements</code> <strong>必须</strong>写在类名称的同一行。</li>
+<li>类的开始花括号<strong>必须</strong>独占一行，结束花括号也<strong>必须</strong>在类主体后独占一行。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">VendorgiPackage</span>;  </span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">FooClass</span>; </span><br><span class="line"><span class="keyword">use</span> <span class="title">BarClass</span> <span class="title">as</span> <span class="title">Bar</span>; </span><br><span class="line"><span class="keyword">use</span> <span class="title">OtherVendorgiOtherPackage</span>\<span class="title">BazClass</span>;  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span> <span class="keyword">extends</span> <span class="title">ParentClass</span> <span class="keyword">implements</span> <span class="title">giArrayAccess</span>, \<span class="title">Countable</span> </span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// constants, properties, methods </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>implements</code> 的继承列表如果超出140个字符也可以分成多行，这样的话，每个继承接口名称都<strong>必须</strong>分开独立成行，包括第一个。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">VendorgiPackage</span>;  </span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">FooClass</span>; </span><br><span class="line"><span class="keyword">use</span> <span class="title">BarClass</span> <span class="title">as</span> <span class="title">Bar</span>; </span><br><span class="line"><span class="keyword">use</span> <span class="title">OtherVendorgiOtherPackage</span>\<span class="title">BazClass</span>;  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span> <span class="keyword">extends</span> <span class="title">ParentClass</span> <span class="keyword">implements</span>     </span></span><br><span class="line"><span class="class">    <span class="title">giArrayAccess</span>,     </span></span><br><span class="line"><span class="class">    <span class="title">giCountable</span>,     </span></span><br><span class="line"><span class="class">    <span class="title">giSerializable</span> </span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">     <span class="comment">// constants, properties, methods </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="7-3-常量-const"><a href="#7-3-常量-const" class="headerlink" title="7.3 常量 const"></a>7.3 常量 <code>const</code></h3><ul>
+<li>类的常量中所有字母都<strong>必须</strong>大写，词间以下划线分隔。 </li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">VendorgiPackage</span>;  </span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">FooClass</span>; </span><br><span class="line"><span class="keyword">use</span> <span class="title">BarClass</span> <span class="title">as</span> <span class="title">Bar</span>; </span><br><span class="line"><span class="keyword">use</span> <span class="title">OtherVendorgiOtherPackage</span>\<span class="title">BazClass</span>;  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span> <span class="keyword">extends</span> <span class="title">ParentClass</span> <span class="keyword">implements</span> <span class="title">giArrayAccess</span>, \<span class="title">Countable</span> </span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> VSESION  = <span class="string">'1.0'</span>;</span><br><span class="line">    <span class="keyword">const</span> SITE_URL = <span class="string">'http://www.xxx.com '</span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="7-4-属性-properties"><a href="#7-4-属性-properties" class="headerlink" title="7.4  属性 properties"></a>7.4  属性 <code>properties</code></h3><ul>
+<li>类的属性命名<strong>必须</strong>遵循小写字母开头的驼峰式命名规范 <code>$camelCase</code>。</li>
+<li><strong>必须</strong>对所有属性设置访问控制（如，<code>public</code>，<code>protect</code>，<code>private</code>）。</li>
+<li>一定不可使用关键字 <code>var</code> 声明一个属性。</li>
+<li>每条语句一定不可定义超过一个属性。</li>
+<li>不要使用下划线作为前缀，来区分属性是 <code>protected</code> 或 <code>private</code>。</li>
+<li>定义属性时先常量属性再变量属性，先 <code>public</code> 然后 <code>protected</code>，最后 <code>private</code>。</li>
+</ul>
+<p>以下是属性声明的一个范例：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">VendorgiPackage</span>;  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span> </span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> VSESION = <span class="string">'1.0'</span>;</span><br><span class="line">    <span class="keyword">public</span> $foo = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">protected</span> $sex;</span><br><span class="line">    <span class="keyword">private</span> $name; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="7-5-方法-methods"><a href="#7-5-方法-methods" class="headerlink" title="7.5 方法 methods"></a>7.5 方法 <code>methods</code></h3><ul>
+<li>方法名称<strong>必须</strong>符合 <code>camelCase()</code> 式的小写字母开头驼峰命名规范。</li>
+<li>所有方法都<strong>必须</strong>设置访问控制（如，<code>public</code>，<code>protect</code>，<code>private</code>）。</li>
+<li>不要使用下划线作为前缀，来区分方法是 <code>protected</code> 或 <code>private</code>。</li>
+<li>方法名称后一定不能有空格符，其开始花括号独占一行，结束花括号<strong>必须</strong>在方法主体后单独成一行。参数左括号后和右括号前一定不能有空格。</li>
+<li>一个标准的方法声明可参照以下范例，留意其括号、逗号、空格以及花括号的位置。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">VendorgiPackage</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span> </span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">fooBarBaz</span><span class="params">($storeName, $storeId, array $info = [])</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// method body     </span></span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="7-6-方法的参数-method-arguments"><a href="#7-6-方法的参数-method-arguments" class="headerlink" title="7.6 方法的参数 method arguments"></a>7.6 方法的参数 <code>method arguments</code></h3><ul>
+<li>方法参数名称<strong>必须</strong>符合 <code>camelCase</code> 式的小写字母开头驼峰命名规范</li>
+<li>参数列表中，每个参数后面<strong>必须</strong>要有一个空格，而前面一定不能有空格。</li>
+<li>有默认值的参数，必须放到参数列表的末尾。</li>
+<li>如果参数类型为对像<strong>必须</strong>指定参数类型为具体的类名，如下的 <code>$bazObj</code> 参数。</li>
+<li>如果参数类型为 <code>array</code> <strong>必须</strong>指定参数类型为 <code>array</code> 。如下 <code>$info</code>。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">VendorgiPackage</span>;  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span> </span></span><br><span class="line"><span class="class"></span>&#123;    </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">foo</span><span class="params">($storeName, $storeId, BazClass $bazObj, array $info = [])</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// method body     </span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>参数列表超过140个字符可以分列成多行，这样，包括第一个参数在内的每个参数都<strong>必须</strong>单独成行。</li>
+<li>拆分成多行的参数列表后，结束括号以及最后一个参数<strong>必须</strong>写在同一行，其开始花括号可以写在同一行，也可以独占一行；结束花括号<strong>必须</strong>在方法主体后单独成一行。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">VendorgiPackage</span>;  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span> </span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">aVeryLongMethodName</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        ClassTypeHint $arg1,</span></span></span><br><span class="line"><span class="function"><span class="params">        &amp;$arg2,</span></span></span><br><span class="line"><span class="function"><span class="params">        array $arg3 = [])</span> </span>&#123;</span><br><span class="line">        <span class="comment">// method body     </span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="7-7-abstract-、-final-、-以及-static"><a href="#7-7-abstract-、-final-、-以及-static" class="headerlink" title="7.7 abstract 、 final 、 以及 static"></a>7.7 <code>abstract</code> 、 <code>final</code> 、 以及 <code>static</code></h3><ul>
+<li>需要添加 <code>abstract</code> 或 <code>final</code> 声明时， <strong>必须</strong>写在访问修饰符前，而 <code>static</code> 则<strong>必须</strong>写在其后。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">VendorgiPackage</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassName</span> </span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">static</span> $foo;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">abstract</span> <span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">zim</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">bar</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// method body     </span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="7-8-方法及方法调用"><a href="#7-8-方法及方法调用" class="headerlink" title="7.8 方法及方法调用"></a>7.8 方法及方法调用</h3><ul>
+<li>方法及方法调用时，方法名与参数左括号之间一定不能有空格，参数右括号前也一定不能有空格。每个参数前一定不能有空格，但其后必须有一个空格。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">bar(); </span><br><span class="line">$foo-&gt;bar($arg1); </span><br><span class="line">Foo::bar($arg2, $arg3);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>参数列表超过140个字符可以分列成多行，此时包括第一个参数在内的每个参数都<strong>必须</strong>单独成行。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">$foo-&gt;bar(</span><br><span class="line">    $longArgument,</span><br><span class="line">    $longerArgument,</span><br><span class="line">    $muchLongerArgument);</span><br></pre></td></tr></table></figure>
+<h2 id="8-控制结构-control-structures"><a href="#8-控制结构-control-structures" class="headerlink" title="8. 控制结构 control structures"></a>8. 控制结构 <code>control structures</code></h2><p>控制结构的基本规范如下：</p>
+<ul>
+<li>控制结构关键词后<strong>必须</strong>有一个空格。</li>
+<li>左括号 <code>(</code> 后一定不能有空格。</li>
+<li>右括号 <code>)</code> 前也一定不能有空格。</li>
+<li>右括号 <code>)</code> 与开始花括号 <code>{</code> 间一定有一个空格。</li>
+<li>结构体主体一定要有一次缩进。</li>
+<li>结束花括号 <code>}</code> 一定在结构体主体后单独成行。</li>
+<li>每个结构体的主体都<strong>必须</strong>被包含在成对的花括号之中， 这能让结构体更加标准，以及减少加入新行时，引入出错的可能性。</li>
+</ul>
+<h3 id="8-1-if-、-elseif-和-else"><a href="#8-1-if-、-elseif-和-else" class="headerlink" title="8.1 if 、 elseif 和 else"></a>8.1 <code>if</code> 、 <code>elseif</code> 和 <code>else</code></h3><ul>
+<li>标准的 <code>if</code> 结构如下代码所示，留意 括号、空格以及花括号的位置， 注意 <code>else</code> 和 <code>elseif</code> 都与前面的结束花括号在同一行。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ($expr1) &#123;</span><br><span class="line">    <span class="comment">// if body </span></span><br><span class="line">&#125; <span class="keyword">elseif</span> ($expr2) &#123;</span><br><span class="line">    <span class="comment">// elseif body </span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// else body; </span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 单个if也必须带有花括号</span></span><br><span class="line"><span class="keyword">if</span> ($expr1) &#123;</span><br><span class="line">    <span class="comment">// if body</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>应该使用关键词 <code>elseif</code> 代替所有 <code>else if</code> ，以使得所有的控制关键字都像是单独的一个词。</p>
+<h3 id="8-2-switch-和-case"><a href="#8-2-switch-和-case" class="headerlink" title="8.2 switch 和 case"></a>8.2 <code>switch</code> 和 <code>case</code></h3><p>标准的 <code>switch</code> 结构如下代码所示，留意括号、空格以及花括号的位置。 <code>case</code> 语句必须相对 <code>switch</code> 进行一次缩进，而 <code>break</code> 语句以及 <code>case</code> 内的其它语句都 必须 相对 <code>case</code> 进行一次缩进。 如果存在非空的 <code>case</code> 直穿语句，主体里必须有类似 <code>// no break</code> 的注释。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">switch</span> ($expr) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'First case, with a break'</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'Second case, which falls through'</span>;</span><br><span class="line">        <span class="comment">// no break</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">4</span>:</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'Third case, return instead of break'</span>;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'Default case'</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="8-3-while-和-do-while"><a href="#8-3-while-和-do-while" class="headerlink" title="8.3 while 和 do while"></a>8.3 <code>while</code> 和 <code>do while</code></h3><p>一个规范的 <code>while</code> 语句应该如下所示，注意其 括号、空格以及花括号的位置。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> ($expr) &#123;</span><br><span class="line">    <span class="comment">// structure body </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>标准的 <code>do while</code> 语句如下所示，同样的，注意其 括号、空格以及花括号的位置。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">    <span class="comment">// structure body; </span></span><br><span class="line">&#125; <span class="keyword">while</span> ($expr);</span><br></pre></td></tr></table></figure>
+<h3 id="8-4-for"><a href="#8-4-for" class="headerlink" title="8.4 for"></a>8.4 <code>for</code></h3><p>标准的 <code>for</code> 语句如下所示，注意其 括号、空格以及花括号的位置。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; <span class="number">10</span>; $i++) &#123;</span><br><span class="line">    <span class="comment">// for body </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="8-5-foreach"><a href="#8-5-foreach" class="headerlink" title="8.5 foreach"></a>8.5 <code>foreach</code></h3><p>标准的 <code>foreach</code> 语句如下所示，注意其 括号、空格以及花括号的位置。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> ($iterable <span class="keyword">as</span> $key =&gt; $value) &#123;</span><br><span class="line">    <span class="comment">// foreach body </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="8-6-try-catch"><a href="#8-6-try-catch" class="headerlink" title="8.6 try, catch"></a>8.6 <code>try</code>, <code>catch</code></h3><p>标准的 <code>try catch</code> 语句如下所示，注意其 括号、空格以及花括号的位置。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">     <span class="comment">// try body </span></span><br><span class="line">&#125; <span class="keyword">catch</span> (FirstExceptionType $e) &#123;</span><br><span class="line">    <span class="comment">// catch body </span></span><br><span class="line">&#125; <span class="keyword">catch</span> (OtherExceptionType $e) &#123;</span><br><span class="line">    <span class="comment">// catch body </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="9-闭包"><a href="#9-闭包" class="headerlink" title="9 闭包"></a>9 闭包</h2><ul>
+<li>闭包声明时，关键词 <code>function</code> 后以及关键词 <code>use</code> 的前后都<strong>必须</strong>要有一个空格。</li>
+<li>开始花括号<strong>必须</strong>写在声明的下一行，结束花括号<strong>必须</strong>紧跟主体结束的下一行。</li>
+<li>参数列表和变量列表的左括号后以及右括号前，<strong>必须</strong>不能有空格。</li>
+<li>参数和变量列表中，逗号前<strong>必须</strong>不能有空格，而逗号后<strong>必须</strong>要有空格。</li>
+<li>闭包中有默认值的参数<strong>必须</strong>放到列表的后面。</li>
+<li>标准的闭包声明语句如下所示，注意其 括号、逗号、空格以及花括号的位置。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">$closureWithArgs = <span class="function"><span class="keyword">function</span> <span class="params">($arg1, $arg2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// body </span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">$closureWithArgsAndVars = <span class="function"><span class="keyword">function</span> <span class="params">($arg1, $arg2)</span> <span class="title">use</span> <span class="params">($var1, $var2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// body </span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>参数列表以及变量列表可以分成多行，这样，包括第一个在内的每个参数或变量都<strong>必须</strong>单独成行。</li>
+</ul>
+<p>以下几个例子，包含了参数和变量列表被分成多行的多情况。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">$longArgsNoVars = <span class="function"><span class="keyword">function</span> <span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    $longArgument,</span></span></span><br><span class="line"><span class="function"><span class="params">    $longerArgument,</span></span></span><br><span class="line"><span class="function"><span class="params">    $muchLongerArgument)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// body</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">$noArgsLongVars = <span class="function"><span class="keyword">function</span> <span class="params">()</span> <span class="title">use</span> <span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    $longVar1,</span></span></span><br><span class="line"><span class="function"><span class="params">    $longerVar2,</span></span></span><br><span class="line"><span class="function"><span class="params">    $muchLongerVar3)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// body</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">$longArgsLongVars = <span class="function"><span class="keyword">function</span> <span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    $longArgument,</span></span></span><br><span class="line"><span class="function"><span class="params">    $longerArgument,</span></span></span><br><span class="line"><span class="function"><span class="params">    $muchLongerArgument)</span> <span class="title">use</span> <span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    $longVar1,</span></span></span><br><span class="line"><span class="function"><span class="params">    $longerVar2,</span></span></span><br><span class="line"><span class="function"><span class="params">    $muchLongerVar3)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// body</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">$longArgsShortVars = <span class="function"><span class="keyword">function</span> <span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    $longArgument,</span></span></span><br><span class="line"><span class="function"><span class="params">    $longerArgument,</span></span></span><br><span class="line"><span class="function"><span class="params">    $muchLongerArgument)</span> <span class="title">use</span> <span class="params">($var1)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// body</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">$shortArgsLongVars = <span class="function"><span class="keyword">function</span> <span class="params">($arg)</span> <span class="title">use</span> <span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    $longVar1,</span></span></span><br><span class="line"><span class="function"><span class="params">    $longerVar2,</span></span></span><br><span class="line"><span class="function"><span class="params">    $muchLongerVar3)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// body</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>注意，闭包被直接用作函数或方法调用的参数时，以上规则仍然适用。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">$foo-&gt;bar(</span><br><span class="line">    $arg1,</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="params">($arg2)</span> <span class="title">use</span> <span class="params">($var1)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// body</span></span><br><span class="line">    &#125;, $arg3);</span><br></pre></td></tr></table></figure>
+<h2 id="10-注释"><a href="#10-注释" class="headerlink" title="10  注释"></a>10  注释</h2><h3 id="10-1-文件注释"><a href="#10-1-文件注释" class="headerlink" title="10.1 文件注释"></a>10.1 文件注释</h3><ul>
+<li>注释开始应该使用 <code>/*</code>， 不可以使用 <code>/**</code>；结束应该使用 <code>*/</code>； 不可以使用 <code>**/</code>。</li>
+<li>第二行php版本信息，版本信息后一空行。</li>
+<li>注解内容对齐，注解之间不可有空行。</li>
+<li>星号和注释内容中间必须是一个空格。</li>
+<li>保持注解顺序一致 <code>@copyright</code> 然后　<code>@link</code>　再　<code>@license</code>。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * PHP version 5.5</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@copyright</span> Copyright (c) 2005-2015 XXXX. (http://www.xxx.com)</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@link</span>       http://www.xxx.com</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@license</span>    xxx公司版权所有</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">VendorgiPackage</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">aVeryLongMethodName</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        ClassTypeHint $arg1,</span></span></span><br><span class="line"><span class="function"><span class="params">        &amp;$arg2,</span></span></span><br><span class="line"><span class="function"><span class="params">        array $arg3 = [])</span> </span>&#123;</span><br><span class="line">        <span class="comment">// method body</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="10-2-类注释"><a href="#10-2-类注释" class="headerlink" title="10.2 类注释"></a>10.2 类注释</h3><ul>
+<li>注释开始应该使用 <code>/**</code>, 不可以使用 <code>/*</code>;结束应该使用 <code>*/</code>， 不可以使用 <code>**/</code>。</li>
+<li>第二行开始描述，描述后一空行。</li>
+<li>注解内容对齐，注解之间不可有空行。</li>
+<li>星号和注释内容中间必须是一个空格。</li>
+<li>保持注解顺序一致 <code>@author</code> 然后 <code>@since</code> 再 <code>@version</code>。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">VendorgiPackage</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 我是类描述信息哦！</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>  Author</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span>   2015年1月12日</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">aVeryLongMethodName</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        ClassTypeHint $arg1,</span></span></span><br><span class="line"><span class="function"><span class="params">        &amp;$arg2,</span></span></span><br><span class="line"><span class="function"><span class="params">        array $arg3 = [])</span> </span>&#123;</span><br><span class="line">        <span class="comment">// method body</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="10-3-属性注释"><a href="#10-3-属性注释" class="headerlink" title="10.3 属性注释"></a>10.3 属性注释</h3><ul>
+<li>注释开始应该使用 <code>/**</code>， 不可以使用 <code>/*</code>，结束应该使用 <code>*/</code>， 不可以使用 <code>**/</code>。</li>
+<li>星号和注释内容中间必须是一个空格。</li>
+<li>使用 <code>var</code> 注解并注明类型。</li>
+<li>注解基本类型包括 <code>int</code>、<code>sting</code>、<code>array</code>、<code>boolea</code>、具体类名称。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cache</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 缓存的键值</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> string</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> $cacheKey = <span class="string">''</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 缓存的键值</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> string</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> $cacheTime = <span class="number">60</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 缓存的对象</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> \CacheServer</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> $cacheObj = <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="10-4-方法注释"><a href="#10-4-方法注释" class="headerlink" title="10.4 方法注释"></a>10.4 方法注释</h3><ul>
+<li>注释开始应该使用 <code>/**</code>， 不可以使用 <code>/*</code>；结束应该使用 <code>*/</code>， 不可以使用 <code>**/</code>。</li>
+<li>第二行开始方法描述，方法描述后一空行。</li>
+<li>注解内容对齐，注解之间不可有空行。</li>
+<li>星号和注释内容中间必须是一个空格。</li>
+<li>注解顺序为 <code>@param</code>，<code>@return</code>，<code>@author</code> 和 <code>@since</code>，参数的顺序必须与方法参数顺序一致。</li>
+<li>参数和返回值注解包括基本类型（<code>int/sting/array/boolean/unknown</code>）和对象，如果多个可能类型使用 <code>|</code> 分割。</li>
+<li>如果参数类型为对像必须指定参数类型为具体的类名，如下的 <code>$arg1</code> 参数。</li>
+<li>如果参数类型为 <code>array</code> 必须指定参数类型为 <code>array</code> 。如下 <code>$arg2</code>。</li>
+<li>需要作者和日期注解，日期为最后修改日期。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 我是方法描述信息</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> ClassName $arg1 参数1描述　我是具体的对象类型哦</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> array $arg2 参数2描述　我是数据类型哦</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> int $arg3 参数3描述  我是基本数据类型哦</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> boolean</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Author</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span>  2015年1月12日</span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">methodName</span><span class="params">(ClassName $arg1, array $arg2, $arg3)</span> </span></span><br><span class="line"><span class="function"></span>&#123;     </span><br><span class="line">    <span class="comment">// method body</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="10-5-其他注释"><a href="#10-5-其他注释" class="headerlink" title="10.5 其他注释"></a>10.5 其他注释</h3><ul>
+<li>代码注释尽量使用 <code>//</code></li>
+<li>注释内容开始前必须一个空格</li>
+<li>代码行尾注释 <code>//</code> 前面必须一个空格</li>
+<li>代码注释与下面的代码对齐</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">methodName</span><span class="params">(ClassName $arg1, array $arg2, $arg3)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 这里是注释哦 注释内容前是有一个空格的哦</span></span><br><span class="line">        <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; <span class="number">10</span>; $i++) &#123;</span><br><span class="line">            <span class="comment">// for body 注释和下面的代码是对齐的哦</span></span><br><span class="line">            $a++; <span class="comment">// 代码行尾注释‘//’前面必须一个空格</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>多行注释时使用 <code>/* *  ......*/</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">methodName</span><span class="params">(ClassName $arg1, array $arg2, $arg3)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         *  这是多行注释哦</span></span><br><span class="line"><span class="comment">         *　这是多行注释哦</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; <span class="number">10</span>; $i++) &#123;</span><br><span class="line">            <span class="comment">// for body</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/20210219/sealtalk用户相关接口.html" rel="next" title="用户相关接口">
+                <i class="fa fa-chevron-left"></i> 用户相关接口
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/20210219/php实现variable-precision SWAR算法.html" rel="prev" title="php实现variable-precision SWAR算法">
+                php实现variable-precision SWAR算法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="slpi1" />
+          <p class="site-author-name" itemprop="name">slpi1</p>
+           
+              <p class="site-description motion-element" itemprop="description">PHP,Laravel,thinkPHP,javascript,css</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP代码规范"><span class="nav-number">1.</span> <span class="nav-text">PHP代码规范</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-文件夹"><span class="nav-number">1.1.</span> <span class="nav-text">1. 文件夹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-文件"><span class="nav-number">1.2.</span> <span class="nav-text">2. 文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-行"><span class="nav-number">1.3.</span> <span class="nav-text">3. 行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-缩进"><span class="nav-number">1.4.</span> <span class="nav-text">4. 缩进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-关键字以及-true-false-null"><span class="nav-number">1.5.</span> <span class="nav-text">5. 关键字以及 true/false/null</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-namespace-以及-use-声明"><span class="nav-number">1.6.</span> <span class="nav-text">6. namespace 以及 use 声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-类-class，属性-properties-和方法-methods"><span class="nav-number">1.7.</span> <span class="nav-text">7. 类 class，属性 properties 和方法 methods</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-类-class"><span class="nav-number">1.7.1.</span> <span class="nav-text">7.1 类 class</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-extends-和-implements"><span class="nav-number">1.7.2.</span> <span class="nav-text">7.2 extends 和 implements</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-3-常量-const"><span class="nav-number">1.7.3.</span> <span class="nav-text">7.3 常量 const</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-4-属性-properties"><span class="nav-number">1.7.4.</span> <span class="nav-text">7.4  属性 properties</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-5-方法-methods"><span class="nav-number">1.7.5.</span> <span class="nav-text">7.5 方法 methods</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-6-方法的参数-method-arguments"><span class="nav-number">1.7.6.</span> <span class="nav-text">7.6 方法的参数 method arguments</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-7-abstract-、-final-、-以及-static"><span class="nav-number">1.7.7.</span> <span class="nav-text">7.7 abstract 、 final 、 以及 static</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-8-方法及方法调用"><span class="nav-number">1.7.8.</span> <span class="nav-text">7.8 方法及方法调用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-控制结构-control-structures"><span class="nav-number">1.8.</span> <span class="nav-text">8. 控制结构 control structures</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-if-、-elseif-和-else"><span class="nav-number">1.8.1.</span> <span class="nav-text">8.1 if 、 elseif 和 else</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-switch-和-case"><span class="nav-number">1.8.2.</span> <span class="nav-text">8.2 switch 和 case</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-while-和-do-while"><span class="nav-number">1.8.3.</span> <span class="nav-text">8.3 while 和 do while</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-4-for"><span class="nav-number">1.8.4.</span> <span class="nav-text">8.4 for</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-5-foreach"><span class="nav-number">1.8.5.</span> <span class="nav-text">8.5 foreach</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-6-try-catch"><span class="nav-number">1.8.6.</span> <span class="nav-text">8.6 try, catch</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-闭包"><span class="nav-number">1.9.</span> <span class="nav-text">9 闭包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-注释"><span class="nav-number">1.10.</span> <span class="nav-text">10  注释</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#10-1-文件注释"><span class="nav-number">1.10.1.</span> <span class="nav-text">10.1 文件注释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-2-类注释"><span class="nav-number">1.10.2.</span> <span class="nav-text">10.2 类注释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-3-属性注释"><span class="nav-number">1.10.3.</span> <span class="nav-text">10.3 属性注释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-4-方法注释"><span class="nav-number">1.10.4.</span> <span class="nav-text">10.4 方法注释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-5-其他注释"><span class="nav-number">1.10.5.</span> <span class="nav-text">10.5 其他注释</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">slpi1</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

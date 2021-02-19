@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="PHP坑爹函数系列Index 前言 strtotime trim getimagesize realpath pathinfo opendir  前言本系列中指出的问题，绝大部分都是因为对php文档内容不熟悉，或函数说明理解不到位导致的，所以有空多翻翻php文档。 strtotime 本函数预期接受一个包含美国英语日期格式的字符串并尝试将其解析为 Unix 时间戳（自 January 1 1970">
+<meta property="og:type" content="article">
+<meta property="og:title" content="easy note">
+<meta property="og:url" content="http://blog.slpi1.com/20210219/discuss/what_the_fu..function.html">
+<meta property="og:site_name" content="easy note">
+<meta property="og:description" content="PHP坑爹函数系列Index 前言 strtotime trim getimagesize realpath pathinfo opendir  前言本系列中指出的问题，绝大部分都是因为对php文档内容不熟悉，或函数说明理解不到位导致的，所以有空多翻翻php文档。 strtotime 本函数预期接受一个包含美国英语日期格式的字符串并尝试将其解析为 Unix 时间戳（自 January 1 1970">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-02-19T07:44:38.639Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="easy note">
+<meta name="twitter:description" content="PHP坑爹函数系列Index 前言 strtotime trim getimagesize realpath pathinfo opendir  前言本系列中指出的问题，绝大部分都是因为对php文档内容不熟悉，或函数说明理解不到位导致的，所以有空多翻翻php文档。 strtotime 本函数预期接受一个包含美国英语日期格式的字符串并尝试将其解析为 Unix 时间戳（自 January 1 1970">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.slpi1.com/20210219/discuss/what_the_fu..function.html"/>
+
+
+
+
+
+  <title> | easy note</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">easy note</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">easy note</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20210219/discuss/what_the_fu..function.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline"></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-19T15:44:38+08:00">
+                2021-02-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="PHP坑爹函数系列"><a href="#PHP坑爹函数系列" class="headerlink" title="PHP坑爹函数系列"></a>PHP坑爹函数系列</h1><h1 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h1><ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#strtotime">strtotime</a></li>
+<li><a href="#trim">trim</a></li>
+<li><a href="#getimagesize">getimagesize</a></li>
+<li><a href="#realpath">realpath</a></li>
+<li><a href="#pathinfo">pathinfo</a></li>
+<li><a href="#opendir">opendir</a></li>
+</ul>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本系列中指出的问题，绝大部分都是因为对php文档内容不熟悉，或函数说明理解不到位导致的，所以有空多翻翻<a href="https://www.php.net/manual/zh/index.php" target="_blank" rel="noopener">php文档</a>。</p>
+<h1 id="strtotime"><a href="#strtotime" class="headerlink" title="strtotime"></a>strtotime</h1><blockquote>
+<p>本函数预期接受一个包含美国英语日期格式的字符串并尝试将其解析为 Unix 时间戳（自 January 1 1970 00:00:00 GMT 起的秒数），其值相对于 now 参数给出的时间，如果没有提供此参数则用系统当前时间。</p>
+</blockquote>
+<p><strong>禁止给strtotime传入变量作为第一个参数。</strong> 因为你不知道这个变量代表的字符会是什么。千万要注意传入的参数，不可以是任意的字符串，否则可能会导致不确定的输出。之前网上流传的一段代码，通过strtotime来判断日期格式是否正确就是很好的错误示范：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$data=<span class="string">'2014-11-11'</span>;<span class="comment">//这里可以任意格式，因为strtotime函数很强大</span></span><br><span class="line">$is_date=strtotime($data)?strtotime($data):<span class="keyword">false</span>;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">if</span>($is_date===<span class="keyword">false</span>)&#123;</span><br><span class="line">    <span class="keyword">exit</span>(<span class="string">'日期格式非法'</span>);</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> date(<span class="string">'Y-m-d'</span>,$is_date);<span class="comment">//只要提交的是合法的日期，这里都统一成2014-11-11格式</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="trim"><a href="#trim" class="headerlink" title="trim"></a>trim</h1><p><code>trim/ltrim/rtrim</code> 这三个函数，原本是用于去除字符串首尾的空白。但这个函数也支持传入第二个参数来指定要过滤的范围。之前的项目中有出现这样的用法：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$path = <span class="string">'/Resource/video/video.mp4'</span>;</span><br><span class="line"></span><br><span class="line">$path = ltrim($path, <span class="string">'/Resource'</span>);</span><br></pre></td></tr></table></figure>
+<p>本意是想去除字符串的<code>/Resource</code>前缀，但是没想到结果会是 <code>video/video.mp4</code>，更没想到会误伤类似 <code>/Resource/start/video.mp4</code> 等字符串。因为如果第二个参数是一个字符列表的话，会逐个匹配去除，凡是指定的列表中出现的字符，如果在首位，都会被去除，而不是将<code>/Resource</code>作为一个整体去除。</p>
+<h1 id="getimagesize"><a href="#getimagesize" class="headerlink" title="getimagesize"></a>getimagesize</h1><p>用于检查指定图片文件的大小，除了可以检查本地文件系统中的文件，还能用于检查网络地址中的文件，这种情况下，就需要考虑因网络延迟导致的性能的问题。之前的项目中遇到过，在某个接口中检查一组网络图片的大小，导致接口返回异常缓慢。</p>
+<h1 id="realpath"><a href="#realpath" class="headerlink" title="realpath"></a>realpath</h1><p>realpath用于将目录转化成绝对路径。</p>
+<blockquote>
+<p>realpath() 扩展所有的符号连接并且处理输入的 path 中的 ‘/./‘, ‘/../‘ 以及多余的 ‘/‘ 并返回规范化后的绝对路径名。返回的路径中没有符号连接，’/./‘ 或 ‘/../‘ 成分。</p>
+</blockquote>
+<p>注意如果指定目录或文件不存在，函数会返回false</p>
+<h1 id="pathinfo"><a href="#pathinfo" class="headerlink" title="pathinfo"></a>pathinfo</h1><p>pathinfo有可能出现返回值不正确的情况。这时请注意检查文件名是否包含中文，这可能导致basename为空，解决办法是:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setlocale(LC_ALL, <span class="string">'en_US.UTF-8'</span>);</span><br></pre></td></tr></table></figure></p>
+<h1 id="opendir"><a href="#opendir" class="headerlink" title="opendir"></a>opendir</h1><p>在windows下读取映射目录时，有权限的问题。解决方案:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$location = <span class="string">"\\\\ip\web"</span>;</span><br><span class="line">$user     = <span class="string">"root"</span>;</span><br><span class="line">$pass     = <span class="string">"123456youzu"</span>;</span><br><span class="line">$letter   = <span class="string">"Z"</span>;</span><br><span class="line">system(<span class="string">"net use "</span> . $letter . <span class="string">": \""</span> . $location . <span class="string">"\" "</span> . $pass . <span class="string">" /user:"</span> . $user . <span class="string">" /persistent:no&gt;nul 2&gt;&amp;1"</span>);</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/20210219/environment/docker/data/mysql/readme.html" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/20210219/laravel/eloquent-article.html" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="slpi1" />
+          <p class="site-author-name" itemprop="name">slpi1</p>
+           
+              <p class="site-description motion-element" itemprop="description">PHP,Laravel,thinkPHP,javascript,css</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP坑爹函数系列"><span class="nav-number">1.</span> <span class="nav-text">PHP坑爹函数系列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Index"><span class="nav-number">2.</span> <span class="nav-text">Index</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">3.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#strtotime"><span class="nav-number">4.</span> <span class="nav-text">strtotime</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#trim"><span class="nav-number">5.</span> <span class="nav-text">trim</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#getimagesize"><span class="nav-number">6.</span> <span class="nav-text">getimagesize</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#realpath"><span class="nav-number">7.</span> <span class="nav-text">realpath</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pathinfo"><span class="nav-number">8.</span> <span class="nav-text">pathinfo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#opendir"><span class="nav-number">9.</span> <span class="nav-text">opendir</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">slpi1</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
