@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="在web应用中，与数据库的交互可以说是最常用且最重要的操作。作为当前最流行的php框架之一，laravel对数据库操作的封装，可以说是非常优秀了。在官方文档当中，数据库的使用说明文档占据了两个大章节，分别是【数据库】与【Eloquent ORM】，为什么针对同一功能，官方要出两个文档呢？是因为它重要？复杂？对此我无从猜测，不过可以从源码中窥知一二。 一、 Eloquent的生命周期在laravel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="laravel ORM源码分析">
+<meta property="og:url" content="http://blog.slpi1.com/20190802/laravel/eloquent-article.html">
+<meta property="og:site_name" content="easy note">
+<meta property="og:description" content="在web应用中，与数据库的交互可以说是最常用且最重要的操作。作为当前最流行的php框架之一，laravel对数据库操作的封装，可以说是非常优秀了。在官方文档当中，数据库的使用说明文档占据了两个大章节，分别是【数据库】与【Eloquent ORM】，为什么针对同一功能，官方要出两个文档呢？是因为它重要？复杂？对此我无从猜测，不过可以从源码中窥知一二。 一、 Eloquent的生命周期在laravel">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.slpi1.com/images/Laravel-Model.png">
+<meta property="og:updated_time" content="2021-02-19T08:08:15.488Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="laravel ORM源码分析">
+<meta name="twitter:description" content="在web应用中，与数据库的交互可以说是最常用且最重要的操作。作为当前最流行的php框架之一，laravel对数据库操作的封装，可以说是非常优秀了。在官方文档当中，数据库的使用说明文档占据了两个大章节，分别是【数据库】与【Eloquent ORM】，为什么针对同一功能，官方要出两个文档呢？是因为它重要？复杂？对此我无从猜测，不过可以从源码中窥知一二。 一、 Eloquent的生命周期在laravel">
+<meta name="twitter:image" content="http://blog.slpi1.com/images/Laravel-Model.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.slpi1.com/20190802/laravel/eloquent-article.html"/>
+
+
+
+
+
+  <title>laravel ORM源码分析 | easy note</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">easy note</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">easy note</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20190802/laravel/eloquent-article.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">laravel ORM源码分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-02T12:50:00+08:00">
+                2019-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在web应用中，与数据库的交互可以说是最常用且最重要的操作。作为当前最流行的php框架之一，laravel对数据库操作的封装，可以说是非常优秀了。在官方文档当中，数据库的使用说明文档占据了两个大章节，分别是【数据库】与【Eloquent ORM】，为什么针对同一功能，官方要出两个文档呢？是因为它重要？复杂？对此我无从猜测，不过可以从源码中窥知一二。</p>
+<h1 id="一、-Eloquent的生命周期"><a href="#一、-Eloquent的生命周期" class="headerlink" title="一、 Eloquent的生命周期"></a>一、 Eloquent的生命周期</h1><p>在laravel应用的生命周期里，数据库部分出现在第二阶段，容器启动阶段。更精确的说，是容器启动阶段的服务提供者注册/启动阶段。数据库服务的入口，是数据库的服务提供者，即<code>Illuminate\Database\DatabaseServiceProvider</code>。</p>
+<p>DatabaseServiceProvider的注册方法如代码所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public function register()</span><br><span class="line">&#123;</span><br><span class="line">    Model::clearBootedModels();</span><br><span class="line"></span><br><span class="line">    $this-&gt;registerConnectionServices();</span><br><span class="line"></span><br><span class="line">    $this-&gt;registerEloquentFactory();</span><br><span class="line"></span><br><span class="line">    $this-&gt;registerQueueableEntityResolver();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中，<code>registerConnectionServices()</code>方法注册了三个别名服务，分别是<code>db.factor/db/db.connection</code>。db用于管理数据库连接；db.factor用于创建数据库连接；而db.connection绑定了一个可用的连接对象。值得一提的是，db.connection是通过bind方法绑定闭包到容器当中，所以在注册阶段并未实例化，而是在真正 需要进行数据连接时实例化连接对象，然后替换原来的闭包。</p>
+<p><code>registerEloquentFactory()</code>方法注册了数据填充功能中的数据工厂，用于生成模拟数据。<code>registerQueueableEntityResolver()</code>方法注册了队列的数据库实现。</p>
+<p>接着，在DatabaseServiceProvider的启动方法中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public function boot()</span><br><span class="line">&#123;</span><br><span class="line">    Model::setConnectionResolver($this-&gt;app[&apos;db&apos;]);</span><br><span class="line"></span><br><span class="line">    Model::setEventDispatcher($this-&gt;app[&apos;events&apos;]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分别调用了Model的两个静态方法<code>setConnectionResolver()/setEventDispatcher()</code>，加上注册方法中的<code>clearBootedModels()</code>，完成了Eloquent ORM的Model类的全局设置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Model::clearBootedModels();</span><br><span class="line">Model::setConnectionResolver($this-&gt;app[&apos;db&apos;]);</span><br><span class="line">Model::setEventDispatcher($this-&gt;app[&apos;events&apos;]);</span><br></pre></td></tr></table></figure>
+<h1 id="二、-楔子-Eloquent-ORM的使用"><a href="#二、-楔子-Eloquent-ORM的使用" class="headerlink" title="二、 楔子 - Eloquent ORM的使用"></a>二、 楔子 - Eloquent ORM的使用</h1><p>我们先回顾一下官方文档中，关于ORM的用法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 1. 静态调用</span><br><span class="line">User::all();</span><br><span class="line">User::find(1);</span><br><span class="line">User::where();</span><br><span class="line"></span><br><span class="line">// 2. 对象调用</span><br><span class="line">$flight = App\Flight::find(1);</span><br><span class="line">$flight-&gt;name = &apos;New Flight Name&apos;;</span><br><span class="line">$flight-&gt;save();</span><br><span class="line">$filght-&gt;delete();</span><br></pre></td></tr></table></figure>
+<p>Eloquent ORM既可以通过静态调用执行方法，也可以先获取到模型对象，然后执行方法。但他们实质是一样的。在Model中定义的静态方法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">protected static function boot()</span><br><span class="line">protected static function bootTraits()</span><br><span class="line">public static function clearBootedModels()</span><br><span class="line">public static function on($connection = null)</span><br><span class="line">public static function onWriteConnection()</span><br><span class="line">public static function all($columns = [&apos;*&apos;])</span><br><span class="line">public static function with($relations)</span><br><span class="line">public static function destroy($ids)</span><br><span class="line">public static function query()</span><br><span class="line">public static function resolveConnection($connection = null)</span><br><span class="line">public static function getConnectionResolver()</span><br><span class="line">public static function setConnectionResolver(Resolver $resolver)</span><br><span class="line">public static function unsetConnectionResolver()</span><br><span class="line">public static function __callStatic($method, $parameters)</span><br></pre></td></tr></table></figure>
+<p>可以看到，形如<code>User::find(1)/User::where()</code>的静态调用方法，本身不在类中有定义，而是转发到__callStatic魔术方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static function __callStatic($method, $parameters)</span><br><span class="line">&#123;</span><br><span class="line">    return (new static)-&gt;$method(...$parameters);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也就是先实例化自身，然后在对象上执行调用。所以，在使用Eloquent的过程中，模型基本上都会有实例化的过程，然后再对象的基础上进行方法的调用。那么我们看看Model的构造方法中，都做了哪些动作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public function __construct(array $attributes = [])</span><br><span class="line">&#123;</span><br><span class="line">    $this-&gt;bootIfNotBooted();</span><br><span class="line"></span><br><span class="line">    $this-&gt;syncOriginal();</span><br><span class="line"></span><br><span class="line">    $this-&gt;fill($attributes);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>bootIfNotBooted()</code>是模型的启动方法，标记模型被启动，并且触发模型启动的前置与后置事件。在启动过程中，会查询模型使用的trait中是否包含<code>boot{Name}</code>形式的方法，有的话就执行，这个步骤可以为模型扩展一些功能，比如文档中的软删除：</p>
+<blockquote>
+<p>要在模型上启动软删除，则必须在模型上使用 Illuminate\Database\Eloquent\SoftDeletes trait 并添加 deleted_at 字段到你的 $dates 属性上。</p>
+</blockquote>
+<p>就是在启动<code>SoftDeletes</code>traits的时候，给模型添加了一组查询作用域，来新增<code>Restore()/WithTrashed()/WithoutTrashed()/OnlyTrashed()</code>四个方法，同时改写delete方法的逻辑，从而定义了软删除的相关行为。</p>
+<p><code>syncOriginal()</code>方法的作用在于保存原始对象数据，当更新对象的属性时，可以进行脏检查。</p>
+<p><code>fill($attributes)</code>就是初始化模型的属性。</p>
+<p>在实际运用中可能会注意到，我们很少会用new的方法、通过构造函数来实例化模型对象，但在后续我们要说道的查询方法中，会有一个<code>装载对象</code>的过程，有这样的用法。为什么我们很少会new一个Model，其实原因两个方面：首先从逻辑上说，是先有一条数据库记录，然后才有基于该记录的数据模型，所以在new之前必然要有查询数据库的动作；其次是因为直接new出来的Model，它的状态有可能并不正确，需要手动进行设置，可以查阅Model的<code>newInstance()/newFromBuilder()</code>两个方法来理解“状态不正确”的含义。</p>
+<h1 id="三、-深入-Eloquent-ORM的查询过程"><a href="#三、-深入-Eloquent-ORM的查询过程" class="headerlink" title="三、 深入 - Eloquent ORM的查询过程"></a>三、 深入 - Eloquent ORM的查询过程</h1><p>我们以<code>User::all()</code>的查询过程来作为本小节的开始，Model的all()方法代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public static function all($columns = [&apos;*&apos;])</span><br><span class="line">&#123;</span><br><span class="line">    return (new static)-&gt;newQuery()-&gt;get(</span><br><span class="line">        is_array($columns) ? $columns : func_get_args()</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个查询过程，可以分成三个步骤来执行:</p>
+<ul>
+<li><code>new static</code>: 模型实例化，得到模型对象。</li>
+<li><code>$model-&gt;newQuery()</code>: 根据模型对象，获取查询构造器$query。</li>
+<li><code>$query-&gt;get($columns)</code>: 根据查询构造器，取得模型数据集合。</li>
+</ul>
+<p>Eloquent ORM的查询过程，就可以归纳成这三个过程:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[模型对象]=&gt;[查询构造器]=&gt;[数据集合]</span><br></pre></td></tr></table></figure>
+<p>数据集合也是模型对象的集合，即使是做<code>first()</code>查询，也是先获取到只有一个对象的数据集合，然后取出第一个对象。但数据集合中的模型对象，与第一步中的模型对象不是同一个对象，作用也不一样。第一步实例化得到的模型对象，是一个<code>空对象</code>，其作用是为了获取第二步的查询构造器，第三步中的模型对象，是经过数据库查询，获取到数据后，对数据进行封装后的对象，是一个有数据的对象，从查询数据到模型对象的过程，我称之为<code>装载对象</code>，装载对象，正是使用的上文提及的<code>newFromBuilder()</code>方法。</p>
+<p><code>newQuery()</code>的调用过程很长，概括如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">newQuery()</span><br><span class="line">--&gt;newQueryWithoutScopes()  // 添加查询作用域</span><br><span class="line">--&gt;newModelQuery() // 添加对关系模型的加载</span><br><span class="line">--&gt;newEloquentBuilder(newBaseQueryBuilder()) // 获取查询构造器</span><br><span class="line">--&gt; return new Builder(new QueryBuilder()) // 查询构造器的再封装</span><br></pre></td></tr></table></figure>
+<p>它引出了Eloquent ORM中的一个重要概念，叫做$query，查询构造器，虽然官方文档中，有大篇幅关于Model的使用说明，但其实很多方法都会转发给$query去执行。从最后的一次调用可以看出，有两个查询构造器，分别是：</p>
+<ul>
+<li>数据库查询构造器：Illuminate\Database\Query\Builder</li>
+<li>Eloquent ORM查询构造器：Illuminate\Database\Eloquent\Builder</li>
+</ul>
+<blockquote>
+<p>备注：</p>
+<ol>
+<li>由于两个类名一致，我们约定当提到Builder时，我们指的是Illuminate\Database\Query\Builder;当提到EloquentBuilder时，我们指的是Illuminate\Database\Eloquent\Builder。</li>
+<li>在代码中，Builder或EloquentBuilder的实例一般用变量$query来表示</li>
+</ol>
+</blockquote>
+<p>这两个查询构造器的存在，解释了本文开头提到的问题：为什么关于数据库的文档说明，会分为两个章节？因为一章是对<code>Illuminate\Database\Query\Builder</code>的说明，另一章是对<code>Illuminate\Database\Eloquent\Builder</code>的说明(直观的理解为对Model的说明)。</p>
+<p>数据库查询构造器Builder定义了一组通用的，人性化的操作接口，来描述将要执行的SQL语句（见官方文档【数据库 - 查询构造器】一章。）在这一层提供的接口更接近SQL原生的使用方法，比如：<code>where/join/select/insert/delete/update</code>等，都很容易在数据库的体系内找到相应的操作或指令；EloquentBuilder是对Builder的再封装，EloquentBuilder在Builder的基础之上，定义了一些更复杂，但更便捷的描述接口（见官方文档【Eloquent ORM - 快速入门】一章。），比如：<code>first/firstOrCreate/paginator</code>等。</p>
+<h2 id="3-1-EloquentBuilder"><a href="#3-1-EloquentBuilder" class="headerlink" title="3.1 EloquentBuilder"></a>3.1 EloquentBuilder</h2><p>EloquentBuilder是Eloquent ORM查询构造器，是比较高级的能与数据库交互的对象。一般在Model层面的与数据库交互的方法，都会转发到Model的EloquentBuilder对象上去执行，通过下列方法可以获取到一个Eloquent对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$query = User::query();</span><br><span class="line">$query = User::select();</span><br></pre></td></tr></table></figure>
+<p>每个EloquentBuilder对象都会有一个Builder成员对象。</p>
+<h2 id="3-2-Builder"><a href="#3-2-Builder" class="headerlink" title="3.2 Builder"></a>3.2 Builder</h2><p>Builder是数据库查询构造器，在Builder层面已经可以与数据库进行交互了，如何获取到一个Builder对象呢？下面展示两种方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 获取Builder对象</span><br><span class="line">$query = DB::table(&apos;user&apos;);</span><br><span class="line">$query = User::query()-&gt;getQuery();</span><br><span class="line"></span><br><span class="line">// Builder对象与数据库交互</span><br><span class="line">$query-&gt;select(&apos;name&apos;)-&gt;where(&apos;status&apos;, 1)-&gt;orderBy(&apos;id&apos;)-&gt;get();</span><br></pre></td></tr></table></figure>
+<p>Builder有三个成员对象:</p>
+<ul>
+<li>ConnectionInterface</li>
+<li>Grammar</li>
+<li>Processor</li>
+</ul>
+<p><strong>ConnectionInterface</strong></p>
+<p>ConnectionInterface对象是执行SQL语句、对读写分离连接进行管理的对象，也就是数据库连接对象。是最初级的、能与数据交互的对象：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DB::select(&apos;select * from users where active = ?&apos;, [1]);</span><br><span class="line">DB::insert(&apos;insert into users (id, name) values (?, ?)&apos;, [1, &apos;Dayle&apos;]);</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>虽然DB门面指向的是<code>Illuminate\Database\DatabaseManager</code>的实例，但是对数据库交互上的操作，都会转发到connection上去执行。</p>
+</blockquote>
+<p>回头看本文中 <a href="#Eloquent的生命周期">Eloquent的生命周期</a> 关于DatabaseServiceProvider的启动方法的描述，DatabaseServiceProvider的启动方法中执行的代码 <code>Model::setConnectionResolver($this-&gt;app[&#39;db&#39;]);</code> ，这个步骤就是为了后续获取Builder的第一个成员对象<code>ConnectionInterface</code>，数据库连接对象。前文提到过，数据库的连接并不是在服务提供者启动时进行的，是在做出查询动作时才会连接数据库：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">// Illuminate\Database\Eloquent\Model::class</span><br><span class="line">protected function newBaseQueryBuilder()</span><br><span class="line">&#123;</span><br><span class="line">    // 获取数据库连接</span><br><span class="line">    $connection = $this-&gt;getConnection();</span><br><span class="line"></span><br><span class="line">    // Builder实例化时传入的三个对象，ConnectionInterface、Grammar、Processor</span><br><span class="line">    return new QueryBuilder(</span><br><span class="line">        $connection, $connection-&gt;getQueryGrammar(), $connection-&gt;getPostProcessor()</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public function getConnection()</span><br><span class="line">&#123;</span><br><span class="line">    return static::resolveConnection($this-&gt;getConnectionName());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static function resolveConnection($connection = null)</span><br><span class="line">&#123;</span><br><span class="line">    // 使用通过Model::setConnectionResolver($this-&gt;app[&apos;db&apos;])注入的resolver进行数据库的连接</span><br><span class="line">    return static::$resolver-&gt;connection($connection);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Grammar</strong></p>
+<p>Grammar对象是SQL语法解析对象，我们在Builder对象中调用的方法，会以Builder属性的形式将调用参数管理起来，然后在调用SQL执行方法时，先通过Grammar对象对这些数据进行解析，解析出将要执行的SQL语句，然后交给ConnectionInterface执行，获取到数据。</p>
+<p><strong>Processor</strong></p>
+<p>Processor对象的作用比较简单，将查询结果数据返回给Builder，包括查询的行数据，插入后的自增ID值。</p>
+<h2 id="3-3-SELECT语句的描述"><a href="#3-3-SELECT语句的描述" class="headerlink" title="3.3 SELECT语句的描述"></a>3.3 SELECT语句的描述</h2><p>在Builder对象中，关于数据库查询语句的描述，被分成12个部分:</p>
+<ul>
+<li>aggregate: 聚合查询列描述，该部分与columns互斥</li>
+<li>columns: 查询列描述</li>
+<li>from: 查询表描述</li>
+<li>joins: 聚合表描述</li>
+<li>wheres: 查询条件描述</li>
+<li>groups: 分组描述</li>
+<li>havings: 分组条件描述</li>
+<li>orders: 排序条件描述</li>
+<li>limit: 限制条数描述</li>
+<li>offset: 便宜了描述</li>
+<li>unions: 组合查询描述</li>
+<li>lock: 锁描述</li>
+</ul>
+<p>其中，关于wherers的描述提供了相当丰富的操作接口，在实现这部分的接口时，在查询构造器Builder中将where操作分成了以下类型： <code>Basic/Column/In/NotIn/NotInSub/InSub/NotNull/Null/between/Nested/Sub/NotExists/Exists/Raw</code>。wheres条件的组装在 <code>Illuminate\Database\Query\Grammars\Grammar::compileWheres()</code> 方法中完成，每种类型都由两个部分组成：<code>逻辑符号 + 条件表达式</code>，逻辑符号包含<code>and/or</code>。多个where条件直接连接后，通过Grammar::removeLeadingBoolean去掉头部的逻辑符号，组装成最终的条件部分。如果有 <code>Nested</code> 的wheres描述，对Nested的部分单独执行<code>compileWheres</code>后，用括号包装起来形成一个复合的 <code>条件表达式</code>。</p>
+<p>wheresTable:</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>boolean</th>
+<th>condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Basic</td>
+<td><del>and</del> (Grammar::removeLeadingBoolean)</td>
+<td>id = 1</td>
+</tr>
+<tr>
+<td>Column</td>
+<td>and</td>
+<td>table1.column1 = table2.column2</td>
+</tr>
+<tr>
+<td>Nested</td>
+<td>and</td>
+<td>(wheresTable)</td>
+</tr>
+</tbody>
+</table>
+<p>最终组合成的Sql语句就是 <code>id = 1 and table1.column1 = table2.column2 and (...)</code>。</p>
+<p>where用法的一些注意事项：</p>
+<ul>
+<li>where的第一个参数是数组或闭包时，条件被描述为Nested类型，也就是参数分组。</li>
+<li>where的第二个参数，比较符号是等于号时，可以省略。</li>
+<li>where的第三个参数是闭包时，表示一个子查询</li>
+</ul>
+<h2 id="3-4-join语句的描述"><a href="#3-4-join语句的描述" class="headerlink" title="3.4 join语句的描述"></a>3.4 join语句的描述</h2><p>每次对Builder执行join操作时，都会新建一个JoinClause对象，在文档中关于高级 Join 语法的说明中，有非常类似于where参数分组的用法，就是由闭包导入查询条件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// join高级用法</span><br><span class="line">DB::table(&apos;users&apos;)</span><br><span class="line">    -&gt;join(&apos;contacts&apos;, function ($join) &#123;</span><br><span class="line">        $join-&gt;on(&apos;users.id&apos;, &apos;=&apos;, &apos;contacts.user_id&apos;)-&gt;orOn(...);</span><br><span class="line">    &#125;)</span><br><span class="line">    -&gt;get();</span><br><span class="line"></span><br><span class="line">// where参数分组</span><br><span class="line">DB::table(&apos;users&apos;)</span><br><span class="line">    -&gt;where(&apos;name&apos;, &apos;=&apos;, &apos;John&apos;)</span><br><span class="line">    -&gt;orWhere(function ($query) &#123;</span><br><span class="line">        $query-&gt;where(&apos;votes&apos;, &apos;&gt;&apos;, 100)</span><br><span class="line">              -&gt;where(&apos;title&apos;, &apos;&lt;&gt;&apos;, &apos;Admin&apos;);</span><br><span class="line">    &#125;)</span><br><span class="line">    -&gt;get();</span><br></pre></td></tr></table></figure>
+<p>实际上JoinClause继承自Builder，所以上述代码中的闭包参数$join，后面也是可以链式调用where系列函数的。与Builder对象的区别在于扩展了一个on方法，on方法类似于whereColumn，条件的两边是对表字段的描述。</p>
+<p>Builder调用join方法时传入的条件，会以<code>Nested</code>的类型添加到JoinClause对象当中，然后将JoinClause对象加入到Builder的joins部分。join结构的组装与wheres类似，会单独对JoinClause对象进行一次compileWheres，然后组装到整体SQL语句中：<code>&quot;{$join-&gt;type} join {$table} {$this-&gt;compileWheres($join)}&quot;</code>。</p>
+<h1 id="四、-高级-读写分离的实现"><a href="#四、-高级-读写分离的实现" class="headerlink" title="四、 高级 - 读写分离的实现"></a>四、 高级 - 读写分离的实现</h1><p>读写分离的问题在connection的范畴。当模型实例化Builder的时候，会先去获取一个connection，如果有配置读写分离，先获取一个writeConnection，然后获取一个readConnection，并绑定到writeConnection上去。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Illuminate\Database\Connectors\ConnectionFactory</span><br><span class="line">public function make(array $config, $name = null)</span><br><span class="line">&#123;</span><br><span class="line">    $config = $this-&gt;parseConfig($config, $name);</span><br><span class="line"></span><br><span class="line">    if (isset($config[&apos;read&apos;])) &#123;</span><br><span class="line">        return $this-&gt;createReadWriteConnection($config);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return $this-&gt;createSingleConnection($config);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protected function createReadWriteConnection(array $config)</span><br><span class="line">&#123;</span><br><span class="line">    $connection = $this-&gt;createSingleConnection($this-&gt;getWriteConfig($config));</span><br><span class="line"></span><br><span class="line">    return $connection-&gt;setReadPdo($this-&gt;createReadPdo($config));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意此时的writeConnection与readConnection并不会真正的连接数据库，而是一个闭包，保存了获取连接的方法，当第一次需要连接数据时，执行闭包获取到连接，并将该连接替换掉闭包，后续执行SQL语句时直接使用该连接即可。在实际使用过程中，可能读写连接的使用并不能简单的按照定义而来，有时需要主动设置要使用的连接。</p>
+<h2 id="4-1-读连接的使用判定"><a href="#4-1-读连接的使用判定" class="headerlink" title="4.1 读连接的使用判定"></a>4.1 读连接的使用判定</h2><p>在配置读写分离后，默认查询会使用readConnection，以下情况会使用writeConnection：</p>
+<ul>
+<li>对select操作指定为write：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// connection 级别指定</span><br><span class="line">Illuminate\Database\Connection::select($query, $bindings = [], $useReadPdo = true);</span><br><span class="line"></span><br><span class="line">// Builder 级别指定</span><br><span class="line">DB::table(&apos;user&apos;)-&gt;useWritePdo()-&gt;get();</span><br><span class="line"></span><br><span class="line">// Model 级别指定</span><br><span class="line">Model::onWriteConnection()-&gt;get()</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查询时启用锁</li>
+<li>启用事务</li>
+<li>启用sticky配置且前文有写操作</li>
+<li>在队列执行时，读取SerializesModels的模型数据时</li>
+</ul>
+<p>关于其判定逻辑的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// Illuminate\Database\Connection::getReadPdo():</span><br><span class="line">public function getReadPdo()</span><br><span class="line">&#123;</span><br><span class="line">    if ($this-&gt;transactions &gt; 0) &#123;</span><br><span class="line">        return $this-&gt;getPdo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if ($this-&gt;getConfig(&apos;sticky&apos;) &amp;&amp; $this-&gt;recordsModified) &#123;</span><br><span class="line">        return $this-&gt;getPdo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if ($this-&gt;readPdo instanceof Closure) &#123;</span><br><span class="line">        return $this-&gt;readPdo = call_user_func($this-&gt;readPdo);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return $this-&gt;readPdo ?: $this-&gt;getPdo();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="五、-进阶-关系模型"><a href="#五、-进阶-关系模型" class="headerlink" title="五、 进阶 - 关系模型"></a>五、 进阶 - 关系模型</h1><p>关于关系模型的定义，其操作接口全部定义在Illuminate\Database\Eloquent\Concerns\HasRelationships::trait中。每个关系定义方法，都是对一个关系对象的定义。</p>
+<h2 id="5-1-关系对象"><a href="#5-1-关系对象" class="headerlink" title="5.1 关系对象"></a>5.1 关系对象</h2><p>关系对象全部继承自 <code>Illuminate\Database\Eloquent\Relations\Relation::abstract</code> 虚拟类。关系对象由一个查询构造器组成，用来保存由关系定义所决定的关系查询条件，和加载关系时的额外条件。比如一对一（多）的关系定义中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public function addConstraints()</span><br><span class="line">&#123;</span><br><span class="line">    if (static::$constraints) &#123;</span><br><span class="line">        $this-&gt;query-&gt;where($this-&gt;foreignKey, &apos;=&apos;, $this-&gt;getParentKey());</span><br><span class="line"></span><br><span class="line">        $this-&gt;query-&gt;whereNotNull($this-&gt;foreignKey);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每当需要获取关系数据时，都会实例化关系对象，实例化的过程中调用addConstraints方法。与此同时，在加载关系数据时，可以传入额外的查询条件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$users = App\User::with([&apos;posts&apos; =&gt; function ($query) &#123;</span><br><span class="line">    $query-&gt;where(&apos;title&apos;, &apos;like&apos;, &apos;%first%&apos;);</span><br><span class="line">&#125;])-&gt;get();</span><br></pre></td></tr></table></figure>
+<p>这些条件最终都会保存在关系对象的查询构造器中，在获取关系数据时，起到筛选作用。</p>
+<p>在使用关系模型时，有两种模式：一种是即时加载模式，一种是预加载模式。</p>
+<h2 id="5-2-即时加载"><a href="#5-2-即时加载" class="headerlink" title="5.2 即时加载"></a>5.2 即时加载</h2><p>即时加载关系对象，是基于当前模型对象来获取关系数据。当以<code>$user-&gt;post</code>的形式获取Model关系属性时，通过__get方法触发对关系模型的获取。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public function getAttribute($key)</span><br><span class="line">&#123;</span><br><span class="line">    if (! $key) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 访问对象属性或存取器</span><br><span class="line">    if (array_key_exists($key, $this-&gt;attributes) ||</span><br><span class="line">        $this-&gt;hasGetMutator($key)) &#123;</span><br><span class="line">        return $this-&gt;getAttributeValue($key);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 判断同名方法是否存在</span><br><span class="line">    if (method_exists(self::class, $key)) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 获取关系对象</span><br><span class="line">    return $this-&gt;getRelationValue($key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>获取关系模型并实例化，得到关系模型对象，执行关系模型对象的addConstraints方法，将模型对象，转化为关系模型对象的查询条件：</p>
+<ul>
+<li>已知模型对象</li>
+<li>关系定义绑定对象的模型名称</li>
+<li>关系定义外键，已知模型对象的主键，及主键的值<br>通过上述三个条件，可以生成关系查询，并获取到结果，这个过程是即时加载关系数据的。</li>
+</ul>
+<p>即时加载在只有单个模型对象时比较适用，如果我们拥有的是一个模型集合，并且需要用到关系数据时，通过即时加载的模式，会有N+1的问题。针对每个模型去获取关系数据，都要进行一次数据库查询，这种情况下，就需要使用预加载的模式。</p>
+<h2 id="5-3-预加载"><a href="#5-3-预加载" class="headerlink" title="5.3 预加载"></a>5.3 预加载</h2><p>对于预加载关系的情况，Model::with(‘relation’)标记关系为预加载，在Model::get()获取数据时，检查到对关系的预加载标记，会对关系进行实例化，这个实例化的过程，会通过Relation::noConstraints屏蔽对关系数据的直接加载，在后续过程中，由通过Model::get()获取的模型列表数据，得到模型的ID列表，关系利用这个ID列表，统一查询关系模型数据。查询完成之后匹配到对应的模型中去，其过程如下：</p>
+<ul>
+<li>EloquentBuilder::get():<ul>
+<li>Builder::get() 获取到模型数据列表</li>
+<li>EloquentBuilder::eagerLoadRelations(): 获取所有模型关系<ul>
+<li>foreach relations EloquentBuilder::eagerLoadRelation() 针对每个关系获取关系数据</li>
+</ul>
+</li>
+<li>Collection: 转化为集合</li>
+</ul>
+</li>
+</ul>
+<p>其中：eagerLoadRelation()的代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Illuminate\Database\Eloquent\Builder::eagerLoadRelation()</span><br><span class="line">protected function eagerLoadRelation(array $models, $name, Closure $constraints)</span><br><span class="line">&#123;</span><br><span class="line">    // 获取关系对象，这里获取关系对象时会通过Relation::noConstraints屏蔽即时加载</span><br><span class="line">    $relation = $this-&gt;getRelation($name);</span><br><span class="line"></span><br><span class="line">    // 在这里将模型id列表注入到关系对象中，作为关系模型查询的条件</span><br><span class="line">    $relation-&gt;addEagerConstraints($models);</span><br><span class="line"></span><br><span class="line">    // 这里可以注入Model::with([&apos;relation&apos; =&gt; function($query)&#123;&#125;])时定义的关系额外条件</span><br><span class="line">    $constraints($relation);</span><br><span class="line"></span><br><span class="line">    // 匹配每个关系对象数据到模型对象中去</span><br><span class="line">    return $relation-&gt;match(</span><br><span class="line">        $relation-&gt;initRelation($models, $name),</span><br><span class="line">        $relation-&gt;getEager(), $name</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="六、-总结"><a href="#六、-总结" class="headerlink" title="六、 总结"></a>六、 总结</h1><p>理解laravel的Eloquent ORM模型，可以先建立下列对象的概念：</p>
+<ul>
+<li>Model，模型对象，编码中比较容易接触与使用的对象，是框架开放给用户的最直观的操作接口;</li>
+<li>EloquentBuilder，Eloquent查询构造器;</li>
+<li>Builder，数据库查询构造器，是EloquentBuilder的组成部分;</li>
+<li>connection，数据库连接对象，与数据库进行交互，执行查询构造器描述的SQL语句;</li>
+<li>Grammar，语法解析器，将查询构造器的描述解释为规范的SQL语句;</li>
+<li>Processor，转发查询进程的结果数据;</li>
+<li>Relation，关系对象，描述两个模型之间的关系，关键是关系之间的查询条件;</li>
+<li>JoinClause，连接查询对象，多表join查询的实现;</li>
+</ul>
+<p>上述对象的关系如图所示 <img src="/images/Laravel-Model.png" alt="relateion"></p>
+<p>当然，Eloquent ORM还有其他跟多的特性，比如数据迁移、数据填充、查询作用域、存取器等，可以留给读者自行去了解与熟悉。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/20190801/laravel/queue.html" rel="next" title="laravel 队列部分源码阅读">
+                <i class="fa fa-chevron-left"></i> laravel 队列部分源码阅读
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/20191016/readme.html" rel="prev" title="信息管理部PHP小组知识分享">
+                信息管理部PHP小组知识分享 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="slpi1" />
+          <p class="site-author-name" itemprop="name">slpi1</p>
+           
+              <p class="site-description motion-element" itemprop="description">PHP,Laravel,thinkPHP,javascript,css</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、-Eloquent的生命周期"><span class="nav-number">1.</span> <span class="nav-text">一、 Eloquent的生命周期</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、-楔子-Eloquent-ORM的使用"><span class="nav-number">2.</span> <span class="nav-text">二、 楔子 - Eloquent ORM的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、-深入-Eloquent-ORM的查询过程"><span class="nav-number">3.</span> <span class="nav-text">三、 深入 - Eloquent ORM的查询过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-EloquentBuilder"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 EloquentBuilder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Builder"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 Builder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-SELECT语句的描述"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 SELECT语句的描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-join语句的描述"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 join语句的描述</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、-高级-读写分离的实现"><span class="nav-number">4.</span> <span class="nav-text">四、 高级 - 读写分离的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-读连接的使用判定"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 读连接的使用判定</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#五、-进阶-关系模型"><span class="nav-number">5.</span> <span class="nav-text">五、 进阶 - 关系模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-关系对象"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 关系对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-即时加载"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 即时加载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-预加载"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 预加载</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#六、-总结"><span class="nav-number">6.</span> <span class="nav-text">六、 总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">slpi1</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

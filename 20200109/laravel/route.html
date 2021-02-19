@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="概述 路由模块是如何进入系统生命周期的？ 路由模块包含哪些功能，分别由哪些子模块负责？  需要说明的是，路由基本是针对web应用而言的，所以本文中提及的应用，是指由laravel构建的web应用，而不包括Console应用。 路由模块的生命周期在由laravel构建的应用当中，功能模块可以统称为服务，所以路由模块也可以称为路由服务。由laravel文档可知，应用中的服务都是由服务提供者来提供的，路">
+<meta property="og:type" content="article">
+<meta property="og:title" content="laravel 路由模块源码分析">
+<meta property="og:url" content="http://blog.slpi1.com/20200109/laravel/route.html">
+<meta property="og:site_name" content="easy note">
+<meta property="og:description" content="概述 路由模块是如何进入系统生命周期的？ 路由模块包含哪些功能，分别由哪些子模块负责？  需要说明的是，路由基本是针对web应用而言的，所以本文中提及的应用，是指由laravel构建的web应用，而不包括Console应用。 路由模块的生命周期在由laravel构建的应用当中，功能模块可以统称为服务，所以路由模块也可以称为路由服务。由laravel文档可知，应用中的服务都是由服务提供者来提供的，路">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-02-19T08:08:15.490Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="laravel 路由模块源码分析">
+<meta name="twitter:description" content="概述 路由模块是如何进入系统生命周期的？ 路由模块包含哪些功能，分别由哪些子模块负责？  需要说明的是，路由基本是针对web应用而言的，所以本文中提及的应用，是指由laravel构建的web应用，而不包括Console应用。 路由模块的生命周期在由laravel构建的应用当中，功能模块可以统称为服务，所以路由模块也可以称为路由服务。由laravel文档可知，应用中的服务都是由服务提供者来提供的，路">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.slpi1.com/20200109/laravel/route.html"/>
+
+
+
+
+
+  <title>laravel 路由模块源码分析 | easy note</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">easy note</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">easy note</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20200109/laravel/route.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">laravel 路由模块源码分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-09T16:10:00+08:00">
+                2020-01-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ul>
+<li>路由模块是如何进入系统生命周期的？</li>
+<li>路由模块包含哪些功能，分别由哪些子模块负责？</li>
+</ul>
+<p>需要说明的是，路由基本是针对web应用而言的，所以本文中提及的应用，是指由laravel构建的web应用，而不包括Console应用。</p>
+<h1 id="路由模块的生命周期"><a href="#路由模块的生命周期" class="headerlink" title="路由模块的生命周期"></a>路由模块的生命周期</h1><p>在由laravel构建的应用当中，功能模块可以统称为服务，所以路由模块也可以称为路由服务。由laravel文档可知，应用中的服务都是由服务提供者来提供的，路由模块也是，所以找到了路由服务提供者，就等于找到了路由模块生命周期的入口。</p>
+<p>如果熟悉laravel应用的生命周期的话，就应该会很清楚：在容器的初始化阶段，会注册三个基础服务提供者，分别是<code>EventServiceProvider/LogServiceProvider/RoutingServiceProvider</code>，其中，<code>RoutingServiceProvider</code>即是路由服务提供者；接着，在容器启动阶段，分别完成<code>配置加载/注册配置中的服务提供者/启动服务提供者</code>三项事务，而在注册配置中的服务提供者时，又会注册一个叫做<code>RouteServiceProvider</code>的路由服务提供者；然后，在启动服务提供者阶段，完成路由启动。之后进入应用执行阶段，期间路由服务由开发者自行决定如何使用。</p>
+<p>所以，路由模块的生命周期可以简单归纳为三个阶段：</p>
+<ul>
+<li>路由服务注册阶段，由RoutingServiceProvider类接管，主要负责路由模块各个功能组件的注册。</li>
+<li>路由启动阶段，加载开发者定义的路由，由RouteServiceProvider类接管。</li>
+<li>路由应用阶段，不是本文所述重点，可以参考官方手册。</li>
+</ul>
+<h1 id="路由模块的组成"><a href="#路由模块的组成" class="headerlink" title="路由模块的组成"></a>路由模块的组成</h1><p>路由模块在应用中的命令空间名称是 <code>Illuminate\Routing</code>。在路由服务的注册阶段，服务提供者注册了7个对象到容器当中：</p>
+<ul>
+<li>router: 路由核心</li>
+<li>url：url生成器</li>
+<li>redirect：url跳转服务</li>
+<li>ServerRequestInterface：略</li>
+<li>ResponseInterface：略</li>
+<li>ResponseFactoryContract：略</li>
+<li>ControllerDispatcherContract：控制器解析器<br>这些就是路由模块中的重要组件啦，当然，各个组件还会进行细分，接下来我们会分别对各个组件做出说明。</li>
+</ul>
+<h2 id="路由核心"><a href="#路由核心" class="headerlink" title="路由核心"></a>路由核心</h2><ul>
+<li>类名: Illuminate\Routing\Router::class</li>
+<li>功能：路由定义/路由匹配</li>
+<li>子组件：Route/RouteCollection/RouteRegistrar/ResourceRegistrar</li>
+</ul>
+<p>在具体介绍路由核心的功能之前，我们先了解一下核心子组件，对他们有一个大致的了解。</p>
+<h3 id="Route"><a href="#Route" class="headerlink" title="Route"></a>Route</h3><ul>
+<li>类名：Illuminate\Routing\Route::class</li>
+<li>功能：路由实例/控制器参数解析/控制器中间件解析</li>
+</ul>
+<p>Route就是我们将要定义的一个一个的路由，我们通过命令<code>php artisan route:list</code>列出来的，就是它们了，与Router只有一字之差，但功能大相径庭。在laravel文档 <code>基础功能 - 路由</code> 篇中，主要讲的就是Route，由于文档对它有大篇幅的解释，所以，他不是本文的主角。</p>
+<h3 id="RouteCollection"><a href="#RouteCollection" class="headerlink" title="RouteCollection"></a>RouteCollection</h3><ul>
+<li>类名：Illuminate\Routing\RouteCollection::class</li>
+<li>功能：路由集合/路由表/路由匹配</li>
+</ul>
+<p>RouteCollection是一个很直观的名字了，应用中无论在何处定义的路由，最后都会被添加到路由表中，因为RouteCollection的存在，所以<code>route:list</code>命令可以很方便的列出应用中定义的路由，也正是因为它的存在，在收到请求是，可以方便的识别出是请求的哪个路由。</p>
+<h3 id="RouteRegistrar"><a href="#RouteRegistrar" class="headerlink" title="RouteRegistrar"></a>RouteRegistrar</h3><ul>
+<li>类名：Illuminate\Routing\RouteRegistrar::class</li>
+<li>功能：路由定义代理</li>
+</ul>
+<p>简单来讲，当我们在<code>routes/web.php</code>文件中定义路由的时候，有可能是Router在定义路由，也有可能是RouteRegistrar在定义路由。</p>
+<h3 id="ResourceRegistrar"><a href="#ResourceRegistrar" class="headerlink" title="ResourceRegistrar"></a>ResourceRegistrar</h3><ul>
+<li>类名：Illuminate\Routing\ResourceRegistrar::class</li>
+<li>功能：路由定义代理（资源路由）</li>
+</ul>
+<p>与RouteRegistrar的定位相同，只不过是专门处理资源路由定义时的场景。</p>
+<h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><h4 id="路由定义"><a href="#路由定义" class="headerlink" title="路由定义"></a>路由定义</h4><p>在laravel文档 <code>基础功能 - 路由</code> 篇中详细说明了如何在应用中定义路由，那么它背后是如何实现的呢？通过上文”路由模块的生命周期”的介绍，我们知道，路由的定义是在路由启动阶段，由RouteServiceProvider类负责。</p>
+<p>RouteServiceProvider服务提供者启动时，会检查路由表是否被缓存，是的话会从缓存中直接返回路由表；否则会执行map方法，分别从<code>routes/web.php</code>和<code>routes/api.php</code>路由定义文件中，导入开发者定义的路由。它执行过程如下：</p>
+<p>注：Route门面最终会指向Router对象，为了避免引起混淆，路由定义过程中都以Router做说明。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Router::middleware(<span class="string">'web'</span>)</span><br><span class="line">     -&gt;namespace(<span class="keyword">$this</span>-&gt;namespace)</span><br><span class="line">     -&gt;group(base_path(<span class="string">'routes/web.php'</span>));</span><br></pre></td></tr></table></figure>
+<p>而<code>routes/web.php</code>中的内容可能会出现以下片段:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Router::group([<span class="string">'middleware'</span> =&gt; [<span class="string">'auth'</span>]], <span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>很容易发现<code>Router</code>两次调用<code>group</code>时，方法的参数个数不一致，其实，Router并没有<br><code>middleware/as/domain/name/namespace/prefix</code> 这些方法，当调用这些方法时，会转发给RouteRegistrar路由定义代理对象去执行，在调用上述方法时，会把对应的参数收集起来，称为路由属性定义方法。而RouteRegistrar也由一个group方法，所以才说的通。</p>
+<p>通过Router直接定义的路由，我称之为原生路由定义，而通过RouteRegistrar定义的路由，我称之为代理路由定义。在原生路由定义之下，又可以分为简单路由定义与复杂路由定义。简单路由定义指一次执行定义一个路由，复杂路由定义指一次执行可以定义多个路由，包括Router的<code>group/resource/apiResource</code>等方法。当RouteRegistrar定义路由时，又会转发给Router来进行定义，并收集路由属性定义链上的属性，所以，路由最终都是Router“直接”定义出来的，而RouteRegistrar和ResourceRegistrar都是路由定义中出现的语法糖。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>原生定义</th>
+<th>代理定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>简单定义</td>
+<td>Router::get($uri,$action)<br>Router::post($uri,$action)…</td>
+<td>暂无该场景</td>
+</tr>
+<tr>
+<td>复杂定义</td>
+<td>Router::group($attribute,$callback/$routeFile)</td>
+<td>RouteRegistrar::group($routeFile)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="路由匹配"><a href="#路由匹配" class="headerlink" title="路由匹配"></a>路由匹配</h4><p>在容器启动完毕，请求通过全局中间件过滤后，会开始对请求的路由进行匹配关键方法是Illuminate\Routing\Router::findRoute</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">findRoute</span><span class="params">($request)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// $this-&gt;routes 即是路由表，RouteCollection对象，$route既是命中的路由</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;current = $route = <span class="keyword">$this</span>-&gt;routes-&gt;match($request);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">$this</span>-&gt;container-&gt;instance(Route::class, $route);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> $route;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Router调用findRoute方法，将请求request转发给RouteCollection的match方法执行，match方法接着会遍历路由对象，由路由对象与request进行匹配，匹配通过则命中路由，否则会抛出路由不存在的异常。匹配会从<code>uri/method/host/sheme</code>四个方面进行，全部通过为命中。</p>
+<h4 id="控制器解析"><a href="#控制器解析" class="headerlink" title="控制器解析"></a>控制器解析</h4><p>控制器解析分为两个过程，控制器中间件解析和控制器参数解析，这两个过程都是在Route路由对象中执行，由Route转发给ControllerDispatcherContract的实例经行解析。</p>
+<h5 id="控制器中间件解析"><a href="#控制器中间件解析" class="headerlink" title="控制器中间件解析"></a>控制器中间件解析</h5><p>在路由匹配之前，request已经通过全局中间件，接下来request将要通过路由中间件，通过文档我们知道，路由中间件可以在定义路由时添加（group属性或middleware方法），也可以在控制器中通过middleware方法定义。为了实现这一功能，所以需要在request通过路由中间件之前，实例化控制器，并从中取出定义的中间件。这也导致了在控制器的构造方法中，无法获取路由中间件中获得的状态。</p>
+<h5 id="控制器参数解析"><a href="#控制器参数解析" class="headerlink" title="控制器参数解析"></a>控制器参数解析</h5><p>控制器参数解析是注入的关键。在容器与注入的概念当中，依赖对象先注入到容器之中（或者是依赖对象的实例化方法），后续执行对象，可以根据执行方法参数的类型，从容器中解析出所需对象，然后将这些对象注入到执行方法中，完成依赖的注入。控制器参数解析，就是通过反射解析出执行方法的参数类型，后续过程交给容器解决即可。回到路由模块的生命周期上来，在request通过路由中间件之后，路由解析出控制器的参数，然后通过callAction方法引导控制器方法的执行，执行参数已经通过参数解析得到。这里的callAction方法，解决了上面控制器中间件解析中提到的问题：控制器的构造函数使用受到限制，可以通过callAction方法代替构造函数来执行一些通用操作。</p>
+<h2 id="URL生成器"><a href="#URL生成器" class="headerlink" title="URL生成器"></a>URL生成器</h2><ul>
+<li>类名：Illuminate\Routing\UrlGenerator::class</li>
+<li>功能：生成url/判断字符串是否是url</li>
+</ul>
+<p>URL生成器可以生成的url大致分为两种，一种是普通url，一种是路由url。</p>
+<h3 id="普通URL"><a href="#普通URL" class="headerlink" title="普通URL"></a>普通URL</h3><p>普通URL的生成有以下几个方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 当前请求的完整URL</span><br><span class="line">URL::full();</span><br><span class="line"></span><br><span class="line">// 不含查询字符串的url</span><br><span class="line">URL::current();</span><br><span class="line"></span><br><span class="line">// referer</span><br><span class="line">URL::previous();</span><br><span class="line"></span><br><span class="line">URL::to(&apos;foo/bar&apos;, $parameters, $secure);</span><br><span class="line">URL::secure(&apos;foo/bar&apos;, $parameters);</span><br><span class="line">URL::asset(&apos;css/foo.css&apos;, $secure);</span><br><span class="line">URL::secureAsset(&apos;css/foo.css&apos;);</span><br></pre></td></tr></table></figure>
+<h3 id="路由URL"><a href="#路由URL" class="headerlink" title="路由URL"></a>路由URL</h3><p>普通URL的生成有以下几个方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 根据控制器及方法生成url</span><br><span class="line">URL::action(&apos;NewsController@item&apos;, [&apos;id&apos;=&gt;123]);</span><br><span class="line">URL::action(&apos;Auth\AuthController@logout&apos;);</span><br><span class="line">URL::action(&apos;FooController@method&apos;, $parameters, $absolute);</span><br><span class="line"></span><br><span class="line">// 根据路由名称生成url</span><br><span class="line">URL::route(&apos;foo&apos;, $parameters, $absolute);</span><br></pre></td></tr></table></figure>
+<h3 id="判断字符串是否是url"><a href="#判断字符串是否是url" class="headerlink" title="判断字符串是否是url"></a>判断字符串是否是url</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">URL::isValidUrl(&apos;http://example.com&apos;);</span><br></pre></td></tr></table></figure>
+<h2 id="路由跳转"><a href="#路由跳转" class="headerlink" title="路由跳转"></a>路由跳转</h2><ul>
+<li>类名：Illuminate\Routing\Redirector::class</li>
+<li>功能：url跳转</li>
+</ul>
+<h3 id="一般跳转"><a href="#一般跳转" class="headerlink" title="一般跳转"></a>一般跳转</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">return Redirect::to(&apos;foo/bar&apos;);</span><br><span class="line">return Redirect::to(&apos;foo/bar&apos;)-&gt;with(&apos;key&apos;, &apos;value&apos;);</span><br><span class="line">return Redirect::to(&apos;foo/bar&apos;)-&gt;withInput(Input::get());</span><br><span class="line">return Redirect::to(&apos;foo/bar&apos;)-&gt;withInput(Input::except(&apos;password&apos;));</span><br><span class="line">return Redirect::to(&apos;foo/bar&apos;)-&gt;withErrors($validator);</span><br></pre></td></tr></table></figure>
+<h3 id="相对跳转"><a href="#相对跳转" class="headerlink" title="相对跳转"></a>相对跳转</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 后退</span><br><span class="line">return Redirect::back();</span><br><span class="line"></span><br><span class="line">// 刷新</span><br><span class="line">return Redirect::refresh();</span><br></pre></td></tr></table></figure>
+<h3 id="路由跳转-1"><a href="#路由跳转-1" class="headerlink" title="路由跳转"></a>路由跳转</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 重定向到命名路由（根据命名路由算出 URL）</span><br><span class="line">return Redirect::route(&apos;foobar&apos;);</span><br><span class="line">return Redirect::route(&apos;foobar&apos;, array(&apos;value&apos;));</span><br><span class="line">return Redirect::route(&apos;foobar&apos;, array(&apos;key&apos; =&gt; &apos;value&apos;));</span><br><span class="line"></span><br><span class="line">// 重定向到控制器动作（根据控制器动作算出 URL）</span><br><span class="line">return Redirect::action(&apos;FooController@index&apos;);</span><br><span class="line">return Redirect::action(&apos;FooController@baz&apos;, array(&apos;value&apos;));</span><br><span class="line">return Redirect::action(&apos;FooController@baz&apos;, array(&apos;key&apos; =&gt; &apos;value&apos;));</span><br></pre></td></tr></table></figure>
+<h3 id="授权记忆"><a href="#授权记忆" class="headerlink" title="授权记忆"></a>授权记忆</h3><p>在授权服务中，完成授权后跳回到来源地址的功能依赖这两个方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">// 记住当前url并跳转到指定$path</span><br><span class="line">return Redirect::guest($path);</span><br><span class="line"></span><br><span class="line">// 跳转到guest中记住的地址，否则跳转到$path</span><br><span class="line">return Redirect::intended($path);</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/20200103/laravel/pipeline.html" rel="next" title="Laravel Pipeline源码分析">
+                <i class="fa fa-chevron-left"></i> Laravel Pipeline源码分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/20210219/php实现variable-precision SWAR算法.html" rel="prev" title="php实现variable-precision SWAR算法">
+                php实现variable-precision SWAR算法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="slpi1" />
+          <p class="site-author-name" itemprop="name">slpi1</p>
+           
+              <p class="site-description motion-element" itemprop="description">PHP,Laravel,thinkPHP,javascript,css</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#路由模块的生命周期"><span class="nav-number">2.</span> <span class="nav-text">路由模块的生命周期</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#路由模块的组成"><span class="nav-number">3.</span> <span class="nav-text">路由模块的组成</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#路由核心"><span class="nav-number">3.1.</span> <span class="nav-text">路由核心</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Route"><span class="nav-number">3.1.1.</span> <span class="nav-text">Route</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RouteCollection"><span class="nav-number">3.1.2.</span> <span class="nav-text">RouteCollection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RouteRegistrar"><span class="nav-number">3.1.3.</span> <span class="nav-text">RouteRegistrar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResourceRegistrar"><span class="nav-number">3.1.4.</span> <span class="nav-text">ResourceRegistrar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#功能"><span class="nav-number">3.1.5.</span> <span class="nav-text">功能</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#路由定义"><span class="nav-number">3.1.5.1.</span> <span class="nav-text">路由定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路由匹配"><span class="nav-number">3.1.5.2.</span> <span class="nav-text">路由匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#控制器解析"><span class="nav-number">3.1.5.3.</span> <span class="nav-text">控制器解析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#控制器中间件解析"><span class="nav-number">3.1.5.3.1.</span> <span class="nav-text">控制器中间件解析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制器参数解析"><span class="nav-number">3.1.5.3.2.</span> <span class="nav-text">控制器参数解析</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#URL生成器"><span class="nav-number">3.2.</span> <span class="nav-text">URL生成器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#普通URL"><span class="nav-number">3.2.1.</span> <span class="nav-text">普通URL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由URL"><span class="nav-number">3.2.2.</span> <span class="nav-text">路由URL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#判断字符串是否是url"><span class="nav-number">3.2.3.</span> <span class="nav-text">判断字符串是否是url</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由跳转"><span class="nav-number">3.3.</span> <span class="nav-text">路由跳转</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一般跳转"><span class="nav-number">3.3.1.</span> <span class="nav-text">一般跳转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相对跳转"><span class="nav-number">3.3.2.</span> <span class="nav-text">相对跳转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由跳转-1"><span class="nav-number">3.3.3.</span> <span class="nav-text">路由跳转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#授权记忆"><span class="nav-number">3.3.4.</span> <span class="nav-text">授权记忆</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">slpi1</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

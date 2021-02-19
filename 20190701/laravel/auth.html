@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Index Auth模块 AuthManager Guard SessionGuard与TokenGuard   UserProvider   Auth与框架的关系 AuthServiceProvider 路由解析 路由中间件    Auth 模块用于处理用户认证。在源码中，关于 Auth 模块，有两处命名空间：  Illuminate\Auth: Auth 模块核心代码。这部分的代码都是关于 A">
+<meta property="og:type" content="article">
+<meta property="og:title" content="laravel Auth源码分析">
+<meta property="og:url" content="http://blog.slpi1.com/20190701/laravel/auth.html">
+<meta property="og:site_name" content="easy note">
+<meta property="og:description" content="Index Auth模块 AuthManager Guard SessionGuard与TokenGuard   UserProvider   Auth与框架的关系 AuthServiceProvider 路由解析 路由中间件    Auth 模块用于处理用户认证。在源码中，关于 Auth 模块，有两处命名空间：  Illuminate\Auth: Auth 模块核心代码。这部分的代码都是关于 A">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-02-19T08:08:15.488Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="laravel Auth源码分析">
+<meta name="twitter:description" content="Index Auth模块 AuthManager Guard SessionGuard与TokenGuard   UserProvider   Auth与框架的关系 AuthServiceProvider 路由解析 路由中间件    Auth 模块用于处理用户认证。在源码中，关于 Auth 模块，有两处命名空间：  Illuminate\Auth: Auth 模块核心代码。这部分的代码都是关于 A">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.slpi1.com/20190701/laravel/auth.html"/>
+
+
+
+
+
+  <title>laravel Auth源码分析 | easy note</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">easy note</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">easy note</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20190701/laravel/auth.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">laravel Auth源码分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-01T09:30:00+08:00">
+                2019-07-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h2><ul>
+<li><a href="#Auth模块">Auth模块</a><ul>
+<li><a href="#AuthManager">AuthManager</a></li>
+<li><a href="#Guard">Guard</a><ul>
+<li><a href="#SessionGuard与TokenGuard">SessionGuard与TokenGuard</a></li>
+</ul>
+</li>
+<li><a href="#UserProvider">UserProvider</a></li>
+</ul>
+</li>
+<li><a href="#Auth与框架的关系">Auth与框架的关系</a><ul>
+<li><a href="#AuthServiceProvider">AuthServiceProvider</a></li>
+<li><a href="#路由解析">路由解析</a></li>
+<li><a href="#路由中间件">路由中间件</a></li>
+</ul>
+</li>
+</ul>
+<p><code>Auth</code> 模块用于处理用户认证。在源码中，关于 <code>Auth</code> 模块，有两处命名空间：</p>
+<ul>
+<li><code>Illuminate\Auth</code>: <code>Auth</code> 模块核心代码。这部分的代码都是关于 <code>Auth</code> 模块的实现原理及逻辑。</li>
+<li><code>Illuminate\Foundation\Auth</code>: <code>Auth</code> 模块应用功能。这部分是 <code>Auth</code> 模块在应用层的一些功能的实现。</li>
+</ul>
+<h2 id="Auth模块"><a href="#Auth模块" class="headerlink" title="Auth模块"></a>Auth模块</h2><p>三大组成部分</p>
+<ul>
+<li><code>AuthManager</code>: 认证管理器</li>
+<li><code>Guard</code>: 认证器 <code>or</code> 看守器</li>
+<li><code>UserProvider</code>: 用户提供者</li>
+</ul>
+<h3 id="AuthManager"><a href="#AuthManager" class="headerlink" title="AuthManager"></a>AuthManager</h3><p><code>AuthManager</code> 是用户认证模块功能的入口，是 <code>Auth</code> 类指代的实例。 <code>AuthManager</code> 的职责在于管理及扩展 <code>Guard</code> 与 <code>UserProvider</code>，这是他的“本职工作”，如果在使用过程中，我们不涉及对认证功能的扩展，一般不会用到这部分；<code>AuthManager</code> 的另一个职责，在于充当模块功能的入口，转发应用中对于 <code>Auth</code> 类的调用到 <code>Guard</code>，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Auth::user();</span><br><span class="line">Auth::check();</span><br><span class="line">Auth::login($user);</span><br><span class="line"></span><br><span class="line">// 等同于</span><br><span class="line">Auth::guard(&apos;web&apos;)-&gt;user();</span><br><span class="line">Auth::guard(&apos;web&apos;)-&gt;check();</span><br><span class="line">Auth::guard(&apos;web&apos;)-&gt;login($user);</span><br></pre></td></tr></table></figure>
+<h3 id="Guard"><a href="#Guard" class="headerlink" title="Guard"></a>Guard</h3><p><code>Guard</code> 用于实现认证功能，在 <code>AuthManager</code> 实例化 <code>Guard</code> 时，会绑定一个 <code>UserProvider</code> 给 <code>Guard</code> ，用于后续提供用户实例。框架实现了 <code>SessionGuard</code> 及 <code>TokenGuard</code> ，分别用于使用 <code>session</code>，<code>token</code> 做用户认证的场景。<code>Guard</code> 的认证逻辑可以概括为：<code>Guard</code> 从上下文中获取登陆凭证，将登陆凭证传递给 <code>UserProvider</code>，查询出登陆用户的实例返回给 <code>Guard</code>。</p>
+<h4 id="SessionGuard与TokenGuard"><a href="#SessionGuard与TokenGuard" class="headerlink" title="SessionGuard与TokenGuard"></a>SessionGuard与TokenGuard</h4><p><code>Session</code> 是非常常用的认证手段，框架实现的 <code>SessionGuard</code> 除了拥有认证功能外，还赋予了登陆与退出的功能。这里简单描述一下认证，登陆与退出的概念：</p>
+<ul>
+<li>登陆：客户端提交认证资料，经服务端验证成功后，生成登陆凭证，保存到相应位置，完成登陆。</li>
+<li>认证：服务端检查登陆凭证是否存在及有效，有则完成认证，请求放行。</li>
+<li>退出：服务端销毁登陆凭证，完成退出。</li>
+</ul>
+<p>只有认证才是 <code>Guard</code> 的职责，其他两个并不是 <code>Guard</code> 的职责。基于不同的认证实现，登陆与退出功能可能会交给其他模块完成。比如基于 <code>JWT</code> 的 <code>Token</code> 认证方式，其登陆凭证是保存在客户端的，服务端不保存，所以服务端无法主动销毁登陆凭证，也就没有退出功能。然而基于 <code>Session</code> 的认证方式，登陆凭证是保存在服务端的，所以基于 <code>Session</code> 认证的方式，<strong>可以</strong>提供退出功能。</p>
+<p><code>SessionGuard</code> 实现的登陆功能，也就是文档中所指的“手动认证用户”部分。<code>SessionGuard</code> 提供 <code>attempt</code> 接口，用于用户登陆，同时提供了 <code>logout</code> 接口，实现了退出功能。<code>TokenGuard</code> 并没有这两个功能。</p>
+<h3 id="UserProvider"><a href="#UserProvider" class="headerlink" title="UserProvider"></a>UserProvider</h3><p>用户提供者接收由Guard传递的用户标识，查询出用户实例并返回。框架实现了 <code>EloquentUserProvider</code> 与 <code>DatabaseUserProvider</code> ，分别需要在 <code>Auth</code> 配置中指定用户模型与用户表。大多数情况都是使用 <code>EloquentUserProvider</code>。</p>
+<h2 id="Auth与框架的关系"><a href="#Auth与框架的关系" class="headerlink" title="Auth与框架的关系"></a>Auth与框架的关系</h2><p>要完整的了解 <code>Auth</code> 模块的认证过程，需要结合框架的其他模块及细节来解读。</p>
+<h3 id="AuthServiceProvider"><a href="#AuthServiceProvider" class="headerlink" title="AuthServiceProvider"></a>AuthServiceProvider</h3><p>和其他模块一样，<code>Auth</code> 模块也是由服务提供者注册，在 <code>Laravel</code> 应用生命周期中，处于第二阶段（容器启动）的结束阶段，在这里第一次与 <code>Request</code> 产生互动：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Illuminate\Auth\AuthServiceProvider</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">registerRequestRebindHandler</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;app-&gt;rebinding(<span class="string">'request'</span>, <span class="function"><span class="keyword">function</span> <span class="params">($app, $request)</span> </span>&#123;</span><br><span class="line">        $request-&gt;setUserResolver(<span class="function"><span class="keyword">function</span> <span class="params">($guard = null)</span> <span class="title">use</span> <span class="params">($app)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> call_user_func($app[<span class="string">'auth'</span>]-&gt;userResolver(), $guard);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Auth</code>服务注册时，给 <code>request</code> 绑定了一个“重绑定”事件，该事件的目的何在？</p>
+<p>首先需要知道，<code>request</code> 对象的实例化，是在容器启动之前，是一个比较早的阶段，可以说，在 <code>request</code> 对象第一次被实例化时，容器中基本还没有其他对象的存在，那么，如果在代码后续执行的过程中，需要丰富 <code>request</code> 对象，该怎么办呢？答案就是重绑定，在合适的时机，更新 <code>request</code> 对象之后，重新将 <code>request</code> 对象绑定到容器中。</p>
+<p><code>Auth</code> 服务注册时，给 <code>request</code> 对象重绑定了一个事件，用于给 <code>request</code> 添加“用户解析”功能，当使用 <code>request</code> 的“用户解析”功能时，实际上会去找 <code>Guard</code> 要用户。然而，在服务注册阶段，<code>Guard</code> 表示我也还没实例化，你不能立刻来找我要用户，而是要“推迟”找我要用户的时间，所以，最终在这里绑定的是一个闭包，保存的是 <code>request</code> 解析用户的途径，在合适的时机，通过这一途径，即可找 <code>Guard</code> 要到用户，但这时机究竟是什么时候呢？这个时机，必须满足两个条件：</p>
+<ul>
+<li><code>request</code> 发生了重绑定</li>
+<li><code>Guard</code> 认证用户结束</li>
+</ul>
+<h3 id="路由解析"><a href="#路由解析" class="headerlink" title="路由解析"></a>路由解析</h3><p>路由解析处于 <code>Laravel</code> 应用生命周期的的第三阶段（请求处理）。在第二阶段结束，第三阶段开始时，<code>request</code> 进行了重绑定：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Illuminate\Foundation\Http\Kernel</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// request 重绑定的发生过程</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// HTTP kernel 捕获request，开始处理</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">($request)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        $request-&gt;enableHttpMethodParameterOverride();</span><br><span class="line"></span><br><span class="line">        $response = <span class="keyword">$this</span>-&gt;sendRequestThroughRouter($request);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="keyword">Exception</span> $e) &#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;reportException($e);</span><br><span class="line"></span><br><span class="line">        $response = <span class="keyword">$this</span>-&gt;renderException($request, $e);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable $e) &#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;reportException($e = <span class="keyword">new</span> FatalThrowableError($e));</span><br><span class="line"></span><br><span class="line">        $response = <span class="keyword">$this</span>-&gt;renderException($request, $e);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">$this</span>-&gt;app[<span class="string">'events'</span>]-&gt;dispatch(</span><br><span class="line">        <span class="keyword">new</span> Events\RequestHandled($request, $response)</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> $response;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. HTTP kernel 发送request通过路由</span></span><br><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">sendRequestThroughRouter</span><span class="params">($request)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 这里第一次对request经行绑定，但不会触发重绑定事件</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;app-&gt;instance(<span class="string">'request'</span>, $request);</span><br><span class="line">    <span class="comment">// 紧接着立刻清除已绑定的request对象</span></span><br><span class="line">    Facade::clearResolvedInstance(<span class="string">'request'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">$this</span>-&gt;bootstrap();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">new</span> Pipeline(<span class="keyword">$this</span>-&gt;app))</span><br><span class="line">        -&gt;send($request)</span><br><span class="line">        -&gt;through(<span class="keyword">$this</span>-&gt;app-&gt;shouldSkipMiddleware() ? [] : <span class="keyword">$this</span>-&gt;middleware)</span><br><span class="line">        -&gt;then(<span class="keyword">$this</span>-&gt;dispatchToRouter());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. HTTP kernel 准备解析路由</span></span><br><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">dispatchToRouter</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="params">($request)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// request 在这里重新被绑定，触发重绑定事件</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;app-&gt;instance(<span class="string">'request'</span>, $request);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;router-&gt;dispatch($request);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>框架选择在此处对 <code>request</code> 进行重绑定，是因为，刚刚结束的第二阶段，已经完成了所有服务提供者的注册与启动，此时容器中已经存在所有的服务对象，通过服务对象来丰富 <code>request</code> 对象成为可能。</p>
+<p>在 <code>request</code> 重新绑定之后，执行了这么一段代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Illuminate\Auth\AuthServiceProvider</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="keyword">$this</span>-&gt;router-&gt;dispatch($request);</span><br></pre></td></tr></table></figure>
+<p>这段代码的后文比较长，我简单概况一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">匹配并命中路由 -&gt; 通过路由解析并实例化控制器对象 -&gt; 收集路由与控制器中定义的中间件 -&gt; 执行路由中间件 -&gt; 执行控制器方法</span><br></pre></td></tr></table></figure>
+<h3 id="路由中间件"><a href="#路由中间件" class="headerlink" title="路由中间件"></a>路由中间件</h3><p>认证的行为，在中间件中触发。触发认证行为的中间件是<code>\Illuminate\Auth\Middleware\Authenticate::class</code>，在 <code>request</code> 通过该中间件时，<code>Guard</code> 检查 <code>request</code> 是否已通过认证，通过则放行，否则抛出<code>AuthenticationException</code>未认证异常。在通过认证之后，用户实例会保存在 <code>Guard</code> 对象中，后续所有找 <code>Guard</code> 要用户的行为，都可以得到相同的用户实例。至此，认证完成。</p>
+<p>综上所述，用户的认证，发生在执行路由中间的过程中，在此之前，是无法通过 <code>Auth</code> 来获取认证用户的，需要特别注意的是，控制器的实例化过程，发生在路由中间件执行之前，所以无法在控制器的构造函数中获取用户的登陆状态。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/20190506/laravel/progress-doc.html" rel="next" title="laravel应用执行流程">
+                <i class="fa fa-chevron-left"></i> laravel应用执行流程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/20190801/laravel/queue.html" rel="prev" title="laravel 队列部分源码阅读">
+                laravel 队列部分源码阅读 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="slpi1" />
+          <p class="site-author-name" itemprop="name">slpi1</p>
+           
+              <p class="site-description motion-element" itemprop="description">PHP,Laravel,thinkPHP,javascript,css</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Index"><span class="nav-number">1.</span> <span class="nav-text">Index</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Auth模块"><span class="nav-number">2.</span> <span class="nav-text">Auth模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AuthManager"><span class="nav-number">2.1.</span> <span class="nav-text">AuthManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Guard"><span class="nav-number">2.2.</span> <span class="nav-text">Guard</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SessionGuard与TokenGuard"><span class="nav-number">2.2.1.</span> <span class="nav-text">SessionGuard与TokenGuard</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UserProvider"><span class="nav-number">2.3.</span> <span class="nav-text">UserProvider</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Auth与框架的关系"><span class="nav-number">3.</span> <span class="nav-text">Auth与框架的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AuthServiceProvider"><span class="nav-number">3.1.</span> <span class="nav-text">AuthServiceProvider</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由解析"><span class="nav-number">3.2.</span> <span class="nav-text">路由解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由中间件"><span class="nav-number">3.3.</span> <span class="nav-text">路由中间件</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">slpi1</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

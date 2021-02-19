@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Index word文档中动态插入内容 检查预定义标记是否存在 一般情况 审阅模式   word转pdf 其他问题 mac上编辑过后，标记检查失败 pdf转码时中文出现乱码    最近在开发供应商入库系统时，涉及到部分操作 office 文档的过程，在这里简单记录一下。主要有下面这几个过程  在 word 文档指定位置插入内容 检查 word 文档中预定内容是否存在 word 文档转 pdf  w">
+<meta property="og:type" content="article">
+<meta property="og:title" content="word操作与pdf转码">
+<meta property="og:url" content="http://blog.slpi1.com/20191108/discuss/office-to-pdf.html">
+<meta property="og:site_name" content="easy note">
+<meta property="og:description" content="Index word文档中动态插入内容 检查预定义标记是否存在 一般情况 审阅模式   word转pdf 其他问题 mac上编辑过后，标记检查失败 pdf转码时中文出现乱码    最近在开发供应商入库系统时，涉及到部分操作 office 文档的过程，在这里简单记录一下。主要有下面这几个过程  在 word 文档指定位置插入内容 检查 word 文档中预定内容是否存在 word 文档转 pdf  w">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-02-19T08:08:15.487Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="word操作与pdf转码">
+<meta name="twitter:description" content="Index word文档中动态插入内容 检查预定义标记是否存在 一般情况 审阅模式   word转pdf 其他问题 mac上编辑过后，标记检查失败 pdf转码时中文出现乱码    最近在开发供应商入库系统时，涉及到部分操作 office 文档的过程，在这里简单记录一下。主要有下面这几个过程  在 word 文档指定位置插入内容 检查 word 文档中预定内容是否存在 word 文档转 pdf  w">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.slpi1.com/20191108/discuss/office-to-pdf.html"/>
+
+
+
+
+
+  <title>word操作与pdf转码 | easy note</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">easy note</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">easy note</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20191108/discuss/office-to-pdf.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">word操作与pdf转码</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-08T16:57:00+08:00">
+                2019-11-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h1><ul>
+<li><a href="#word文档中动态插入内容">word文档中动态插入内容</a></li>
+<li><a href="#检查预定义标记是否存在">检查预定义标记是否存在</a><ul>
+<li><a href="#一般情况">一般情况</a></li>
+<li><a href="#审阅模式">审阅模式</a></li>
+</ul>
+</li>
+<li><a href="#word转pdf">word转pdf</a></li>
+<li><a href="#其他问题">其他问题</a><ul>
+<li><a href="#mac上编辑过后，标记检查失败">mac上编辑过后，标记检查失败</a></li>
+<li><a href="#pdf转码时中文出现乱码">pdf转码时中文出现乱码</a></li>
+</ul>
+</li>
+</ul>
+<p>最近在开发供应商入库系统时，涉及到部分操作 <code>office</code> 文档的过程，在这里简单记录一下。主要有下面这几个过程</p>
+<ul>
+<li>在 <code>word</code> 文档指定位置插入内容</li>
+<li>检查 <code>word</code> 文档中预定内容是否存在</li>
+<li><code>word</code> 文档转 <code>pdf</code></li>
+</ul>
+<h1 id="word文档中动态插入内容"><a href="#word文档中动态插入内容" class="headerlink" title="word文档中动态插入内容"></a>word文档中动态插入内容</h1><p>在项目中会按供应商商生成许多合同文档，附件等，需要以供应商公司名称等预定内容填充至文档中。这里可以使用 <code>phpoffice/phpword</code> 扩展直接来完成：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">PhpOffice</span>\<span class="title">PhpWord</span>\<span class="title">TemplateProcessor</span>;</span><br><span class="line"></span><br><span class="line">$template = <span class="string">'/template.docx'</span>;</span><br><span class="line">$option = [</span><br><span class="line">    <span class="string">'company'</span> =&gt; <span class="string">'游族'</span>,</span><br><span class="line">    <span class="string">'user'</span> =&gt; <span class="string">'雷行'</span></span><br><span class="line">];</span><br><span class="line">$target = <span class="string">'/target.docx'</span>;</span><br><span class="line"></span><br><span class="line">$templateProcessor = <span class="keyword">new</span> TemplateProcessor($template);</span><br><span class="line">$templateProcessor-&gt;setValue(array_keys($option), array_values($option));</span><br><span class="line">$templateProcessor-&gt;saveAs($target);</span><br></pre></td></tr></table></figure>
+<p>其中 <code>$template</code> 表示模板文档路径，<code>$option</code> 是待填充内容。 <code>$target</code> 是生成的文件保存路径。待填充部分的内容，以规定的格式将键值填入文档，即可完成替换。如模板文档中字符 <code>${company}</code> 会被替换为 <code>游族</code>, <code>${user}</code> 会被替换为 <code>雷行</code>。</p>
+<h1 id="检查预定义标记是否存在"><a href="#检查预定义标记是否存在" class="headerlink" title="检查预定义标记是否存在"></a>检查预定义标记是否存在</h1><p>由于业务流程问题，在入库过程中，需要在文档中保留一部分的标记，供后续流程进行替换。在此之前，供应商会下载文档，进行编辑，然后重新上传，在上传时，服务端需要检查文档中标记是否被编辑过，是则提示供应商错误信息，以免后续流程执行错误。</p>
+<h2 id="一般情况"><a href="#一般情况" class="headerlink" title="一般情况"></a>一般情况</h2><p>通过 <code>TemplateProcessor::getVariableCount()</code> 方法可以获取文档中存在的标记和数量，返回数据格式如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$target = <span class="string">'/target.docx'</span>;</span><br><span class="line"></span><br><span class="line">$templateProcessor = <span class="keyword">new</span> TemplateProcessor($target);</span><br><span class="line">$result = $templateProcessor-&gt;getVariableCount();</span><br><span class="line"></span><br><span class="line"><span class="comment">// $result</span></span><br><span class="line"><span class="comment">// [</span></span><br><span class="line"><span class="comment">//    'company' =&gt; 1,</span></span><br><span class="line"><span class="comment">//    'user' =&gt; 1</span></span><br><span class="line"><span class="comment">// ]</span></span><br></pre></td></tr></table></figure>
+<p>因此只需要检查返回结果中是否存在相应的键值即可。</p>
+<h2 id="审阅模式"><a href="#审阅模式" class="headerlink" title="审阅模式"></a>审阅模式</h2><p>在审阅模式下，直接通过上述方法，无法获得正确的结果，其原因在于：审阅模式下，编辑 <code>word</code> 文档，即使删除了标记，但在 <code>word</code> 文档的数据源中，仍然存在标记，只不过通过删除线，在文档中变成了不可见内容。所以即使用户编辑了标记，上述方法也无法检测到标记的丢失。</p>
+<p>将 <code>word</code> 文档重命名为 <code>zip</code> 的文档后解压，得到大致如下结构的目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/</span><br><span class="line">|---_rels/</span><br><span class="line">    |---.rels</span><br><span class="line">|---docProps/</span><br><span class="line">    |---app.xml</span><br><span class="line">    |---core.xml</span><br><span class="line">    |---custom.xml</span><br><span class="line">|---word/</span><br><span class="line">    |---_rels/</span><br><span class="line">    |---media/</span><br><span class="line">    |---theme/</span><br><span class="line">    |---document.xml</span><br><span class="line">    |---endnotes.xml</span><br><span class="line">    |---fontTable.xml</span><br><span class="line">    |---footer1.xml</span><br><span class="line">    |---footnotes.xml</span><br><span class="line">    |---header1.xml</span><br><span class="line">    |---numbering.xml</span><br><span class="line">    |---people.xml</span><br><span class="line">    |---settings.xml</span><br><span class="line">    |---styles.xml</span><br><span class="line">    |---webSettings.xml</span><br><span class="line">|---[Content_Types].xml</span><br></pre></td></tr></table></figure>
+<p>操作 <code>word</code> 文档，实际就是对压缩文件内的子文件的操作。文档的内容基本都在 <code>/word/document.xml</code> 这个文件当中。我们查看审阅模式下的 <code>document.xml</code> 找到被编辑过的标记：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--- 这是审阅模式下被编辑过的标记的数据源 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">w:ins</span> <span class="attr">w:id</span>=<span class="string">"29"</span> <span class="attr">w:author</span>=<span class="string">"宋正平(雷行)"</span> <span class="attr">w:date</span>=<span class="string">"2019-10-08T13:58:00Z"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">w:del</span> <span class="attr">w:id</span>=<span class="string">"30"</span> <span class="attr">w:author</span>=<span class="string">"宋正平(雷行) [2]"</span> <span class="attr">w:date</span>=<span class="string">"2019-12-24T10:51:00Z"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">w:r</span> <span class="attr">w:rsidR</span>=<span class="string">"001737A4"</span> <span class="attr">w:rsidRPr</span>=<span class="string">"001737A4"</span> <span class="attr">w:rsidDel</span>=<span class="string">"00212F81"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">w:rPr</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">w:rFonts</span> <span class="attr">w:ascii</span>=<span class="string">"微软雅黑"</span> <span class="attr">w:eastAsia</span>=<span class="string">"微软雅黑"</span> <span class="attr">w:hAnsi</span>=<span class="string">"微软雅黑"</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">w:szCs</span> <span class="attr">w:val</span>=<span class="string">"21"</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">w:u</span> <span class="attr">w:val</span>=<span class="string">"single"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">w:rPr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">w:delText</span>&gt;</span>$&#123;sY&#125;<span class="tag">&lt;/<span class="name">w:delText</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">w:r</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">w:del</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">w:ins</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--- 这是审阅模式下没有编辑过的标记的数据源 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">w:ins</span> <span class="attr">w:id</span>=<span class="string">"32"</span> <span class="attr">w:author</span>=<span class="string">"宋正平(雷行)"</span> <span class="attr">w:date</span>=<span class="string">"2019-10-08T13:58:00Z"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">w:r</span> <span class="attr">w:rsidR</span>=<span class="string">"001737A4"</span> <span class="attr">w:rsidRPr</span>=<span class="string">"001737A4"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">w:rPr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">w:rFonts</span> <span class="attr">w:ascii</span>=<span class="string">"微软雅黑"</span> <span class="attr">w:eastAsia</span>=<span class="string">"微软雅黑"</span> <span class="attr">w:hAnsi</span>=<span class="string">"微软雅黑"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">w:szCs</span> <span class="attr">w:val</span>=<span class="string">"21"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">w:u</span> <span class="attr">w:val</span>=<span class="string">"single"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">w:rPr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">w:t</span>&gt;</span>$&#123;sM&#125;<span class="tag">&lt;/<span class="name">w:t</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">w:r</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">w:ins</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>通过对比发现，审阅模式下被编辑过的内容，依然存在文档数据源中，不过被添加了一对 <code>&lt;w:delText&gt;&lt;/w:delText&gt;</code> 的标记。所以我们只需要在执行 <code>getVariableCount()</code> 方法时，过滤掉这部分的标记即可。</p>
+<p>为了方便操作，我们新建一个类，继承自 <code>PhpOffice\PhpWord\TemplateProcessor</code> 类，然后添加相应操作：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Services</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Exceptions</span>\<span class="title">ErrorLogicException</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">PhpOffice</span>\<span class="title">PhpWord</span>\<span class="title">TemplateProcessor</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WordTagDeleteCheck</span> <span class="keyword">extends</span> <span class="title">TemplateProcessor</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 过滤审阅模式下已删除的标记</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@method</span>  getVariableCountWithoutDel</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span>  雷行  songzhp<span class="doctag">@yoozoo</span>.com  2019-10-30T12:01:16+0800</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>  array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getVariableCountWithoutDel</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过原方法获取标记列表</span></span><br><span class="line">        $vars = <span class="keyword">$this</span>-&gt;getVariableCount();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建替换数组，将带有删除线的标记替换为空字符</span></span><br><span class="line">        $option = [];</span><br><span class="line">        <span class="keyword">foreach</span> ($vars <span class="keyword">as</span> $key =&gt; $value) &#123;</span><br><span class="line">            $option[<span class="string">'&lt;w:delText&gt;$&#123;'</span> . $key . <span class="string">'&#125;&lt;/w:delText&gt;'</span>] = <span class="string">''</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        $search                     = array_keys($option);</span><br><span class="line">        $replace                    = array_values($option);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 对文档页头执行替换</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;tempDocumentHeaders  = <span class="keyword">$this</span>-&gt;setValueForPart($search, $replace, <span class="keyword">$this</span>-&gt;tempDocumentHeaders, <span class="keyword">self</span>::MAXIMUM_REPLACEMENTS_DEFAULT);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 对文档内容执行替换</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;tempDocumentMainPart = <span class="keyword">$this</span>-&gt;setValueForPart($search, $replace, <span class="keyword">$this</span>-&gt;tempDocumentMainPart, <span class="keyword">self</span>::MAXIMUM_REPLACEMENTS_DEFAULT);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 对文档页脚执行替换</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;tempDocumentFooters  = <span class="keyword">$this</span>-&gt;setValueForPart($search, $replace, <span class="keyword">$this</span>-&gt;tempDocumentFooters, <span class="keyword">self</span>::MAXIMUM_REPLACEMENTS_DEFAULT);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 重新获取文档标记</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;getVariableCount();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 检查合同时间标记是否缺少</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@method</span>  checkDateTagDelete</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span>  雷行  songzhp<span class="doctag">@yoozoo</span>.com  2019-10-30T12:01:40+0800</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>  boolean</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">checkDateTagDelete</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line"></span><br><span class="line">        $vars = <span class="keyword">$this</span>-&gt;getVariableCountWithoutDel();</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">isset</span>($vars[<span class="string">'sY'</span>]) ||</span><br><span class="line">            !<span class="keyword">isset</span>($vars[<span class="string">'sM'</span>]) ||</span><br><span class="line">            !<span class="keyword">isset</span>($vars[<span class="string">'sD'</span>]) ||</span><br><span class="line">            !<span class="keyword">isset</span>($vars[<span class="string">'eY'</span>]) ||</span><br><span class="line">            !<span class="keyword">isset</span>($vars[<span class="string">'eM'</span>]) ||</span><br><span class="line">            !<span class="keyword">isset</span>($vars[<span class="string">'eD'</span>])</span><br><span class="line">        ) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> ErrorLogicException(<span class="string">'file.doc.contract'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="word转pdf"><a href="#word转pdf" class="headerlink" title="word转pdf"></a>word转pdf</h1><p>要完成word转pdf，需要现在服务器上安装软件 <code>libreoffice</code>， 然后就可以通过命令来完成：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> HOME=/output &amp;&amp; soffice  --headless --convert-to pdf:writer_pdf_Export  --outdir /output /target.docx</span><br></pre></td></tr></table></figure>
+<p>其中，<code>target.docx</code> 表示文档路径，<code>output</code> 表示转码后 <code>pdf</code> 文档存放的目录。</p>
+<p>一般来说，执行 <code>docx</code> 文档的生成、<code>pdf</code> 的转码，都需要放到队列中异步执行，然而 <code>libreoffice</code> 提供的命令不支持并发操作。所以在启动队列时，执行 <code>pdf</code> 文件转码的队列只允许有一个，否则出现并发，会导致进程卡死，<code>PHP</code> 执行 <code>exec</code> 的进程挂起，队列中的任务会无限超时，<code>pdf</code> 生成失败，千万要注意。</p>
+<h1 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h1><h2 id="mac上编辑过后，标记检查失败"><a href="#mac上编辑过后，标记检查失败" class="headerlink" title="mac上编辑过后，标记检查失败"></a>mac上编辑过后，标记检查失败</h2><p>mac上编辑 <code>word</code> 文档时，可能因 <code>mac</code> 上不具备原文档所需要的字体，自动转化为其他字体，此时会改变标记的 <code>xml</code> 数据，导致标记检查失效。解决方法是在保存模板时嵌入字体</p>
+<h2 id="pdf转码时中文出现乱码"><a href="#pdf转码时中文出现乱码" class="headerlink" title="pdf转码时中文出现乱码"></a>pdf转码时中文出现乱码</h2><ul>
+<li>检查服务器上是否有安装中文字体，如果没有可能会导致中文全部乱码</li>
+<li>原 <code>word</code> 文档是否有嵌入字体，如果服务端已安装中文字体，<code>word</code> 文档嵌入字体，可能会导致部分中文乱码</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/20191101/discuss/error.html" rel="next" title="错误与异常的处理">
+                <i class="fa fa-chevron-left"></i> 错误与异常的处理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/20191113/discuss/package.html" rel="prev" title="如何进行代码结构的规划">
+                如何进行代码结构的规划 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="slpi1" />
+          <p class="site-author-name" itemprop="name">slpi1</p>
+           
+              <p class="site-description motion-element" itemprop="description">PHP,Laravel,thinkPHP,javascript,css</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Index"><span class="nav-number">1.</span> <span class="nav-text">Index</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#word文档中动态插入内容"><span class="nav-number">2.</span> <span class="nav-text">word文档中动态插入内容</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#检查预定义标记是否存在"><span class="nav-number">3.</span> <span class="nav-text">检查预定义标记是否存在</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一般情况"><span class="nav-number">3.1.</span> <span class="nav-text">一般情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#审阅模式"><span class="nav-number">3.2.</span> <span class="nav-text">审阅模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#word转pdf"><span class="nav-number">4.</span> <span class="nav-text">word转pdf</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他问题"><span class="nav-number">5.</span> <span class="nav-text">其他问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mac上编辑过后，标记检查失败"><span class="nav-number">5.1.</span> <span class="nav-text">mac上编辑过后，标记检查失败</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pdf转码时中文出现乱码"><span class="nav-number">5.2.</span> <span class="nav-text">pdf转码时中文出现乱码</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">slpi1</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

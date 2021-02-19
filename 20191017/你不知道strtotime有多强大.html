@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="关于这个函数，PHP 手册译本是这样描述的：   strtotime  (PHP 4, PHP 5, PHP 7)strtotime — 将任何字符串的日期时间描述解析为 Unix 时间戳  说明  int strtotime ( string $time [, int $now = time() ] )本函数预期接受一个包含美国英语日期格式的字符串并尝试将其解析为 Unix 时间戳（自 Janu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="你不知道strtotime有多强大">
+<meta property="og:url" content="http://blog.slpi1.com/20191017/你不知道strtotime有多强大.html">
+<meta property="og:site_name" content="easy note">
+<meta property="og:description" content="关于这个函数，PHP 手册译本是这样描述的：   strtotime  (PHP 4, PHP 5, PHP 7)strtotime — 将任何字符串的日期时间描述解析为 Unix 时间戳  说明  int strtotime ( string $time [, int $now = time() ] )本函数预期接受一个包含美国英语日期格式的字符串并尝试将其解析为 Unix 时间戳（自 Janu">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-02-19T08:08:15.491Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="你不知道strtotime有多强大">
+<meta name="twitter:description" content="关于这个函数，PHP 手册译本是这样描述的：   strtotime  (PHP 4, PHP 5, PHP 7)strtotime — 将任何字符串的日期时间描述解析为 Unix 时间戳  说明  int strtotime ( string $time [, int $now = time() ] )本函数预期接受一个包含美国英语日期格式的字符串并尝试将其解析为 Unix 时间戳（自 Janu">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.slpi1.com/20191017/你不知道strtotime有多强大.html"/>
+
+
+
+
+
+  <title>你不知道strtotime有多强大 | easy note</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">easy note</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">easy note</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20191017/你不知道strtotime有多强大.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="slpi1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="easy note">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">你不知道strtotime有多强大</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-17T11:12:00+08:00">
+                2019-10-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>关于这个函数，PHP 手册译本是这样描述的：</p>
+<blockquote>
+<p><strong> strtotime </strong></p>
+<p>(PHP 4, PHP 5, PHP 7)<br>strtotime — 将任何字符串的日期时间描述解析为 Unix 时间戳</p>
+<p><strong> 说明 </strong></p>
+<p><code>int strtotime ( string $time [, int $now = time() ] )</code><br>本函数预期接受一个包含美国英语日期格式的字符串并尝试将其解析为 Unix 时间戳（自 January 1 1970 00:00:00 GMT 起的秒数），其值相对于 <code>now</code> 参数给出的时间，如果没有提供此参数则用系统当前时间。</p>
+</blockquote>
+<p>原文：</p>
+<blockquote>
+<p><strong> strtotime </strong></p>
+<p>(PHP 4, PHP 5, PHP 7)<br>strtotime — Parse about any English textual datetime description into a Unix timestamp</p>
+<p><strong> Description </strong></p>
+<p><code>int strtotime ( string $time [, int $now = time() ] )</code><br>The function expects to be given a string containing an English date format and will try to parse that format into a Unix timestamp (the number of seconds since January 1 1970 00:00:00 UTC), relative to the timestamp given in now, or the current time if now is not supplied.</p>
+</blockquote>
+<p>先按下不表。</p>
+<p>关于PHP 中时间格处理，几乎是随处都会用到。在项目中就遇到过：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//判断是否为时间格式</span><br><span class="line">function isTimeFormat($str)</span><br><span class="line">&#123;</span><br><span class="line">    return strtotime($str) !== false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>一开始并未深究其中逻辑，因为他工作挺正常的。直到最近发现多处日期数据有误，追踪到上述一段代码，才发现并没有这么简单。这段代码是如何引入的呢，通过搜索后发现，网上有很多文章都提到过这一黑科技：<a href="http://www.daimajiayuan.com/sitejs-17065-1.html" target="_blank" rel="noopener">案例</a>、<a href="http://www.jb51.net/article/44817.htm" target="_blank" rel="noopener">案例</a>、<a href="https://zhidao.baidu.com/question/560995893965912404.html" target="_blank" rel="noopener">案例</a>。所以我猜想应该也是在网上查询后加进来的。但是网上找到的案例或多或少都会提到该方法不是特别严格，对于某些特别的情况判断会出错。</p>
+<a id="more"></a>
+<h2 id="什么情况下适用？"><a href="#什么情况下适用？" class="headerlink" title="什么情况下适用？"></a>什么情况下适用？</h2><p>这个方法是用来判断日期格式是否正确，说的具体一点，就是用户输入的日期格式是否正确。如果是通过标准Unix 时间戳转化的日期格式，strtotime 函数是肯定可以正常工作的（废话）。如果是用户随意输入的格式，那还真不好说，不过在输入日期格式的时候，能经过相关插件过滤的话，这个问题也基本不会存在了。以目前前端插件的丰富程度来看，用户手动输入日期的场景应该是不存在的，都是通过插件进行选择，那么可以说，其实这段代码可以寿终正寝了。</p>
+<h2 id="问题场景还原"><a href="#问题场景还原" class="headerlink" title="问题场景还原"></a>问题场景还原</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$time = time();</span><br><span class="line">if(isTimeFormat($time))</span><br><span class="line">&#123;</span><br><span class="line">    $date = date(&apos;Ymd&apos;,strtotime($time));</span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">&#123;</span><br><span class="line">    $date = date(&apos;Ymd&apos;) ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>项目中出问题的细节基本如此，所以问题的关键在于 <code>strtotime(strtotime(time()))</code> 的返回，根据时间戳<code>time()</code>的不同，他的返回值还真是不能确定：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var_dump(strtotime(strtotime(&apos;2017-07-18 08:36:39&apos;)));</span><br><span class="line">//bool(false)</span><br><span class="line"></span><br><span class="line">var_dump(strtotime(strtotime(&apos;2017-07-18 08:36:40&apos;)));</span><br><span class="line">//int(158748735636)</span><br><span class="line"></span><br><span class="line">var_dump(strtotime(strtotime(&apos;2017-07-18 12:36:40&apos;)));</span><br><span class="line">//int(-17970195562)</span><br></pre></td></tr></table></figure></p>
+<p>所以问题在于运用本身就错了，在原始场景下，获取到时间戳后，直接格式化即可，不必进行时间格式是否正确的判断。</p>
+<h2 id="strtotime-到底有多强大？"><a href="#strtotime-到底有多强大？" class="headerlink" title="strtotime 到底有多强大？"></a>strtotime 到底有多强大？</h2><p>其实根据函数描述来看，strtotime 本意应该是用来转化<strong>对一个时间的正确描述</strong>为时间戳。远远不到<strong>任何字符串</strong>的程度。所以，以后在使用strtotime 函数的时候，应该建立在一定的输入预期上，或者是可控制的输入上。而不要给他一些奇奇怪的东西。比如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">strtotime(&apos;2017-13-14&apos;);</span><br><span class="line">strtotime(&apos;my birthday&apos;);</span><br><span class="line">strtotime(&apos;hello kitty&apos;);</span><br></pre></td></tr></table></figure></p>
+<p>什么的。。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/20191016/discuss/what_the_fu..function.html" rel="next" title="PHP坑爹函数系列">
+                <i class="fa fa-chevron-left"></i> PHP坑爹函数系列
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/20191025/custom/readme.html" rel="prev" title="编码习惯">
+                编码习惯 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="slpi1" />
+          <p class="site-author-name" itemprop="name">slpi1</p>
+           
+              <p class="site-description motion-element" itemprop="description">PHP,Laravel,thinkPHP,javascript,css</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么情况下适用？"><span class="nav-number">1.</span> <span class="nav-text">什么情况下适用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题场景还原"><span class="nav-number">2.</span> <span class="nav-text">问题场景还原</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strtotime-到底有多强大？"><span class="nav-number">3.</span> <span class="nav-text">strtotime 到底有多强大？</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">slpi1</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
