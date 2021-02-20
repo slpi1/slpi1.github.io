@@ -94,17 +94,17 @@
 
 
 
-<meta name="description" content="解决 js 跨域的一种方式是直接在服务端设置允许跨域请求，具体原理及规范可以参考HTTP 访问控制（ CORS ）。问题的关键在于，在创建跨域请求时，请求首部会带上额外信息，这部分不需要手动设置；服务端接收到跨域请求后，设置必要的响应首部信息，完成跨域的请求。 具体设置如下：  Apache 1234Header set Access-Control-Allow-Origin *Header ad">
+<meta name="description" content="文件及目录说明文件 docker-composer.yml: docker容器编排文件，也是搭建本地环境的入口文件。 Dockerfile.php: php环境容器 Dockerfile.queue: supervisord环境容器，容器基于php容器，开启了cron，用于实现队列及定时任务。该文件构建的容器用于模拟linux的shell环境，其他项目中所需要的软件可以在此容器中安装。  目录 d">
 <meta property="og:type" content="article">
-<meta property="og:title" content="服务端支持跨域请求">
-<meta property="og:url" content="http://blog.slpi1.com/20180325/服务端支持跨域请求.html">
+<meta property="og:title" content="通过docker构建本地环境">
+<meta property="og:url" content="http://blog.slpi1.com/20191120/environment/docker/通过docker构建本地环境.html">
 <meta property="og:site_name" content="slpi1">
-<meta property="og:description" content="解决 js 跨域的一种方式是直接在服务端设置允许跨域请求，具体原理及规范可以参考HTTP 访问控制（ CORS ）。问题的关键在于，在创建跨域请求时，请求首部会带上额外信息，这部分不需要手动设置；服务端接收到跨域请求后，设置必要的响应首部信息，完成跨域的请求。 具体设置如下：  Apache 1234Header set Access-Control-Allow-Origin *Header ad">
+<meta property="og:description" content="文件及目录说明文件 docker-composer.yml: docker容器编排文件，也是搭建本地环境的入口文件。 Dockerfile.php: php环境容器 Dockerfile.queue: supervisord环境容器，容器基于php容器，开启了cron，用于实现队列及定时任务。该文件构建的容器用于模拟linux的shell环境，其他项目中所需要的软件可以在此容器中安装。  目录 d">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-02-19T08:08:15.491Z">
+<meta property="og:updated_time" content="2021-02-20T03:20:21.365Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="服务端支持跨域请求">
-<meta name="twitter:description" content="解决 js 跨域的一种方式是直接在服务端设置允许跨域请求，具体原理及规范可以参考HTTP 访问控制（ CORS ）。问题的关键在于，在创建跨域请求时，请求首部会带上额外信息，这部分不需要手动设置；服务端接收到跨域请求后，设置必要的响应首部信息，完成跨域的请求。 具体设置如下：  Apache 1234Header set Access-Control-Allow-Origin *Header ad">
+<meta name="twitter:title" content="通过docker构建本地环境">
+<meta name="twitter:description" content="文件及目录说明文件 docker-composer.yml: docker容器编排文件，也是搭建本地环境的入口文件。 Dockerfile.php: php环境容器 Dockerfile.queue: supervisord环境容器，容器基于php容器，开启了cron，用于实现队列及定时任务。该文件构建的容器用于模拟linux的shell环境，其他项目中所需要的软件可以在此容器中安装。  目录 d">
 
 
 
@@ -133,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="http://blog.slpi1.com/20180325/服务端支持跨域请求.html"/>
+  <link rel="canonical" href="http://blog.slpi1.com/20191120/environment/docker/通过docker构建本地环境.html"/>
 
 
 
 
 
-  <title>服务端支持跨域请求 | slpi1</title>
+  <title>通过docker构建本地环境 | slpi1</title>
   
 
 
@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20180325/服务端支持跨域请求.html">
+    <link itemprop="mainEntityOfPage" href="http://blog.slpi1.com/20191120/environment/docker/通过docker构建本地环境.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="slpi1">
@@ -269,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">服务端支持跨域请求</h1>
+          <h1 class="post-title" itemprop="name headline">通过docker构建本地环境</h1>
         
 
         <div class="post-meta">
@@ -281,8 +281,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-25T19:45:00+08:00">
-                2018-03-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-20T15:01:00+08:00">
+                2019-11-20
               </time>
             
 
@@ -291,6 +291,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/docker/" itemprop="url" rel="index">
+                    <span itemprop="name">docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -319,18 +341,27 @@
       
 
       
-        <p>解决 js 跨域的一种方式是直接在服务端设置允许跨域请求，具体原理及规范可以参考<a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Access_control_CORS" target="_blank" rel="noopener">HTTP 访问控制（ CORS ）</a>。问题的关键在于，在创建跨域请求时，请求首部会带上额外信息，这部分不需要手动设置；服务端接收到跨域请求后，设置必要的响应首部信息，完成跨域的请求。</p>
-<p>具体设置如下：</p>
-<ul>
-<li><p>Apache</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Header set Access-Control-Allow-Origin *</span><br><span class="line">Header add Access-Control-Allow-Headers &quot;origin, content-type, authorization&quot;</span><br><span class="line">Header always set Access-Control-Allow-Methods &quot;POST, GET, PUT, DELETE, OPTIONS&quot;</span><br><span class="line">Header set Access-Control-Allow-Credentials true</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Nginx</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">add_header &apos;Access-Control-Allow-Origin&apos; &apos;*&apos;;</span><br><span class="line">add_header &apos;Access-Control-Allow-Credentials&apos; &apos;true&apos;;</span><br><span class="line">add_header &apos;Access-Control-Allow-Headers&apos; &apos;Authorization,Origin,Content-Type&apos;;</span><br><span class="line">add_header &apos;Access-Control-Allow-Methods&apos; &apos;GET,POST,PUT,DELETE,OPTIONS&apos;;</span><br></pre></td></tr></table></figure>
-</li>
+        <h1 id="文件及目录说明"><a href="#文件及目录说明" class="headerlink" title="文件及目录说明"></a>文件及目录说明</h1><h2 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h2><ul>
+<li><code>docker-composer.yml</code>: docker容器编排文件，也是搭建本地环境的入口文件。</li>
+<li><code>Dockerfile.php</code>: php环境容器</li>
+<li><code>Dockerfile.queue</code>: supervisord环境容器，容器基于php容器，开启了cron，用于实现队列及定时任务。该文件构建的容器用于模拟linux的shell环境，其他项目中所需要的软件可以在此容器中安装。</li>
 </ul>
-<p>如果需要限制能进行跨域请求的域，在 <code>nginx</code> 中可以进行如下设置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">set $set_cross_origin &apos;http://www.a.com&apos;;</span><br><span class="line">if ($http_origin ~* &apos;https?://(api.a.lar|localhost:4200)&apos;) &#123;</span><br><span class="line">    set $set_cross_origin &quot;$http_origin&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">add_header &apos;Access-Control-Allow-Origin&apos; &apos;$set_cross_origin&apos;;</span><br><span class="line">add_header &apos;Access-Control-Allow-Credentials&apos; &apos;true&apos;;</span><br><span class="line">add_header &apos;Access-Control-Allow-Headers&apos; &apos;Authorization,Origin,Content-Type&apos;;</span><br><span class="line">add_header &apos;Access-Control-Allow-Methods&apos; &apos;GET,POST,PUT,DELETE,OPTIONS&apos;;</span><br></pre></td></tr></table></figure></p>
-<p><strong>注意</strong><br>在服务器是 <code>nginx</code> 时，当响应状态码为40x、50x等错误码时，指令 <code>add_header</code> 会失效。<br>如果 <code>nginx</code> 的版本大于 1.7.5，可以指定第三个参数 <code>always</code> 来修正这问题；如果版本比较低，需要加入其它模块来完成响应首部信息的添加。具体可以参考<a href="http://nginx.org/en/docs/http/ngx_http_headers_module.html" target="_blank" rel="noopener">Module ngx_http_headers_module</a>、<a href="https://www.nginx.com/resources/wiki/modules/headers_more/" target="_blank" rel="noopener">Headers More</a></p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li><code>data</code>: mysql与redis数据目录</li>
+<li><code>font</code>: 字体库</li>
+<li><code>supervisor</code>: supervisor配置文件目录</li>
+<li><code>vhost</code>： nginx站点配置目录</li>
+</ul>
+<h1 id="其他变量"><a href="#其他变量" class="headerlink" title="其他变量"></a>其他变量</h1><ul>
+<li><code>docker网络名</code>： localhost</li>
+<li><code>工作目录</code>：D:\song\www 请根据自身情况修改，用户存放项目代码</li>
+<li><code>容器工作目录</code>： /app 容器中的该目录会映射到本地工作目录</li>
+<li><code>nginx容器站点配置目录</code>： /etc/nginx/conf.d nginx容器中的该目录会映射到本地nginx站点配置目录</li>
+<li><code>mysql容器数据目录</code>：/var/lib/mysql mysql容器中的该目录映射到本地mysql的数据目录</li>
+<li><code>redis容器数据目录</code>：/data redis容器中的该目录映射到本地redis数据目录</li>
+</ul>
+<p>请检查上述变量在 <code>docker-composer.yml</code> 配置文件中的映射是否正确，检查各容器的 <code>volumes</code>项。</p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><p>在上述配置正确，docker引擎正常启动的前提下，在本目录执行 <code>docker-compose up -d</code> 即可启动docker环境。</p>
 
       
     </div>
@@ -355,8 +386,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/20171219/2017年终总结.html" rel="next" title="2017年终总结">
-                <i class="fa fa-chevron-left"></i> 2017年终总结
+              <a href="/20191113/discuss/package.html" rel="next" title="如何进行代码结构的规划">
+                <i class="fa fa-chevron-left"></i> 如何进行代码结构的规划
               </a>
             
           </div>
@@ -365,8 +396,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/20180925/discuss/excel-merge-cell.html" rel="prev" title="Excel单元格自动合并的实现方案">
-                Excel单元格自动合并的实现方案 <i class="fa fa-chevron-right"></i>
+              <a href="/20191205/laravel/email-filter.html" rel="prev" title="邮件发送过滤">
+                邮件发送过滤 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -419,8 +450,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -482,6 +522,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#文件及目录说明"><span class="nav-number">1.</span> <span class="nav-text">文件及目录说明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件"><span class="nav-number">1.1.</span> <span class="nav-text">文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#目录"><span class="nav-number">1.2.</span> <span class="nav-text">目录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他变量"><span class="nav-number">2.</span> <span class="nav-text">其他变量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用"><span class="nav-number">3.</span> <span class="nav-text">使用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
